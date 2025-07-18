@@ -531,7 +531,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param value The double value to log.
          */
-        void log(std::string key, double value)
+        void log(const std::string& key, double value)
         {
             for (const auto &manager : logManagers)
             {
