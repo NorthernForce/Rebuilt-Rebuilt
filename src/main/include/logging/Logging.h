@@ -34,56 +34,56 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param value The double value to log.
          */
-        virtual void log(std::string key, double value) = 0;
+        virtual void log(const std::string& key, double value) = 0;
 
         /**
          * @brief Logs a vector of double values.
          * @param key The key/name for the log entry.
          * @param values The vector of double values to log.
          */
-        virtual void log(std::string key, std::vector<double> values) = 0;
+        virtual void log(const std::string& key, std::vector<double> values) = 0;
 
         /**
          * @brief Logs a string value.
          * @param key The key/name for the log entry.
          * @param value The string value to log.
          */
-        virtual void log(std::string key, std::string value) = 0;
+        virtual void log(const std::string& key, std::string value) = 0;
 
         /**
          * @brief Logs a vector of string values.
          * @param key The key/name for the log entry.
          * @param values The vector of string values to log.
          */
-        virtual void log(std::string key, std::vector<std::string> values) = 0;
+        virtual void log(const std::string& key, std::vector<std::string> values) = 0;
 
         /**
          * @brief Logs a boolean value.
          * @param key The key/name for the log entry.
          * @param value The boolean value to log.
          */
-        virtual void log(std::string key, bool value) = 0;
+        virtual void log(const std::string& key, bool value) = 0;
 
         /**
          * @brief Logs a vector of boolean values.
          * @param key The key/name for the log entry.
          * @param values The vector of boolean values to log.
          */
-        virtual void log(std::string key, std::vector<bool> values) = 0;
+        virtual void log(const std::string& key, std::vector<bool> values) = 0;
 
         /**
          * @brief Logs a 64-bit integer value.
          * @param key The key/name for the log entry.
          * @param value The int64_t value to log.
          */
-        virtual void log(std::string key, int64_t value) = 0;
+        virtual void log(const std::string& key, int64_t value) = 0;
 
         /**
          * @brief Logs a vector of 64-bit integer values.
          * @param key The key/name for the log entry.
          * @param values The vector of int64_t values to log.
          */
-        virtual void log(std::string key, std::vector<int64_t> values) = 0;
+        virtual void log(const std::string& key, std::vector<int64_t> values) = 0;
     };
 
     /**
