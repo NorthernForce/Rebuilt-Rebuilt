@@ -41,21 +41,21 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of double values to log.
          */
-        virtual void log(const std::string& key, std::vector<double> values) = 0;
+        virtual void log(const std::string& key, const std::vector<double>& values) = 0;
 
         /**
          * @brief Logs a string value.
          * @param key The key/name for the log entry.
          * @param value The string value to log.
          */
-        virtual void log(const std::string& key, std::string value) = 0;
+        virtual void log(const std::string& key, const std::string& value) = 0;
 
         /**
          * @brief Logs a vector of string values.
          * @param key The key/name for the log entry.
          * @param values The vector of string values to log.
          */
-        virtual void log(const std::string& key, std::vector<std::string> values) = 0;
+        virtual void log(const std::string& key, const std::vector<std::string>& values) = 0;
 
         /**
          * @brief Logs a boolean value.
@@ -69,7 +69,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of boolean values to log.
          */
-        virtual void log(const std::string& key, std::vector<bool> values) = 0;
+        virtual void log(const std::string& key, const std::vector<bool>& values) = 0;
 
         /**
          * @brief Logs a 64-bit integer value.
@@ -83,7 +83,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of int64_t values to log.
          */
-        virtual void log(const std::string& key, std::vector<int64_t> values) = 0;
+        virtual void log(const std::string& key, const std::vector<int64_t>& values) = 0;
     };
 
     /**
@@ -146,7 +146,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param value The string value to log.
          */
-        void log(std::string key, std::string value) override
+        void log(const std::string& key, const std::string& value) override
         {
             auto &entry = stringEntries[key];
             if (!entry)
@@ -161,7 +161,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of string values to log.
          */
-        void log(std::string key, std::vector<std::string> values) override
+        void log(const std::string& key, const std::vector<std::string>& values) override
         {
             auto &entry = stringArrayEntries[key];
             if (!entry)
@@ -176,7 +176,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param value The boolean value to log.
          */
-        void log(std::string key, bool value) override
+        void log(const std::string& key, bool value) override
         {
             auto &entry = booleanEntries[key];
             if (!entry)
@@ -192,7 +192,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of boolean values to log.
          */
-        void log(std::string key, std::vector<bool> values) override
+        void log(const std::string& key, const std::vector<bool>& values) override
         {
             auto &entry = booleanArrayEntries[key];
             if (!entry)
@@ -209,7 +209,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param value The int64_t value to log.
          */
-        void log(std::string key, int64_t value) override
+        void log(const std::string& key, int64_t value) override
         {
             auto &entry = integerEntries[key];
             if (!entry)
@@ -224,7 +224,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of int64_t values to log.
          */
-        void log(std::string key, std::vector<int64_t> values) override
+        void log(const std::string& key, const std::vector<int64_t>& values) override
         {
             auto &entry = integerArrayEntries[key];
             if (!entry)
@@ -296,7 +296,7 @@ namespace nfr
          * @param values The vector of double values to log.
          * @throws std::runtime_error if there's a type mismatch for an existing key.
          */
-        void log(std::string key, std::vector<double> values) override
+        void log(const std::string& key, const std::vector<double>& values) override
         {
             auto &entry = entries[key];
             if (!entry)
@@ -320,7 +320,7 @@ namespace nfr
          * @param value The string value to log.
          * @throws std::runtime_error if there's a type mismatch for an existing key.
          */
-        void log(std::string key, std::string value) override
+        void log(const std::string& key, const std::string& value) override
         {
             auto &entry = entries[key];
             if (!entry)
@@ -344,7 +344,7 @@ namespace nfr
          * @param values The vector of string values to log.
          * @throws std::runtime_error if there's a type mismatch for an existing key.
          */
-        void log(std::string key, std::vector<std::string> values) override
+        void log(const std::string& key, const std::vector<std::string>& values) override
         {
             auto &entry = entries[key];
             if (!entry)
@@ -368,7 +368,7 @@ namespace nfr
          * @param value The boolean value to log.
          * @throws std::runtime_error if there's a type mismatch for an existing key.
          */
-        void log(std::string key, bool value) override
+        void log(const std::string& key, bool value) override
         {
             auto &entry = entries[key];
             if (!entry)
@@ -393,7 +393,7 @@ namespace nfr
          * @param values The vector of boolean values to log.
          * @throws std::runtime_error if there's a type mismatch for an existing key.
          */
-        void log(std::string key, std::vector<bool> values) override
+        void log(const std::string& key, const std::vector<bool>& values) override
         {
             auto &entry = entries[key];
             if (!entry)
@@ -418,7 +418,7 @@ namespace nfr
          * @param value The int64_t value to log.
          * @throws std::runtime_error if there's a type mismatch for an existing key.
          */
-        void log(std::string key, int64_t value) override
+        void log(const std::string& key, int64_t value) override
         {
             auto &entry = entries[key];
             if (!entry)
@@ -442,7 +442,7 @@ namespace nfr
          * @param values The vector of int64_t values to log.
          * @throws std::runtime_error if there's a type mismatch for an existing key.
          */
-        void log(std::string key, std::vector<int64_t> values) override
+        void log(const std::string& key, const std::vector<int64_t>& values) override
         {
             auto &entry = entries[key];
             if (!entry)
@@ -544,7 +544,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of double values to log.
          */
-        void log(std::string key, std::vector<double> values)
+        void log(const std::string& key, const std::vector<double>& values)
         {
             for (const auto &manager : logManagers)
             {
@@ -557,7 +557,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param value The string value to log.
          */
-        void log(std::string key, std::string value)
+        void log(const std::string& key, const std::string& value)
         {
             for (const auto &manager : logManagers)
             {
@@ -570,7 +570,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of string values to log.
          */
-        void log(std::string key, std::vector<std::string> values)
+        void log(const std::string& key, const std::vector<std::string>& values)
         {
             for (const auto &manager : logManagers)
             {
@@ -583,7 +583,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param value The boolean value to log.
          */
-        void log(std::string key, bool value)
+        void log(const std::string& key, bool value)
         {
             for (const auto &manager : logManagers)
             {
@@ -596,7 +596,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of boolean values to log.
          */
-        void log(std::string key, std::vector<bool> values)
+        void log(const std::string& key, const std::vector<bool>& values)
         {
             for (const auto &manager : logManagers)
             {
@@ -609,7 +609,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param value The int64_t value to log.
          */
-        void log(std::string key, int64_t value)
+        void log(const std::string& key, int64_t value)
         {
             for (const auto &manager : logManagers)
             {
@@ -622,7 +622,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of int64_t values to log.
          */
-        void log(std::string key, std::vector<int64_t> values)
+        void log(const std::string& key, const std::vector<int64_t>& values)
         {
             for (const auto &manager : logManagers)
             {
@@ -692,8 +692,7 @@ namespace nfr
                     }
                     else 
                     {
-                        // If no specific logging is implemented, log the value as a string
-                        manager->log(key + "/" + std::string(field.name()), std::to_string(*field.value()));
+                        log(key + "/" + std::string(field.name()), *field.value());
                     }
                 } });
         }
