@@ -131,7 +131,7 @@ namespace nfr
          * @param key The key/name for the log entry.
          * @param values The vector of double values to log.
          */
-        void log(std::string key, std::vector<double> values) override
+        void log(const std::string& key, const std::vector<double>& values) override
         {
             auto &entry = doubleArrayEntries[key];
             if (!entry)
