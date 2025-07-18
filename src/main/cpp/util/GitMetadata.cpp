@@ -59,6 +59,8 @@ GitMetadata loadGitMetadata(const std::string& filePath) {
                 metadata.total_commit_count = std::stoi(value);
             } catch (const std::invalid_argument&) {
                 metadata.total_commit_count = 0; // Default to 0 if conversion fails
+            } catch (const std::out_of_range&) {
+                metadata.total_commit_count = 0; // Default to 0 if value is out of range
             }
         }
     }
