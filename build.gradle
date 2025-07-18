@@ -38,53 +38,6 @@ wpi.cpp.debugSimulation = false
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
-// BOOST SETUP
-def boostVersion = "1.84.0"
-def boostUnderscoreVersion = boostVersion.replace('.', '_')
-def boostUrl = "https://archives.boost.io/release/${boostVersion}/source/boost_${boostUnderscoreVersion}.tar.gz"
-def boostDir = file("external/boost_${boostUnderscoreVersion}")
-
-task downloadBoost(type: Download) {
-    src boostUrl
-    dest file("external/boost_${boostUnderscoreVersion}.tar.gz")
-    onlyIf { !boostDir.exists() }
-}
-
-task extractBoost(type: Copy, dependsOn: downloadBoost) {
-    from tarTree(resources.gzip("external/boost_${boostUnderscoreVersion}.tar.gz"))
-    into "external"
-    onlyIf { !boostDir.exists() }
-}
-
-tasks.named("extractBoost") {
-    doLast {
-        println "Boost extracted to ${boostDir}"
-    }
-}
-
-// GLAZE SETUP
-// def glazeVersion = "5.5.4"
-// def glazeUrl = "https://github.com/stephenberry/glaze/archive/refs/tags/v${glazeVersion}.tar.gz"
-// def glazeDir = file("external/glaze-${glazeVersion}")
-
-// task downloadGlaze(type: Download) {
-//     src glazeUrl
-//     dest file("external/glaze-${glazeVersion}.tar.gz")
-//     onlyIf { !glazeDir.exists() }
-// }
-
-// task extractGlaze(type: Copy, dependsOn: downloadGlaze) {
-//     from tarTree(resources.gzip("external/glaze-${glazeVersion}.tar.gz"))
-//     into "external"
-//     onlyIf { !glazeDir.exists() }
-// }
-
-// tasks.named("extractGlaze") {
-//     doLast {
-//         println "Glaze extracted to ${glazeDir}"
-//     }
-// }
-
 def reflectCppVersion = "0.19.0"
 def reflectCppUrl = "https://github.com/getml/reflect-cpp/archive/refs/tags/v${reflectCppVersion}.tar.gz"
 def reflectCppDir = file("external/reflect-cpp-${reflectCppVersion}")
@@ -152,8 +105,6 @@ model {
                 }
                 exportedHeaders {
                     srcDir 'src/main/include'
-                    srcDir "external/boost_${boostUnderscoreVersion}"
-                    // srcDir "external/glaze-${glazeVersion}/include"
                     srcDir "external/reflect-cpp-${reflectCppVersion}/include"
                 }
             }
