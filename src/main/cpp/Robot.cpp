@@ -67,11 +67,6 @@ void Robot::TestPeriodic() {}
 
 void Robot::TestExit() {}
 
-namespace nfr
-{
-    Logger logger{{}};
-}
-
 #ifndef RUNNING_FRC_TESTS
 int main()
 {

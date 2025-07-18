@@ -35,8 +35,3 @@ private:
 
     RobotContainer m_container;
 };
-
-namespace nfr
-{
-    extern Logger logger; // Global logger instance
-}

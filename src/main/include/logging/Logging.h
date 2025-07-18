@@ -847,4 +847,5 @@ namespace nfr
         }
     };
 
+    inline Logger logger{{}};
 }
