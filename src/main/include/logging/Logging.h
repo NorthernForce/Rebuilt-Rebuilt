@@ -272,7 +272,7 @@ namespace nfr
          * @param value The double value to log.
          * @throws std::runtime_error if there's a type mismatch for an existing key.
          */
-        void log(std::string key, double value) override
+        void log(const std::string& key, double value) override
         {
             auto &entry = entries[key];
             if (!entry)
