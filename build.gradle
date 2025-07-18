@@ -58,7 +58,7 @@ tasks.named("extractReflectCpp") {
 }
 
 tasks.withType(CppCompile).configureEach {
-    dependsOn extractBoost, extractReflectCpp
+    dependsOn extractReflectCpp
 }
 
 nativeUtils.platformConfigs.named('windowsx86-64').configure {
