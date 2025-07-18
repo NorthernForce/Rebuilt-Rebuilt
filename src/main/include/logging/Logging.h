@@ -639,7 +639,7 @@ namespace nfr
          * @param s The struct/class instance to log.
          */
         template <class T>
-        void log(std::string key, const T &s)
+        void log(const std::string& key, const T &s)
         {
             if constexpr (is_not_log_implemented_v<T>)
             {
