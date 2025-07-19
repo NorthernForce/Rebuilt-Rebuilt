@@ -5,6 +5,7 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
+#include "subsystems/SwerveDrive.h"
 
 class RobotContainer {
  public:
@@ -14,4 +15,5 @@ class RobotContainer {
 
  private:
   void ConfigureBindings();
+  std::unique_ptr<nfr::SwerveDrive> drive;
 };
