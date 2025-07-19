@@ -136,17 +136,6 @@ CommandPtr SwerveDrive::getSysIdRoutine()
     );
 }
 
-template<typename RequestSupplier>
-    requires(!is_lvalue_reference_v<invoke_result_t<RequestSupplier>>) &&
-            requires(RequestSupplier req, SwerveDrive &drive) { drive.SetControl(req()); }
-CommandPtr SwerveDrive::applyRequest(RequestSupplier request)
-{
-    return cmd::Run([this, request = std::move(request)]() mutable
-                        {
-                            SetControl(request());
-                        }, {this});
-}
-
 void SwerveDrive::Periodic()
 {
 }
@@ -197,7 +186,7 @@ CommandPtr SwerveDrive::driveByJoystick(function<double()> xAxis,
 {
     if (fieldCentric)
     {
-        return applyRequest([this, xAxis = std::move(xAxis), yAxis = std::move(yAxis), rotationAxis = std::move(rotationAxis)]() mutable
+        return ApplyRequest([&, xAxis = std::move(xAxis), yAxis = std::move(yAxis), rotationAxis = std::move(rotationAxis)]() -> auto&&
                         {
                             return fieldCentricRequest
                                 .WithVelocityX(xAxis() * maxTranslationSpeed)
@@ -207,7 +196,7 @@ CommandPtr SwerveDrive::driveByJoystick(function<double()> xAxis,
     }
     else
     {
-        return applyRequest([this, xAxis = std::move(xAxis), yAxis = std::move(yAxis), rotationAxis = std::move(rotationAxis)]() mutable
+        return ApplyRequest([&, xAxis = std::move(xAxis), yAxis = std::move(yAxis), rotationAxis = std::move(rotationAxis)]() -> auto&&
                         {
                             return robotRelativeRequest
                                 .WithVelocityX(xAxis() * maxTranslationSpeed)

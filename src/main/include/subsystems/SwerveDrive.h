@@ -85,6 +85,7 @@ namespace nfr
         ctre::phoenix6::swerve::requests::RobotCentric robotRelativeRequest = ctre::phoenix6::swerve::requests::RobotCentric();
         units::meters_per_second_t maxTranslationSpeed;
         units::radians_per_second_t maxRotationSpeed;
+
     public:
         using SwerveModuleConstants = ctre::phoenix6::swerve::SwerveModuleConstants<
             ctre::phoenix6::configs::TalonFXConfiguration,
@@ -98,18 +99,39 @@ namespace nfr
                     pathplanner::PIDConstants rotationPID,
                     units::meters_per_second_t maxTranslationSpeed,
                     units::radians_per_second_t maxRotationSpeed,
-                    const SwerveModuleConstants & frontLeftConstants,
-                    const SwerveModuleConstants & frontRightConstants,
-                    const SwerveModuleConstants & backLeftConstants,
-                    const SwerveModuleConstants & backRightConstants);
+                    const SwerveModuleConstants &frontLeftConstants,
+                    const SwerveModuleConstants &frontRightConstants,
+                    const SwerveModuleConstants &backLeftConstants,
+                    const SwerveModuleConstants &backRightConstants);
         frc2::sysid::SysIdRoutine &getSysIdTranslation() { return sysIdRoutineTranslation; }
         frc2::sysid::SysIdRoutine &getSysIdSteerGains() { return sysIdRoutineSteerGains; }
         frc2::sysid::SysIdRoutine &getSysIdRotation() { return sysIdRoutineRotation; }
         frc2::CommandPtr getSysIdRoutine();
         template <typename RequestSupplier>
-            requires(!std::is_lvalue_reference_v<std::invoke_result_t<RequestSupplier>>) &&
-                    requires(RequestSupplier req, SwerveDrive &drive) { drive.SetControl(req()); }
-        frc2::CommandPtr applyRequest(RequestSupplier request);
+        requires std::is_lvalue_reference_v<std::invoke_result_t<RequestSupplier>> &&
+            requires(RequestSupplier req, ctre::phoenix6::swerve::SwerveDrivetrain<ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::CANcoder> &drive) { drive.SetControl(req()); }
+    frc2::CommandPtr ApplyRequest(RequestSupplier request)
+    {
+        return Run([this, request=std::move(request)] {
+            return SetControl(request());
+        });
+    }
+
+    /**
+     * \brief Returns a command that applies the specified control request to this swerve drivetrain.
+     *
+     * \param request Function returning the request to apply
+     * \returns Command to run
+     */
+    template <typename RequestSupplier>
+        requires (!std::is_lvalue_reference_v<std::invoke_result_t<RequestSupplier>>) &&
+            requires(RequestSupplier req, ctre::phoenix6::swerve::SwerveDrivetrain<ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::CANcoder> &drive) { drive.SetControl(req()); }
+    frc2::CommandPtr ApplyRequest(RequestSupplier request)
+    {
+        return Run([this, request=std::move(request)] {
+            return SetControl(request());
+        });
+    }
         void Periodic() override;
         void AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp) override;
         void followTrajectory(const choreo::SwerveSample &sample);
