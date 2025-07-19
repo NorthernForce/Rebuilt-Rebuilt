@@ -16,4 +16,5 @@ class RobotContainer {
  private:
   void ConfigureBindings();
   std::unique_ptr<nfr::SwerveDrive> drive;
+  std::optional<frc2::CommandPtr> resetModulesCommand;
 };

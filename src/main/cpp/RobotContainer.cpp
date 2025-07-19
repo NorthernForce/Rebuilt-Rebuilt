@@ -10,9 +10,27 @@
 #include "generated/TunerConstants.h"
 #include "constants/Constants.h"
 #include "frc/MathUtil.h"
+#include "frc/Preferences.h"
+#include "frc/smartdashboard/SmartDashboard.h"
 
 using namespace std;
 using namespace nfr;
+
+std::array<frc::Rotation2d, 4> getModuleOffsets() {
+    return {
+        (units::degree_t)frc::Preferences::GetDouble("FrontLeftOffset", 0.0),
+        (units::degree_t)frc::Preferences::GetDouble("FrontRightOffset", 0.0),
+        (units::degree_t)frc::Preferences::GetDouble("BackLeftOffset", 0.0),
+        (units::degree_t)frc::Preferences::GetDouble("BackRightOffset", 0.0)
+    };
+}
+
+void setModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets) {
+    frc::Preferences::SetDouble("FrontLeftOffset", offsets[0].Degrees().value());
+    frc::Preferences::SetDouble("FrontRightOffset", offsets[1].Degrees().value());
+    frc::Preferences::SetDouble("BackLeftOffset", offsets[2].Degrees().value());
+    frc::Preferences::SetDouble("BackRightOffset", offsets[3].Degrees().value());
+}
 
 RobotContainer::RobotContainer()
 {
@@ -29,6 +47,7 @@ RobotContainer::RobotContainer()
         TunerConstants::FrontRight,
         TunerConstants::BackLeft,
         TunerConstants::BackRight);
+    drive->setModuleOffsets(getModuleOffsets());
     ConfigureBindings();
 }
 
@@ -50,6 +69,11 @@ void RobotContainer::ConfigureBindings() {
         processInput([&driverController]() { return driverController.GetRightX(); }),
         true // Field-centric driving
     ));
+    resetModulesCommand = drive->RunOnce([&]() {
+        auto offsets = drive->resetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
+        setModuleOffsets(offsets);
+    });
+    frc::SmartDashboard::PutData("Reset Swerve Modules", resetModulesCommand.value().get());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
