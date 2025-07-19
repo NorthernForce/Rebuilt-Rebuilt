@@ -108,30 +108,28 @@ namespace nfr
         frc2::sysid::SysIdRoutine &getSysIdRotation() { return sysIdRoutineRotation; }
         frc2::CommandPtr getSysIdRoutine();
         template <typename RequestSupplier>
-        requires std::is_lvalue_reference_v<std::invoke_result_t<RequestSupplier>> &&
-            requires(RequestSupplier req, ctre::phoenix6::swerve::SwerveDrivetrain<ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::CANcoder> &drive) { drive.SetControl(req()); }
-    frc2::CommandPtr ApplyRequest(RequestSupplier request)
-    {
-        return Run([this, request=std::move(request)] {
-            return SetControl(request());
-        });
-    }
+            requires std::is_lvalue_reference_v<std::invoke_result_t<RequestSupplier>> &&
+                     requires(RequestSupplier req, ctre::phoenix6::swerve::SwerveDrivetrain<ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::CANcoder> &drive) { drive.SetControl(req()); }
+        frc2::CommandPtr ApplyRequest(RequestSupplier request)
+        {
+            return Run([this, request = std::move(request)]
+                       { return SetControl(request()); });
+        }
 
-    /**
-     * \brief Returns a command that applies the specified control request to this swerve drivetrain.
-     *
-     * \param request Function returning the request to apply
-     * \returns Command to run
-     */
-    template <typename RequestSupplier>
-        requires (!std::is_lvalue_reference_v<std::invoke_result_t<RequestSupplier>>) &&
-            requires(RequestSupplier req, ctre::phoenix6::swerve::SwerveDrivetrain<ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::CANcoder> &drive) { drive.SetControl(req()); }
-    frc2::CommandPtr ApplyRequest(RequestSupplier request)
-    {
-        return Run([this, request=std::move(request)] {
-            return SetControl(request());
-        });
-    }
+        /**
+         * \brief Returns a command that applies the specified control request to this swerve drivetrain.
+         *
+         * \param request Function returning the request to apply
+         * \returns Command to run
+         */
+        template <typename RequestSupplier>
+            requires(!std::is_lvalue_reference_v<std::invoke_result_t<RequestSupplier>>) &&
+                    requires(RequestSupplier req, ctre::phoenix6::swerve::SwerveDrivetrain<ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::CANcoder> &drive) { drive.SetControl(req()); }
+        frc2::CommandPtr ApplyRequest(RequestSupplier request)
+        {
+            return Run([this, request = std::move(request)]
+                       { return SetControl(request()); });
+        }
         void Periodic() override;
         void AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp) override;
         void followTrajectory(const choreo::SwerveSample &sample);
