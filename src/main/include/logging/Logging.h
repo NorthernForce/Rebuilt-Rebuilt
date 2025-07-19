@@ -500,6 +500,22 @@ namespace nfr
     template <typename T>
     inline constexpr bool is_not_log_implemented_v = is_not_log_implemented<T>::value;
 
+
+    class CustomLogged
+    {
+    public:
+        virtual void log(LoggerContext&& context) const = 0;
+    };
+
+    // A trait to check if a type has a custom logger
+    template <typename T, typename = void>
+    struct is_custom_logged : std::false_type {};
+    template <typename T>
+    struct is_custom_logged<T, std::void_t<decltype(std::declval<T>().log(std::declval<LoggerContext&>()))>> : std::true_type {};
+    // A more user-friendly alias for the trait
+    template <typename T>
+    inline constexpr bool is_custom_logged_v = is_custom_logged<T>::value;
+
     /**
      * @brief A composite logger that can manage multiple logging backends.
      * It dispatches log calls to all registered BaseLogManager instances.
@@ -651,6 +667,12 @@ namespace nfr
                 // If a custom logger is implemented for this type, use it
                 CustomLoggerFor<T> customLogger;
                 customLogger.log(s, LoggerContext(*this, key));
+                return;
+            }
+            if constexpr (is_custom_logged_v<T>)
+            {
+                // If the type is CustomLogged, call its log method
+                s.log(LoggerContext(*this, key));
                 return;
             }
             const auto view = rfl::to_view(s);
