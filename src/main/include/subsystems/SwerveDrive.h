@@ -81,7 +81,10 @@ namespace nfr
         void configurePathplanner(pathplanner::PIDConstants translationPID, pathplanner::PIDConstants rotationPID);
         void configureChoreo(pathplanner::PIDConstants translationPID, pathplanner::PIDConstants rotationPID);
         void startSimThread();
-
+        ctre::phoenix6::swerve::requests::FieldCentric fieldCentricRequest = ctre::phoenix6::swerve::requests::FieldCentric();
+        ctre::phoenix6::swerve::requests::RobotCentric robotRelativeRequest = ctre::phoenix6::swerve::requests::RobotCentric();
+        units::meters_per_second_t maxTranslationSpeed;
+        units::radians_per_second_t maxRotationSpeed;
     public:
         using SwerveModuleConstants = ctre::phoenix6::swerve::SwerveModuleConstants<
             ctre::phoenix6::configs::TalonFXConfiguration,
@@ -93,6 +96,8 @@ namespace nfr
                     std::array<double, 3> const &visionStandardDeviation,
                     pathplanner::PIDConstants translationPID,
                     pathplanner::PIDConstants rotationPID,
+                    units::meters_per_second_t maxTranslationSpeed,
+                    units::radians_per_second_t maxRotationSpeed,
                     const SwerveModuleConstants & frontLeftConstants,
                     const SwerveModuleConstants & frontRightConstants,
                     const SwerveModuleConstants & backLeftConstants,
@@ -110,5 +115,10 @@ namespace nfr
         void followTrajectory(const choreo::SwerveSample &sample);
         void setModuleOffsets(const std::array<frc::Rotation2d, 4> &offsets);
         std::array<frc::Rotation2d, 4> resetModuleOffsets(const std::array<frc::Rotation2d, 4> &targetOffsets);
+        frc2::CommandPtr driveByJoystick(
+            std::function<double()> xAxis,
+            std::function<double()> yAxis,
+            std::function<double()> rotationAxis,
+            bool fieldRelative = true);
     };
 }

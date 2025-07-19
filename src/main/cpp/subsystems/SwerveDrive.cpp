@@ -21,12 +21,16 @@ SwerveDrive::SwerveDrive(const SwerveDrivetrainConstants &driveConstants,
                          std::array<double, 3> const &visionStandardDeviation,
                          PIDConstants translationPID,
                          PIDConstants rotationPID,
+                         units::meters_per_second_t maxTranslationSpeed,
+                         units::radians_per_second_t maxRotationSpeed,
                          const SwerveModuleConstants & frontLeftConstants,
                          const SwerveModuleConstants & frontRightConstants,
                          const SwerveModuleConstants & rearLeftConstants,
                          const SwerveModuleConstants & rearRightConstants)
-    : SwerveDrivetrain(driveConstants, updateRate, odometryStandardDeviation, visionStandardDeviation, frontLeftConstants,
-        frontRightConstants, rearLeftConstants, rearRightConstants)
+    : SwerveDrivetrain(driveConstants, updateRate, odometryStandardDeviation, visionStandardDeviation,
+    frontLeftConstants,
+        frontRightConstants, rearLeftConstants, rearRightConstants), maxTranslationSpeed(maxTranslationSpeed),
+        maxRotationSpeed(maxRotationSpeed)
 {
     configurePathplanner(translationPID, rotationPID);
     configureChoreo(translationPID, rotationPID);
@@ -140,7 +144,7 @@ CommandPtr SwerveDrive::applyRequest(RequestSupplier request)
     return cmd::Run([this, request = std::move(request)]() mutable
                         {
                             SetControl(request());
-                        }, this);
+                        }, {this});
 }
 
 void SwerveDrive::Periodic()
@@ -184,4 +188,31 @@ std::array<Rotation2d, 4> SwerveDrive::resetModuleOffsets(const std::array<frc::
         offsets[i] = Rotation2d{newOffset};
     }
     return offsets;
+}
+
+CommandPtr SwerveDrive::driveByJoystick(function<double()> xAxis,
+                                        function<double()> yAxis,
+                                        function<double()> rotationAxis,
+                                        bool fieldCentric)
+{
+    if (fieldCentric)
+    {
+        return applyRequest([this, xAxis = std::move(xAxis), yAxis = std::move(yAxis), rotationAxis = std::move(rotationAxis)]() mutable
+                        {
+                            return fieldCentricRequest
+                                .WithVelocityX(xAxis() * maxTranslationSpeed)
+                                .WithVelocityY(yAxis() * maxTranslationSpeed)
+                                .WithRotationalRate(rotationAxis() * maxRotationSpeed);
+                        });
+    }
+    else
+    {
+        return applyRequest([this, xAxis = std::move(xAxis), yAxis = std::move(yAxis), rotationAxis = std::move(rotationAxis)]() mutable
+                        {
+                            return robotRelativeRequest
+                                .WithVelocityX(xAxis() * maxTranslationSpeed)
+                                .WithVelocityY(yAxis() * maxTranslationSpeed)
+                                .WithRotationalRate(rotationAxis() * maxRotationSpeed);
+                        });
+    }
 }
