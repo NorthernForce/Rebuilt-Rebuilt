@@ -138,6 +138,12 @@ CommandPtr SwerveDrive::getSysIdRoutine()
 
 void SwerveDrive::Periodic()
 {
+    if (DriverStation::IsDisabled())
+    {
+        auto const allianceColor = DriverStation::GetAlliance().value_or(DriverStation::Alliance::kRed);
+        SetOperatorPerspectiveForward(
+            allianceColor == DriverStation::Alliance::kRed ? kRedAlliancePerspectiveRotation : kBlueAlliancePerspectiveRotation);
+    }
 }
 
 void SwerveDrive::AddVisionMeasurement(Pose2d pose, second_t timestamp)

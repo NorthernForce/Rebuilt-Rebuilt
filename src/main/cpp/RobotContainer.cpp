@@ -69,6 +69,11 @@ void RobotContainer::ConfigureBindings() {
         processInput([&driverController]() { return driverController.GetRightX(); }),
         true // Field-centric driving
     ));
+    driverController.Back().OnTrue(
+        drive->RunOnce([&]() {
+            drive->SeedFieldCentric();
+        })
+    );
     resetModulesCommand = drive->RunOnce([&]() {
         auto offsets = drive->resetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
         setModuleOffsets(offsets);

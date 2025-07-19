@@ -73,7 +73,9 @@ namespace nfr
         ctre::phoenix6::swerve::requests::ApplyRobotSpeeds pathplannerFollower = ctre::phoenix6::swerve::requests::ApplyRobotSpeeds();
         struct
         {
-            ctre::phoenix6::swerve::requests::ApplyFieldSpeeds follower = ctre::phoenix6::swerve::requests::ApplyFieldSpeeds();
+            ctre::phoenix6::swerve::requests::ApplyFieldSpeeds follower = ctre::phoenix6::swerve::requests::ApplyFieldSpeeds()
+                .WithForwardPerspective(
+                    ctre::phoenix6::swerve::requests::ForwardPerspectiveValue::BlueAlliance);
             std::unique_ptr<frc::PIDController> xController;
             std::unique_ptr<frc::PIDController> yController;
             std::unique_ptr<frc::PIDController> headingController;
@@ -81,7 +83,9 @@ namespace nfr
         void configurePathplanner(pathplanner::PIDConstants translationPID, pathplanner::PIDConstants rotationPID);
         void configureChoreo(pathplanner::PIDConstants translationPID, pathplanner::PIDConstants rotationPID);
         void startSimThread();
-        ctre::phoenix6::swerve::requests::FieldCentric fieldCentricRequest = ctre::phoenix6::swerve::requests::FieldCentric();
+        ctre::phoenix6::swerve::requests::FieldCentric fieldCentricRequest = ctre::phoenix6::swerve::requests::FieldCentric()
+            .WithForwardPerspective(
+                ctre::phoenix6::swerve::requests::ForwardPerspectiveValue::OperatorPerspective);
         ctre::phoenix6::swerve::requests::RobotCentric robotRelativeRequest = ctre::phoenix6::swerve::requests::RobotCentric();
         units::meters_per_second_t maxTranslationSpeed;
         units::radians_per_second_t maxRotationSpeed;
