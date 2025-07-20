@@ -26,9 +26,11 @@ struct GitMetadata
     int total_commit_count;
 };
 
-extern GitMetadata loadGitMetadata(const std::string& filePath = "git.properties");
+extern GitMetadata loadGitMetadata(const std::string& filePath);
+
+#include <frc/Filesystem.h>
 inline const GitMetadata& getGitMetadata()
 {
-    static const GitMetadata metadata = loadGitMetadata();
+    static const GitMetadata metadata = loadGitMetadata(frc::filesystem::GetDeployDirectory() + "/git.properties");
     return metadata;
 }

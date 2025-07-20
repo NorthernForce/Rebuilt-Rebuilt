@@ -24,7 +24,6 @@ deploy {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
                     deleteOldFiles = false
-                    dependsOn generateGitProperties
                 }
             }
         }
@@ -33,7 +32,7 @@ deploy {
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 
-def includeDesktopSupport = false
+def includeDesktopSupport = true
 wpi.cpp.debugSimulation = false
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
@@ -58,7 +57,7 @@ tasks.named("extractReflectCpp") {
 }
 
 tasks.withType(CppCompile).configureEach {
-    dependsOn extractReflectCpp
+    dependsOn extractReflectCpp, generateGitProperties
 }
 
 nativeUtils.platformConfigs.named('windowsx86-64').configure {
