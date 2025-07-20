@@ -5,7 +5,8 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
-#include "Climber.h" 
+#include <frc2/command/button/CommandXboxController.h>
+#include "subsystems/climber/Climber.h"
 
 class RobotContainer {
  public:
@@ -15,6 +16,8 @@ class RobotContainer {
 
  private:
   Climber m_climber;
+  
+  frc2::CommandXboxController m_driverController{0};
   
   void ConfigureBindings();
 };

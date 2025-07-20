@@ -1,5 +1,5 @@
-#include "ExtendClimber.h"
-#include "Climber.h"
+#include "subsystems/climber/commands/ExtendClimber.h"
+#include "subsystems/climber/Climber.h"
 
 ExtendClimber::ExtendClimber(Climber* climber)
     : m_climber(climber)

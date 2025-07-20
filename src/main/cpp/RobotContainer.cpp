@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "RobotContainer.h"
-#include "Climber.h"
+#include "subsystems/climber/Climber.h"
 #include "RobotConstants.h"
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/CommandXboxController.h>
@@ -11,18 +11,15 @@
 RobotContainer::RobotContainer()
     : m_climber(RobotConstants::ClimberConstants::kId,
                 RobotConstants::ClimberConstants::kClimbSpeed,
-                RobotConstants::ClimberConstants::kInverted) {
+                RobotConstants::ClimberConstants::kInverted),
+      m_driverController(0)
+{
     ConfigureBindings();
 }
 
 void RobotContainer::ConfigureBindings() {
-    frc2::CommandXboxController driverController{0};
-
-    // Bind A button to extend the climber
-    driverController.A().WhileTrue(m_climber.GetExtendCommand());
-
-    // Bind B button to retract the climber
-    driverController.B().WhileTrue(m_climber.GetRetractCommand());
+    m_driverController.A().WhileTrue(m_climber.GetExtendCommand());
+    m_driverController.B().WhileTrue(m_climber.GetRetractCommand());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

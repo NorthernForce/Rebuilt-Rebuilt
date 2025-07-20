@@ -1,5 +1,5 @@
-#include "RetractClimber.h"
-#include "Climber.h"
+#include "subsystems/climber/commands/RetractClimber.h"
+#include "subsystems/climber/Climber.h"
 
 RetractClimber::RetractClimber(Climber* climber)
     : m_climber(climber)
