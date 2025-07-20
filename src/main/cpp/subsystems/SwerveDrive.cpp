@@ -32,15 +32,15 @@ SwerveDrive::SwerveDrive(const SwerveDrivetrainConstants &driveConstants,
         frontRightConstants, rearLeftConstants, rearRightConstants), maxTranslationSpeed(maxTranslationSpeed),
         maxRotationSpeed(maxRotationSpeed)
 {
-    configurePathplanner(translationPID, rotationPID);
-    configureChoreo(translationPID, rotationPID);
+    ConfigurePathplanner(translationPID, rotationPID);
+    ConfigureChoreo(translationPID, rotationPID);
     if (utils::IsSimulation())
     {
-        startSimThread();
+        StartSimThread();
     }
 }
 
-void SwerveDrive::configurePathplanner(PIDConstants translationPID,
+void SwerveDrive::ConfigurePathplanner(PIDConstants translationPID,
                                        PIDConstants rotationPID)
 {
     auto config = RobotConfig::fromGUISettings();
@@ -70,7 +70,7 @@ void SwerveDrive::configurePathplanner(PIDConstants translationPID,
         this);
 }
 
-void SwerveDrive::startSimThread()
+void SwerveDrive::StartSimThread()
 {
     lastSimTime = utils::GetCurrentTime();
     simNotifier = make_unique<frc::Notifier>([this]
@@ -84,7 +84,7 @@ void SwerveDrive::startSimThread()
     simNotifier->StartPeriodic(kSimLoopPeriod);
 }
 
-void SwerveDrive::configureChoreo(PIDConstants translationPID,
+void SwerveDrive::ConfigureChoreo(PIDConstants translationPID,
                                   PIDConstants rotationPID)
 {
     choreo.xController = make_unique<PIDController>(
@@ -96,7 +96,7 @@ void SwerveDrive::configureChoreo(PIDConstants translationPID,
     choreo.headingController->EnableContinuousInput(-M_PI, M_PI);
 }
 
-void SwerveDrive::followTrajectory(const SwerveSample &sample)
+void SwerveDrive::FollowTrajectory(const SwerveSample &sample)
 {
     const auto &pose = GetState().Pose;
     meters_per_second_t xFeedback{choreo.xController->Calculate(
@@ -112,7 +112,7 @@ void SwerveDrive::followTrajectory(const SwerveSample &sample)
                        headingFeedback + sample.omega}));
 }
 
-CommandPtr SwerveDrive::getSysIdRoutine()
+CommandPtr SwerveDrive::GetSysIdRoutine()
 {
     return cmd::Sequence(
         cmd::RunOnce([]() {
@@ -151,7 +151,7 @@ void SwerveDrive::AddVisionMeasurement(Pose2d pose, second_t timestamp)
     SwerveDrivetrain::AddVisionMeasurement(pose, utils::FPGAToCurrentTime(timestamp));
 }
 
-void SwerveDrive::setModuleOffsets(const std::array<Rotation2d, 4> &offsets)
+void SwerveDrive::SetModuleOffsets(const std::array<Rotation2d, 4> &offsets)
 {
     for (size_t i = 0; i < offsets.size(); ++i)
     {
@@ -164,7 +164,7 @@ void SwerveDrive::setModuleOffsets(const std::array<Rotation2d, 4> &offsets)
     }
 }
 
-std::array<Rotation2d, 4> SwerveDrive::resetModuleOffsets(const std::array<frc::Rotation2d, 4>& targetOffsets)
+std::array<Rotation2d, 4> SwerveDrive::ResetModuleOffsets(const std::array<frc::Rotation2d, 4>& targetOffsets)
 {
     std::array<Rotation2d, 4> offsets;
     for (size_t i = 0; i < offsets.size(); ++i)
@@ -185,7 +185,7 @@ std::array<Rotation2d, 4> SwerveDrive::resetModuleOffsets(const std::array<frc::
     return offsets;
 }
 
-CommandPtr SwerveDrive::driveByJoystick(function<double()> xAxis,
+CommandPtr SwerveDrive::DriveByJoystick(function<double()> xAxis,
                                         function<double()> yAxis,
                                         function<double()> rotationAxis,
                                         bool fieldCentric)
