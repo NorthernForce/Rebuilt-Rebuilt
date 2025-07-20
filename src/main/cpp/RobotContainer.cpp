@@ -25,16 +25,14 @@ std::array<frc::Rotation2d, 4> getModuleOffsets() {
     };
 }
 
-void setModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets) {
+void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets) {
     frc::Preferences::SetDouble("FrontLeftOffset", offsets[0].Degrees().value());
     frc::Preferences::SetDouble("FrontRightOffset", offsets[1].Degrees().value());
     frc::Preferences::SetDouble("BackLeftOffset", offsets[2].Degrees().value());
     frc::Preferences::SetDouble("BackRightOffset", offsets[3].Degrees().value());
 }
 
-RobotContainer::RobotContainer()
-{
-    drive = make_unique<SwerveDrive>(
+RobotContainer::RobotContainer() : drive(
         TunerConstants::DrivetrainConstants,
         DriveConstants::kUpdateRate,
         DriveConstants::kOdometryStandardDeviation,
@@ -46,12 +44,13 @@ RobotContainer::RobotContainer()
         TunerConstants::FrontLeft,
         TunerConstants::FrontRight,
         TunerConstants::BackLeft,
-        TunerConstants::BackRight);
-    drive->setModuleOffsets(getModuleOffsets());
+        TunerConstants::BackRight)
+{
+    drive.SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
 }
 
-std::function<double()> processInput(std::function<double()> input) {
+std::function<double()> ProcessInput(std::function<double()> input) {
     return [input = std::move(input)]() mutable {
         auto x = input();
         x = frc::ApplyDeadband(x, 0.10);
@@ -61,22 +60,20 @@ std::function<double()> processInput(std::function<double()> input) {
 }
 
 void RobotContainer::ConfigureBindings() {
-    frc2::CommandXboxController driverController{0};
-    frc2::CommandXboxController operatorController{1};
-    drive->SetDefaultCommand(drive->driveByJoystick(
-        processInput([&driverController]() { return driverController.GetLeftX(); }),
-        processInput([&driverController]() { return driverController.GetLeftY(); }),
-        processInput([&driverController]() { return driverController.GetRightX(); }),
+    drive.SetDefaultCommand(drive.DriveByJoystick(
+        ProcessInput([&]() { return driverController.GetLeftX(); }),
+        ProcessInput([&]() { return driverController.GetLeftY(); }),
+        ProcessInput([&]() { return driverController.GetRightX(); }),
         true // Field-centric driving
     ));
     driverController.Back().OnTrue(
-        drive->RunOnce([&]() {
-            drive->SeedFieldCentric();
+        drive.RunOnce([&]() {
+            drive.SeedFieldCentric();
         })
     );
-    resetModulesCommand = drive->RunOnce([&]() {
-        auto offsets = drive->resetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
-        setModuleOffsets(offsets);
+    resetModulesCommand = drive.RunOnce([&]() {
+        auto offsets = drive.ResetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
+        SetModuleOffsets(offsets);
     });
     frc::SmartDashboard::PutData("Reset Swerve Modules", resetModulesCommand.value().get());
 }

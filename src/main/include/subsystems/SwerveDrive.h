@@ -80,9 +80,9 @@ namespace nfr
             std::unique_ptr<frc::PIDController> yController;
             std::unique_ptr<frc::PIDController> headingController;
         } choreo;
-        void configurePathplanner(pathplanner::PIDConstants translationPID, pathplanner::PIDConstants rotationPID);
-        void configureChoreo(pathplanner::PIDConstants translationPID, pathplanner::PIDConstants rotationPID);
-        void startSimThread();
+        void ConfigurePathplanner(pathplanner::PIDConstants translationPID, pathplanner::PIDConstants rotationPID);
+        void ConfigureChoreo(pathplanner::PIDConstants translationPID, pathplanner::PIDConstants rotationPID);
+        void StartSimThread();
         ctre::phoenix6::swerve::requests::FieldCentric fieldCentricRequest = ctre::phoenix6::swerve::requests::FieldCentric()
             .WithForwardPerspective(
                 ctre::phoenix6::swerve::requests::ForwardPerspectiveValue::OperatorPerspective);
@@ -107,10 +107,10 @@ namespace nfr
                     const SwerveModuleConstants &frontRightConstants,
                     const SwerveModuleConstants &backLeftConstants,
                     const SwerveModuleConstants &backRightConstants);
-        frc2::sysid::SysIdRoutine &getSysIdTranslation() { return sysIdRoutineTranslation; }
-        frc2::sysid::SysIdRoutine &getSysIdSteerGains() { return sysIdRoutineSteerGains; }
-        frc2::sysid::SysIdRoutine &getSysIdRotation() { return sysIdRoutineRotation; }
-        frc2::CommandPtr getSysIdRoutine();
+        frc2::sysid::SysIdRoutine &GetSysIdTranslation() { return sysIdRoutineTranslation; }
+        frc2::sysid::SysIdRoutine &GetSysIdSteerGains() { return sysIdRoutineSteerGains; }
+        frc2::sysid::SysIdRoutine &GetSysIdRotation() { return sysIdRoutineRotation; }
+        frc2::CommandPtr GetSysIdRoutine();
         template <typename RequestSupplier>
             requires std::is_lvalue_reference_v<std::invoke_result_t<RequestSupplier>> &&
                      requires(RequestSupplier req, ctre::phoenix6::swerve::SwerveDrivetrain<ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::TalonFX, ctre::phoenix6::hardware::CANcoder> &drive) { drive.SetControl(req()); }
@@ -136,10 +136,10 @@ namespace nfr
         }
         void Periodic() override;
         void AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp) override;
-        void followTrajectory(const choreo::SwerveSample &sample);
-        void setModuleOffsets(const std::array<frc::Rotation2d, 4> &offsets);
-        std::array<frc::Rotation2d, 4> resetModuleOffsets(const std::array<frc::Rotation2d, 4> &targetOffsets);
-        frc2::CommandPtr driveByJoystick(
+        void FollowTrajectory(const choreo::SwerveSample &sample);
+        void SetModuleOffsets(const std::array<frc::Rotation2d, 4> &offsets);
+        std::array<frc::Rotation2d, 4> ResetModuleOffsets(const std::array<frc::Rotation2d, 4> &targetOffsets);
+        frc2::CommandPtr DriveByJoystick(
             std::function<double()> xAxis,
             std::function<double()> yAxis,
             std::function<double()> rotationAxis,
