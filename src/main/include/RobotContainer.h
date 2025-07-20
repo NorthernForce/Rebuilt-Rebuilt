@@ -5,6 +5,7 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
+#include "Climber.h" 
 
 class RobotContainer {
  public:
@@ -13,5 +14,7 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
  private:
+  Climber m_climber;
+  
   void ConfigureBindings();
 };
