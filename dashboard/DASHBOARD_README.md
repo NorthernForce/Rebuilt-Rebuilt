@@ -1,6 +1,6 @@
 # Northern Force Team 172 Dashboard
 
-A modern React-based dashboard for FRC Team 172's robot built with Material-UI and FIRST Web Components.
+A modern React-based dashboard for FRC Team 172's robot built with Material-UI and proper FIRST Web Components NetworkTables integration.
 
 ## 🚀 Quick Start
 
@@ -14,23 +14,60 @@ The dashboard will be available at `http://localhost:5173`
 
 ## 🎯 Features
 
-### Driver Station
-- Real-time match timer and robot status
-- Camera feed integration
-- FRC Web Components for telemetry
-- Battery and connection monitoring
+### Driver Station ✅ Updated with NetworkTables
+- **Real-time match timer**: Connected to `/FMSInfo/MatchTime` 
+- **Live robot status**: Connection monitoring with NT4Provider
+- **Battery monitoring**: Live voltage from `/SmartDashboard/Battery Voltage`
+- **FRC Web Components**: Proper React integration using `useEntry` hooks
+  - `NumberBar` for drive speed visualization
+  - `Gyro` component for robot heading
+  - `BasicFmsInfo` for FMS data
 
-### Autonomous Chooser  
-- Multiple autonomous routes with descriptions
-- Starting position selection
-- Complexity indicators
-- Test functionality with safety warnings
+### Autonomous Chooser ✅ Updated with NetworkTables
+- **SendableChooser integration**: Uses `/SmartDashboard/Autonomous`
+- **Live status monitoring**: Real-time autonomous execution state
+- **Test mode**: Safe autonomous testing with simulation mode
+- **NetworkTables sync**: Bidirectional data communication
 
-### Subsystems Monitor
-- Tree view of all robot subsystems
-- Individual status dashboards
-- Real-time sensor data visualization
-- Enable/disable controls
+### Subsystems Monitor ✅ Updated with NetworkTables  
+- **Live status monitoring**: All subsystem states from NetworkTables
+- **Dynamic data visualization**: Real motor currents, speeds, sensor readings
+- **Interactive controls**: Enable/disable subsystems via NetworkTables
+- **FWC integration**: Proper React-wrapped web components
+
+## 🔧 NetworkTables Integration
+
+### Key Features
+- **NT4 Protocol**: Full bidirectional communication
+- **Real-time Updates**: Live data binding with `useEntry` hook
+- **Connection Monitoring**: Automatic reconnection and offline state
+- **Type Safety**: Full TypeScript support
+
+### Usage Example
+```typescript
+import { useEntry, useNt4, NT4Provider } from '@frc-web-components/react'
+
+// Real-time data binding
+const [batteryVoltage] = useEntry('/SmartDashboard/Battery Voltage', 12.6)
+const [matchTime] = useEntry('/FMSInfo/MatchTime', 135)
+const [driveEnabled, setDriveEnabled] = useEntry('/SmartDashboard/Drive Enabled', true)
+
+// Connection monitoring
+const { nt4Provider } = useNt4()
+const connected = nt4Provider.isConnected()
+```
+
+### Robot Integration
+```java
+// In Robot.java - publish telemetry data
+@Override
+public void robotPeriodic() {
+  SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
+  SmartDashboard.putNumber("Drive Speed", drivetrain.getCurrentSpeed());
+  SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+  SmartDashboard.putBoolean("Drive Enabled", drivetrain.isEnabled());
+}
+```
 
 ## 🛠️ Development
 

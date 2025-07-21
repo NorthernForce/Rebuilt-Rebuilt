@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Box,
   Paper,
@@ -15,6 +15,7 @@ import {
   SelectChangeEvent
 } from '@mui/material'
 import { PlayArrow, Stop, Warning } from '@mui/icons-material'
+import { useEntry, SendableChooser } from '@frc-web-components/react'
 
 interface AutonomousRoute {
   id: string
@@ -69,9 +70,24 @@ const autonomousRoutes: AutonomousRoute[] = [
 ]
 
 function AutonomousChooser() {
-  const [selectedRoute, setSelectedRoute] = useState<string>('score_leave')
-  const [startPosition, setStartPosition] = useState<string>('2')
-  const [autoStatus, setAutoStatus] = useState<'ready' | 'running' | 'complete'>('ready')
+  const [selectedRoute, setSelectedRoute] = useEntry('/SmartDashboard/Autonomous Selected', 'score_leave')
+  const [startPosition, setStartPosition] = useEntry('/SmartDashboard/Starting Position', '2')
+  const [autoRunning, setAutoRunning] = useEntry('/SmartDashboard/Auto Running', false)
+  const [autoComplete, setAutoComplete] = useEntry('/SmartDashboard/Auto Complete', false)
+  const [testModeEnabled, setTestModeEnabled] = useEntry('/SmartDashboard/Test Mode Enabled', false)
+  
+  const [localAutoStatus, setLocalAutoStatus] = useState<'ready' | 'running' | 'complete'>('ready')
+
+  // Update local status based on NetworkTables
+  useEffect(() => {
+    if (autoRunning) {
+      setLocalAutoStatus('running')
+    } else if (autoComplete) {
+      setLocalAutoStatus('complete')
+    } else {
+      setLocalAutoStatus('ready')
+    }
+  }, [autoRunning, autoComplete])
 
   const handleRouteChange = (event: SelectChangeEvent<string>) => {
     const routeId = event.target.value
@@ -98,12 +114,16 @@ function AutonomousChooser() {
   }
 
   const testAutonomous = () => {
-    setAutoStatus('running')
-    // Simulate autonomous routine
-    setTimeout(() => {
-      setAutoStatus('complete')
-      setTimeout(() => setAutoStatus('ready'), 3000)
-    }, 5000)
+    if (localAutoStatus === 'running') {
+      // Stop the autonomous routine
+      setAutoRunning(false)
+      setTestModeEnabled(false)
+    } else {
+      // Start the autonomous routine
+      setTestModeEnabled(true)
+      setAutoRunning(true)
+      setAutoComplete(false)
+    }
   }
 
   return (
@@ -117,12 +137,20 @@ function AutonomousChooser() {
             </Typography>
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 3 }}>
-              {/* Route Selector */}
+              {/* NetworkTables SendableChooser */}
+              <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                  Robot Autonomous Chooser
+                </Typography>
+                <SendableChooser source-key="/SmartDashboard/Autonomous" />
+              </Box>
+
+              {/* Route Selector (Dashboard Override) */}
               <FormControl fullWidth>
-                <InputLabel>Autonomous Route</InputLabel>
+                <InputLabel>Autonomous Route (Dashboard)</InputLabel>
                 <Select
                   value={selectedRoute}
-                  label="Autonomous Route"
+                  label="Autonomous Route (Dashboard)"
                   onChange={handleRouteChange}
                 >
                   {autonomousRoutes.map((route) => (
@@ -152,21 +180,28 @@ function AutonomousChooser() {
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button
                   variant="contained"
-                  startIcon={autoStatus === 'running' ? <Stop /> : <PlayArrow />}
+                  startIcon={localAutoStatus === 'running' ? <Stop /> : <PlayArrow />}
                   onClick={testAutonomous}
-                  disabled={autoStatus === 'running'}
-                  color={autoStatus === 'running' ? 'error' : 'primary'}
+                  color={localAutoStatus === 'running' ? 'error' : 'primary'}
                   fullWidth
                 >
-                  {autoStatus === 'running' ? 'Running...' : autoStatus === 'complete' ? 'Complete!' : 'Test Autonomous'}
+                  {localAutoStatus === 'running' ? 'Stop Test' : localAutoStatus === 'complete' ? 'Test Complete!' : 'Test Autonomous'}
                 </Button>
               </Box>
 
-              {autoStatus === 'running' && (
+              {localAutoStatus === 'running' && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 2, backgroundColor: 'warning.dark', borderRadius: 1 }}>
                   <Warning />
                   <Typography variant="body2">
                     Autonomous routine is running. Do not enable robot during testing.
+                  </Typography>
+                </Box>
+              )}
+
+              {testModeEnabled && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 2, backgroundColor: 'info.dark', borderRadius: 1 }}>
+                  <Typography variant="body2">
+                    Test Mode: Robot will run autonomous in simulation mode
                   </Typography>
                 </Box>
               )}

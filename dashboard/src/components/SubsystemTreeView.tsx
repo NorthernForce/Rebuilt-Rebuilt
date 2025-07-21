@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Box,
   Paper,
@@ -16,60 +16,114 @@ import {
 } from '@mui/material'
 import { ExpandMore, DriveEta, PrecisionManufacturing, CameraAlt, Sensors, Error } from '@mui/icons-material'
 import '@frc-web-components/fwc'
+import { useEntry, NumberBar } from '@frc-web-components/react'
 
 interface SubsystemStatus {
   name: string
-  status: 'OK' | 'Warning' | 'Error'
-  enabled: boolean
+  statusKey: string
+  enabledKey: string
   icon: React.ReactNode
 }
 
-interface SubsystemData {
-  [key: string]: any
-}
-
 function SubsystemTreeView() {
-  const [subsystems] = useState<SubsystemStatus[]>([
-    { name: 'Drive Train', status: 'OK', enabled: true, icon: <DriveEta /> },
-    { name: 'Arm Mechanism', status: 'OK', enabled: true, icon: <PrecisionManufacturing /> },
-    { name: 'Vision', status: 'Warning', enabled: true, icon: <CameraAlt /> },
-    { name: 'Sensors', status: 'OK', enabled: true, icon: <Sensors /> }
-  ])
+  const subsystemConfigs: SubsystemStatus[] = [
+    { 
+      name: 'Drive Train', 
+      statusKey: '/SmartDashboard/Drive Train Status', 
+      enabledKey: '/SmartDashboard/Drive Train Enabled',
+      icon: <DriveEta /> 
+    },
+    { 
+      name: 'Arm Mechanism', 
+      statusKey: '/SmartDashboard/Arm Status', 
+      enabledKey: '/SmartDashboard/Arm Enabled',
+      icon: <PrecisionManufacturing /> 
+    },
+    { 
+      name: 'Vision', 
+      statusKey: '/SmartDashboard/Vision Status', 
+      enabledKey: '/SmartDashboard/Vision Enabled',
+      icon: <CameraAlt /> 
+    },
+    { 
+      name: 'Sensors', 
+      statusKey: '/SmartDashboard/Sensors Status', 
+      enabledKey: '/SmartDashboard/Sensors Enabled',
+      icon: <Sensors /> 
+    }
+  ]
 
-  const [driveData] = useState<SubsystemData>({
-    leftMotorSpeed: 0.65,
-    rightMotorSpeed: 0.68,
-    gyroAngle: 45.2,
-    odometryX: 2.5,
-    odometryY: 1.2,
-    maxSpeed: 4.5,
-    currentSpeed: 2.1
-  })
+  // Drive Train NetworkTables entries
+  const [leftMotorSpeed] = useEntry('/SmartDashboard/Left Motor Speed', 0.65)
+  const [rightMotorSpeed] = useEntry('/SmartDashboard/Right Motor Speed', 0.68)
+  const [gyroAngle] = useEntry('/SmartDashboard/Gyro Angle', 45.2)
+  const [odometryX] = useEntry('/SmartDashboard/Odometry X', 2.5)
+  const [odometryY] = useEntry('/SmartDashboard/Odometry Y', 1.2)
+  const [maxSpeed] = useEntry('/SmartDashboard/Max Speed', 4.5)
+  const [currentSpeed] = useEntry('/SmartDashboard/Current Speed', 2.1)
+  const [leftMotorCurrent] = useEntry('/SmartDashboard/Left Motor Current', 15.2)
+  const [rightMotorCurrent] = useEntry('/SmartDashboard/Right Motor Current', 16.8)
 
-  const [armData] = useState<SubsystemData>({
-    armAngle: 32.5,
-    armTargetAngle: 35.0,
-    armMotorCurrent: 8.2,
-    wristAngle: 15.0,
-    intakeSpeed: 0.8,
-    hasGamePiece: true
-  })
+  // Arm Mechanism NetworkTables entries  
+  const [armAngle] = useEntry('/SmartDashboard/Arm Angle', 32.5)
+  const [armTargetAngle] = useEntry('/SmartDashboard/Arm Target Angle', 35.0)
+  const [armMotorCurrent] = useEntry('/SmartDashboard/Arm Motor Current', 8.2)
+  const [wristAngle] = useEntry('/SmartDashboard/Wrist Angle', 15.0)
+  const [intakeSpeed] = useEntry('/SmartDashboard/Intake Speed', 0.8)
+  const [hasGamePiece] = useEntry('/SmartDashboard/Has Game Piece', true)
 
-  const [visionData] = useState<SubsystemData>({
-    targetVisible: true,
-    targetDistance: 2.3,
-    targetAngle: -5.2,
-    cameraConnected: true,
-    processingLatency: 15
-  })
+  // Vision NetworkTables entries
+  const [targetVisible] = useEntry('/SmartDashboard/Target Visible', true)
+  const [targetDistance] = useEntry('/SmartDashboard/Target Distance', 2.3)
+  const [targetAngle] = useEntry('/SmartDashboard/Target Angle', -5.2)
+  const [cameraConnected] = useEntry('/SmartDashboard/Camera Connected', true)
+  const [processingLatency] = useEntry('/SmartDashboard/Vision Latency', 15)
 
-  const [sensorData] = useState<SubsystemData>({
-    batteryVoltage: 12.6,
-    totalCurrent: 45.2,
-    canStatus: 'OK',
-    pdpTemperature: 32,
-    compressorPressure: 110
-  })
+  // Sensor NetworkTables entries
+  const [batteryVoltage] = useEntry('/SmartDashboard/Battery Voltage', 12.6)
+  const [totalCurrent] = useEntry('/SmartDashboard/Total Current', 45.2)
+  const [canStatus] = useEntry('/SmartDashboard/CAN Status', 'OK')
+  const [pdpTemperature] = useEntry('/SmartDashboard/PDP Temperature', 32)
+  const [compressorPressure] = useEntry('/SmartDashboard/Compressor Pressure', 110)
+
+  // Subsystem status and enabled states
+  const [driveTrainStatus] = useEntry('/SmartDashboard/Drive Train Status', 'OK')
+  const [driveTrainEnabled, setDriveTrainEnabled] = useEntry('/SmartDashboard/Drive Train Enabled', true)
+  const [armStatus] = useEntry('/SmartDashboard/Arm Status', 'OK')
+  const [armEnabled, setArmEnabled] = useEntry('/SmartDashboard/Arm Enabled', true)
+  const [visionStatus] = useEntry('/SmartDashboard/Vision Status', 'Warning')
+  const [visionEnabled, setVisionEnabled] = useEntry('/SmartDashboard/Vision Enabled', true)
+  const [sensorsStatus] = useEntry('/SmartDashboard/Sensors Status', 'OK')
+  const [sensorsEnabled, setSensorsEnabled] = useEntry('/SmartDashboard/Sensors Enabled', true)
+
+  const getSubsystemStatus = (name: string) => {
+    switch (name) {
+      case 'Drive Train': return driveTrainStatus
+      case 'Arm Mechanism': return armStatus
+      case 'Vision': return visionStatus
+      case 'Sensors': return sensorsStatus
+      default: return 'OK'
+    }
+  }
+
+  const getSubsystemEnabled = (name: string) => {
+    switch (name) {
+      case 'Drive Train': return driveTrainEnabled
+      case 'Arm Mechanism': return armEnabled
+      case 'Vision': return visionEnabled
+      case 'Sensors': return sensorsEnabled
+      default: return true
+    }
+  }
+
+  const setSubsystemEnabled = (name: string, enabled: boolean) => {
+    switch (name) {
+      case 'Drive Train': setDriveTrainEnabled(enabled); break
+      case 'Arm Mechanism': setArmEnabled(enabled); break
+      case 'Vision': setVisionEnabled(enabled); break
+      case 'Sensors': setSensorsEnabled(enabled); break
+    }
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -90,12 +144,18 @@ function SubsystemTreeView() {
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Motor Speeds</Typography>
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="body2">Left Motor: {(driveData.leftMotorSpeed * 100).toFixed(1)}%</Typography>
-                    <LinearProgress variant="determinate" value={Math.abs(driveData.leftMotorSpeed * 100)} sx={{ mb: 1 }} />
+                    <Typography variant="body2">Left Motor: {(leftMotorSpeed * 100).toFixed(1)}%</Typography>
+                    <LinearProgress variant="determinate" value={Math.abs(leftMotorSpeed * 100)} sx={{ mb: 1 }} />
+                    <Typography variant="caption" color="text.secondary">
+                      Current: {leftMotorCurrent.toFixed(1)}A
+                    </Typography>
                   </Box>
                   <Box>
-                    <Typography variant="body2">Right Motor: {(driveData.rightMotorSpeed * 100).toFixed(1)}%</Typography>
-                    <LinearProgress variant="determinate" value={Math.abs(driveData.rightMotorSpeed * 100)} />
+                    <Typography variant="body2">Right Motor: {(rightMotorSpeed * 100).toFixed(1)}%</Typography>
+                    <LinearProgress variant="determinate" value={Math.abs(rightMotorSpeed * 100)} />
+                    <Typography variant="caption" color="text.secondary">
+                      Current: {rightMotorCurrent.toFixed(1)}A
+                    </Typography>
                   </Box>
                 </CardContent>
               </Card>
@@ -104,20 +164,22 @@ function SubsystemTreeView() {
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Position & Speed</Typography>
-                  <Typography variant="body2">Gyro: {driveData.gyroAngle}°</Typography>
-                  <Typography variant="body2">X: {driveData.odometryX}m</Typography>
-                  <Typography variant="body2">Y: {driveData.odometryY}m</Typography>
-                  <Typography variant="body2">Speed: {driveData.currentSpeed} m/s</Typography>
+                  <Typography variant="body2">Gyro: {gyroAngle.toFixed(1)}°</Typography>
+                  <Typography variant="body2">X: {odometryX.toFixed(2)}m</Typography>
+                  <Typography variant="body2">Y: {odometryY.toFixed(2)}m</Typography>
+                  <Typography variant="body2">Speed: {currentSpeed.toFixed(1)} m/s</Typography>
                 </CardContent>
               </Card>
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ mt: 2 }}>
                 <Typography variant="subtitle2" gutterBottom>Drive Speed</Typography>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: `<frc-number-bar value="${driveData.currentSpeed / driveData.maxSpeed}" min="0" max="1" precision="2"></frc-number-bar>`
-                  }}
+                <NumberBar 
+                  value={currentSpeed / maxSpeed} 
+                  min={0} 
+                  max={1} 
+                  precision={2}
+                  style={{ width: '100%' }}
                 />
               </Box>
             </Grid>
@@ -131,9 +193,16 @@ function SubsystemTreeView() {
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Arm Position</Typography>
-                  <Typography variant="body2">Current: {armData.armAngle}°</Typography>
-                  <Typography variant="body2">Target: {armData.armTargetAngle}°</Typography>
-                  <Typography variant="body2">Motor Current: {armData.armMotorCurrent}A</Typography>
+                  <Typography variant="body2">Current: {armAngle.toFixed(1)}°</Typography>
+                  <Typography variant="body2">Target: {armTargetAngle.toFixed(1)}°</Typography>
+                  <Typography variant="body2">Motor Current: {armMotorCurrent.toFixed(1)}A</Typography>
+                  <Box sx={{ mt: 1 }}>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={(armAngle / 180) * 100}
+                      sx={{ height: 8, borderRadius: 1 }}
+                    />
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
@@ -141,11 +210,20 @@ function SubsystemTreeView() {
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>End Effector</Typography>
-                  <Typography variant="body2">Wrist Angle: {armData.wristAngle}°</Typography>
-                  <Typography variant="body2">Intake Speed: {(armData.intakeSpeed * 100).toFixed(0)}%</Typography>
+                  <Typography variant="body2">Wrist Angle: {wristAngle.toFixed(1)}°</Typography>
+                  <Typography variant="body2">Intake Speed: {(intakeSpeed * 100).toFixed(0)}%</Typography>
                   <Typography variant="body2">
-                    Game Piece: {armData.hasGamePiece ? '✅ Detected' : '❌ None'}
+                    Game Piece: {hasGamePiece ? '✅ Detected' : '❌ None'}
                   </Typography>
+                  <Box sx={{ mt: 1 }}>
+                    <NumberBar 
+                      value={intakeSpeed} 
+                      min={-1} 
+                      max={1} 
+                      precision={2}
+                      style={{ width: '100%', height: '20px' }}
+                    />
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
@@ -160,10 +238,20 @@ function SubsystemTreeView() {
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Target Tracking</Typography>
                   <Typography variant="body2">
-                    Target: {visionData.targetVisible ? '✅ Visible' : '❌ Not Found'}
+                    Target: {targetVisible ? '✅ Visible' : '❌ Not Found'}
                   </Typography>
-                  <Typography variant="body2">Distance: {visionData.targetDistance}m</Typography>
-                  <Typography variant="body2">Angle: {visionData.targetAngle}°</Typography>
+                  <Typography variant="body2">Distance: {targetDistance.toFixed(1)}m</Typography>
+                  <Typography variant="body2">Angle: {targetAngle.toFixed(1)}°</Typography>
+                  <Box sx={{ mt: 1 }}>
+                    <Typography variant="caption" color="text.secondary">Target Angle</Typography>
+                    <NumberBar 
+                      value={targetAngle / 180} 
+                      min={-1} 
+                      max={1} 
+                      precision={2}
+                      style={{ width: '100%', height: '20px' }}
+                    />
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
@@ -172,14 +260,20 @@ function SubsystemTreeView() {
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Camera Status</Typography>
                   <Typography variant="body2">
-                    Connection: {visionData.cameraConnected ? '✅ Connected' : '❌ Disconnected'}
+                    Connection: {cameraConnected ? '✅ Connected' : '❌ Disconnected'}
                   </Typography>
-                  <Typography variant="body2">Latency: {visionData.processingLatency}ms</Typography>
-                  {visionData.processingLatency > 20 && (
+                  <Typography variant="body2">Latency: {processingLatency}ms</Typography>
+                  {processingLatency > 20 && (
                     <Typography variant="body2" color="warning.main">
                       ⚠️ High latency detected
                     </Typography>
                   )}
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={Math.min((processingLatency / 50) * 100, 100)}
+                    color={processingLatency > 20 ? 'warning' : 'success'}
+                    sx={{ mt: 1 }}
+                  />
                 </CardContent>
               </Card>
             </Grid>
@@ -193,9 +287,17 @@ function SubsystemTreeView() {
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Power System</Typography>
-                  <Typography variant="body2">Battery: {sensorData.batteryVoltage}V</Typography>
-                  <Typography variant="body2">Total Current: {sensorData.totalCurrent}A</Typography>
-                  <Typography variant="body2">Temperature: {sensorData.pdpTemperature}°C</Typography>
+                  <Typography variant="body2">Battery: {batteryVoltage.toFixed(1)}V</Typography>
+                  <Typography variant="body2">Total Current: {totalCurrent.toFixed(1)}A</Typography>
+                  <Typography variant="body2">Temperature: {pdpTemperature}°C</Typography>
+                  <Box sx={{ mt: 1 }}>
+                    <Typography variant="caption" color="text.secondary">Current Draw</Typography>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={Math.min((totalCurrent / 120) * 100, 100)}
+                      color={totalCurrent > 80 ? 'warning' : 'success'}
+                    />
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
@@ -203,18 +305,28 @@ function SubsystemTreeView() {
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>System Status</Typography>
-                  <Typography variant="body2">CAN Bus: {sensorData.canStatus}</Typography>
-                  <Typography variant="body2">Pressure: {sensorData.compressorPressure} PSI</Typography>
+                  <Typography variant="body2">CAN Bus: {canStatus}</Typography>
+                  <Typography variant="body2">Pressure: {compressorPressure} PSI</Typography>
+                  <Box sx={{ mt: 1 }}>
+                    <Typography variant="caption" color="text.secondary">Air Pressure</Typography>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={(compressorPressure / 120) * 100}
+                      color={compressorPressure > 100 ? 'success' : 'warning'}
+                    />
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ mt: 2 }}>
                 <Typography variant="subtitle2" gutterBottom>Battery Voltage</Typography>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: `<frc-number-bar value="${sensorData.batteryVoltage}" min="10" max="13" precision="1"></frc-number-bar>`
-                  }}
+                <NumberBar 
+                  value={batteryVoltage} 
+                  min={10} 
+                  max={13} 
+                  precision={1}
+                  style={{ width: '100%' }}
                 />
               </Box>
             </Grid>
@@ -237,35 +349,41 @@ function SubsystemTreeView() {
             </Typography>
             
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {subsystems.map((subsystem) => (
-                <Card key={subsystem.name} elevation={2}>
-                  <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      {subsystem.icon}
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle1">{subsystem.name}</Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Chip 
-                            label={subsystem.status}
-                            size="small"
-                            color={getStatusColor(subsystem.status) as any}
-                          />
-                          <FormControlLabel
-                            control={
-                              <Switch 
-                                checked={subsystem.enabled}
-                                size="small"
-                              />
-                            }
-                            label="Enabled"
-                            sx={{ ml: 'auto' }}
-                          />
+              {subsystemConfigs.map((subsystem) => {
+                const status = getSubsystemStatus(subsystem.name)
+                const enabled = getSubsystemEnabled(subsystem.name)
+                
+                return (
+                  <Card key={subsystem.name} elevation={2}>
+                    <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        {subsystem.icon}
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="subtitle1">{subsystem.name}</Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Chip 
+                              label={status}
+                              size="small"
+                              color={getStatusColor(status) as any}
+                            />
+                            <FormControlLabel
+                              control={
+                                <Switch 
+                                  checked={enabled}
+                                  size="small"
+                                  onChange={(e) => setSubsystemEnabled(subsystem.name, e.target.checked)}
+                                />
+                              }
+                              label="Enabled"
+                              sx={{ ml: 'auto' }}
+                            />
+                          </Box>
                         </Box>
                       </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </Box>
           </Paper>
         </Grid>
@@ -277,28 +395,32 @@ function SubsystemTreeView() {
               Subsystem Dashboards
             </Typography>
 
-            {subsystems.map((subsystem) => (
-              <Accordion key={subsystem.name} elevation={2} sx={{ mb: 1 }}>
-                <AccordionSummary 
-                  expandIcon={<ExpandMore />}
-                  sx={{ backgroundColor: 'grey.900' }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    {subsystem.icon}
-                    <Typography variant="h6">{subsystem.name}</Typography>
-                    <Chip 
-                      label={subsystem.status}
-                      size="small"
-                      color={getStatusColor(subsystem.status) as any}
-                    />
-                    {subsystem.status === 'Error' && <Error color="error" />}
-                  </Box>
-                </AccordionSummary>
-                <AccordionDetails sx={{ p: 3 }}>
-                  {renderSubsystemDashboard(subsystem.name)}
-                </AccordionDetails>
-              </Accordion>
-            ))}
+            {subsystemConfigs.map((subsystem) => {
+              const status = getSubsystemStatus(subsystem.name)
+              
+              return (
+                <Accordion key={subsystem.name} elevation={2} sx={{ mb: 1 }}>
+                  <AccordionSummary 
+                    expandIcon={<ExpandMore />}
+                    sx={{ backgroundColor: 'grey.900' }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      {subsystem.icon}
+                      <Typography variant="h6">{subsystem.name}</Typography>
+                      <Chip 
+                        label={status}
+                        size="small"
+                        color={getStatusColor(status) as any}
+                      />
+                      {status === 'Error' && <Error color="error" />}
+                    </Box>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ p: 3 }}>
+                    {renderSubsystemDashboard(subsystem.name)}
+                  </AccordionDetails>
+                </Accordion>
+              )
+            })}
           </Paper>
         </Grid>
       </Grid>
