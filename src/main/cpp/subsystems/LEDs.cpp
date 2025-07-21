@@ -133,35 +133,35 @@ void LEDs::FeedParticleEffect(double brightness, int tick) {
 
 // Command factory methods
 frc2::CommandPtr LEDs::ReadyToPlace() {
-  return std::make_unique<Blinking>(this);
+  return Blinking(this).ToPtr();
 }
 
 frc2::CommandPtr LEDs::Hungry() {
-  return std::make_unique<Runway>(this);
+  return Runway(this).ToPtr();
 }
 
 frc2::CommandPtr LEDs::Happy() {
-  return std::make_unique<PiecePresent>(this);
+  return PiecePresent(this).ToPtr();
 }
 
 frc2::CommandPtr LEDs::NoAlliance() {
-  return std::make_unique<NoAllianceLEDs>(this);
+  return NoAllianceLEDs(this).ToPtr();
 }
 
 frc2::CommandPtr LEDs::RedAlliance() {
-  return std::make_unique<EveryOther>(this, frc::Color::kRed);
+  return EveryOther(this, frc::Color::kRed).ToPtr();
 }
 
 frc2::CommandPtr LEDs::BlueAlliance() {
-  return std::make_unique<EveryOther>(this, frc::Color::kBlue);
+  return EveryOther(this, frc::Color::kBlue).ToPtr();
 }
 
 frc2::CommandPtr LEDs::Auto() {
-  return std::make_unique<AutoLEDs>(this);
+  return AutoLEDs(this).ToPtr();
 }
 
 frc2::CommandPtr LEDs::Endgame() {
-  return std::make_unique<EndgameLEDs>(this);
+  return EndgameLEDs(this).ToPtr();
 }
 
 void LEDs::Periodic() {
