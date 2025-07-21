@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <rfl.hpp>
 
 struct GitMetadata
 {
