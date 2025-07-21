@@ -72,6 +72,35 @@ void RobotContainer::ConfigureBindings() {
   // Additional drive controls for operator
   m_operatorController.LeftBumper().WhileTrue(m_drive.StrafeLeft(0.4));
   m_operatorController.RightBumper().WhileTrue(m_drive.StrafeRight(0.4));
+  
+  // Superstructure controls (4 levels)
+  m_operatorController.POVUp().OnTrue(m_superstructure.GetMoveToL4Command());
+  m_operatorController.POVRight().OnTrue(m_superstructure.GetMoveToL3Command());
+  m_operatorController.POVDown().OnTrue(m_superstructure.GetMoveToL2Command());
+  m_operatorController.POVLeft().OnTrue(m_superstructure.GetMoveToL1Command());
+  
+  // Climber controls (right stick Y-axis for manual control)
+  m_driverController.Start().OnTrue(m_climber.GetExtendCommand());
+  m_driverController.Back().OnTrue(m_climber.GetRetractCommand());
+  
+  // Algae extractor controls
+  m_operatorController.X().OnTrue(m_algaeExtractor.GetFullExtractionCycle());
+  m_operatorController.Y().OnTrue(m_algaeExtractor.GetReturnCommand());
+  
+  // LED pattern controls (for demonstration)
+  frc2::Trigger([this] { return m_manipulator.HasGamePiece(); })
+    .OnTrue(frc2::cmd::RunOnce([this] { m_leds.SetPattern(LEDSubsystem::LEDPattern::GAME_PIECE_DETECTED); }))
+    .OnFalse(frc2::cmd::RunOnce([this] { m_leds.SetPattern(LEDSubsystem::LEDPattern::SOLID_ALLIANCE); }));
+  
+  // Set alliance color based on DriverStation
+  frc2::Trigger([] { return frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed; })
+    .OnTrue(frc2::cmd::RunOnce([this] { m_leds.SetAllianceColor(true); }))
+    .OnFalse(frc2::cmd::RunOnce([this] { m_leds.SetAllianceColor(false); }));
+  
+  // Vision controls
+  m_operatorController.Start().OnTrue(frc2::cmd::RunOnce([this] {
+    m_vision.SetVisionEnabled(!m_vision.IsVisionEnabled());
+  }));
 }
 
 double RobotContainer::ProcessJoystickInput(double input) {
@@ -114,6 +143,48 @@ void RobotContainer::Periodic() {
     pose.Y().value(), 
     pose.Rotation().Degrees().value()
   });
+  
+  // Cross-subsystem coordination
+  
+  // Update AprilTags subsystem with current robot pose from drive
+  m_aprilTags.SetReferencePose(m_drive.GetPose());
+  
+  // Get vision-based pose corrections and apply to drive if available
+  auto visionPose = m_aprilTags.GetRobotPose();
+  if (visionPose.has_value() && m_aprilTags.GetVisibleTagCount() >= 2) {
+    // Only use vision pose if we see multiple tags (more reliable)
+    m_drive.AddVisionMeasurement(visionPose->pose, visionPose->timestamp);
+  }
+  
+  // Update LED patterns based on robot state
+  if (frc::DriverStation::IsAutonomous() || m_autonomousMode) {
+    m_leds.SetPattern(LEDSubsystem::LEDPattern::AUTONOMOUS_MODE);
+  } else if (m_vision.IsGamePieceDetected()) {
+    m_leds.SetPattern(LEDSubsystem::LEDPattern::GAME_PIECE_DETECTED);
+  } else if (frc::DriverStation::IsDisabled()) {
+    m_leds.SetPattern(LEDSubsystem::LEDPattern::RAINBOW);
+  } else {
+    m_leds.SetPattern(LEDSubsystem::LEDPattern::SOLID_ALLIANCE);
+  }
+  
+  // Update alliance color for LEDs
+  auto alliance = frc::DriverStation::GetAlliance();
+  if (alliance.has_value()) {
+    m_leds.SetAllianceColor(alliance == frc::DriverStation::Alliance::kRed);
+  }
+  
+  // Superstructure status for dashboard
+  auto currentLevel = m_superstructure.GetCurrentLevel();
+  std::string levelStr;
+  switch (currentLevel) {
+    case SuperstructureSubsystem::ScoringLevel::L1: levelStr = "L1"; break;
+    case SuperstructureSubsystem::ScoringLevel::L2: levelStr = "L2"; break;
+    case SuperstructureSubsystem::ScoringLevel::L3: levelStr = "L3"; break;
+    case SuperstructureSubsystem::ScoringLevel::L4: levelStr = "L4"; break;
+    case SuperstructureSubsystem::ScoringLevel::HOME: levelStr = "HOME"; break;
+    case SuperstructureSubsystem::ScoringLevel::CORAL_STATION: levelStr = "CORAL_STATION"; break;
+  }
+  frc::SmartDashboard::PutString("Superstructure/CurrentLevel", levelStr);
   
   // If in autonomous mode and not in auto period, allow manual override
   if (m_autonomousMode && frc::DriverStation::IsTeleopEnabled()) {

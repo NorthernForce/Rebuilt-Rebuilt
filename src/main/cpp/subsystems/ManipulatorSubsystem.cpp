@@ -66,7 +66,7 @@ frc2::CommandPtr ManipulatorSubsystem::Intake() {
       SetState(State::IDLE);
     },
     {this}
-  ).ToPtr();
+  );
 }
 
 frc2::CommandPtr ManipulatorSubsystem::Outtake() {
@@ -78,7 +78,7 @@ frc2::CommandPtr ManipulatorSubsystem::Outtake() {
       SetState(State::IDLE);
     },
     {this}
-  ).ToPtr();
+  );
 }
 
 frc2::CommandPtr ManipulatorSubsystem::SlowOuttake() {
@@ -90,7 +90,7 @@ frc2::CommandPtr ManipulatorSubsystem::SlowOuttake() {
       SetState(State::IDLE);
     },
     {this}
-  ).ToPtr();
+  );
 }
 
 frc2::CommandPtr ManipulatorSubsystem::Purge() {
@@ -102,13 +102,13 @@ frc2::CommandPtr ManipulatorSubsystem::Purge() {
       SetState(State::IDLE);
     },
     {this}
-  ).ToPtr();
+  );
 }
 
 frc2::CommandPtr ManipulatorSubsystem::Stop() {
   return frc2::cmd::RunOnce([this] {
     SetState(State::IDLE);
-  }, {}).ToPtr();
+  }, {});
 }
 
 bool ManipulatorSubsystem::HasGamePiece() const {

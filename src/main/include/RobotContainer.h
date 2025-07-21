@@ -12,6 +12,12 @@
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
 #include "subsystems/ManipulatorSubsystem.h"
+#include "subsystems/ClimberSubsystem.h"
+#include "subsystems/AlgaeExtractorSubsystem.h"
+#include "subsystems/SuperstructureSubsystem.h"
+#include "subsystems/LEDSubsystem.h"
+#include "subsystems/VisionSubsystem.h"
+#include "subsystems/AprilTagsSubsystem.h"
 
 class RobotContainer {
  public:
@@ -36,6 +42,12 @@ class RobotContainer {
   // Subsystems
   DriveSubsystem m_drive;
   ManipulatorSubsystem m_manipulator;
+  ClimberSubsystem m_climber;
+  AlgaeExtractorSubsystem m_algaeExtractor;
+  SuperstructureSubsystem m_superstructure;
+  LEDSubsystem m_leds;
+  VisionSubsystem m_vision;
+  AprilTagsSubsystem m_aprilTags;
   
   // Autonomous mode tracking
   bool m_autonomousMode = false;
