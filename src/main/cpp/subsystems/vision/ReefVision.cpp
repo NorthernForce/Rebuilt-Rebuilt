@@ -7,7 +7,7 @@
 #include <networktables/DoubleTopic.h>
 #include <networktables/StringTopic.h>
 #include <frc2/command/SubsystemBase.h>
-#include "subsystems/vision/Vision.h"
+#include "subsystems/vision/ReefVision.h"
 
 Vision::Vision(const std::string& deviceName, const std::string& tableName)
     : xOffset(NAN), connected(false), deviceName(deviceName) {

@@ -6,7 +6,7 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
-#include "subsystems/vision/Vision.h"
+#include "subsystems/vision/ReefVision.h"
 
 class RobotContainer {
 public:
