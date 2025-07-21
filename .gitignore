@@ -182,3 +182,7 @@ ctre_sim/
 # clangd
 /.cache
 compile_commands.json
+
+# Dashboard React App build artifacts
+dashboard/dist/
+dashboard/.tmp/
