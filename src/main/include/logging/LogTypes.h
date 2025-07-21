@@ -180,7 +180,7 @@ namespace nfr
     concept IsConvertableToVolt = units::traits::is_voltage_unit_v<T>;
 
     template <IsConvertableToVolt T>
-    inline void Log(const LogContext &logContext, const units::volt_t &value)
+    inline void Log(const LogContext &logContext, const T &value)
     {
         auto volts = static_cast<units::volt_t>(value);
         logContext << volts.value();
@@ -191,7 +191,7 @@ namespace nfr
     concept IsConvertableToAmpere = units::traits::is_current_unit_v<T>;
 
     template <IsConvertableToAmpere T>
-    inline void Log(const LogContext &logContext, const units::ampere_t &value)
+    inline void Log(const LogContext &logContext, const T &value)
     {
         auto amperes = static_cast<units::ampere_t>(value);
         logContext << amperes.value();
@@ -202,7 +202,7 @@ namespace nfr
     concept IsConvertableToMetersPerSecondSquared = units::traits::is_acceleration_unit_v<T>;
 
     template <IsConvertableToMetersPerSecondSquared T>
-    inline void Log(const LogContext &logContext, const units::meters_per_second_squared_t &value)
+    inline void Log(const LogContext &logContext, const T &value)
     {
         auto metersPerSecondSquared = static_cast<units::meters_per_second_squared_t>(value);
         logContext << metersPerSecondSquared.value();
