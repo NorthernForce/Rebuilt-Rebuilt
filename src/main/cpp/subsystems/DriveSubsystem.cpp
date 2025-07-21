@@ -62,7 +62,7 @@ frc2::CommandPtr DriveSubsystem::DriveByJoystick(
       units::meters_per_second_t{ySpeed() * Constants::Drive::kMaxSpeed.value()},
       units::radians_per_second_t{rotSpeed() * Constants::Drive::kMaxAngularVelocity.value()}
     );
-  }, {this}).ToPtr();
+  }, {this});
 }
 
 frc2::CommandPtr DriveSubsystem::DriveToPose(const frc::Pose2d& targetPose) {
@@ -95,7 +95,7 @@ frc2::CommandPtr DriveSubsystem::DriveToPose(const frc::Pose2d& targetPose) {
     } else {
       Drive(0_mps, 0_mps, 0_rad_per_s);
     }
-  }, {this}).ToPtr();
+  }, {this});
 }
 
 frc2::CommandPtr DriveSubsystem::DriveToNearestReef() {
@@ -107,43 +107,43 @@ frc2::CommandPtr DriveSubsystem::DriveToNearestReef() {
     // In a real implementation, this would calculate the actual nearest position
     // For now, just go to position A
     DriveToPose(nearestReef).Schedule();
-  }, {}).ToPtr();
+  }, {});
 }
 
 frc2::CommandPtr DriveSubsystem::StrafeLeft(double speed) {
   return frc2::cmd::Run([this, speed] {
     Drive(0_mps, units::meters_per_second_t{speed}, 0_rad_per_s);
-  }, {this}).ToPtr();
+  }, {this});
 }
 
 frc2::CommandPtr DriveSubsystem::StrafeRight(double speed) {
   return frc2::cmd::Run([this, speed] {
     Drive(0_mps, units::meters_per_second_t{-speed}, 0_rad_per_s);
-  }, {this}).ToPtr();
+  }, {this});
 }
 
 frc2::CommandPtr DriveSubsystem::GoForward(double speed) {
   return frc2::cmd::Run([this, speed] {
     Drive(units::meters_per_second_t{speed}, 0_mps, 0_rad_per_s);
-  }, {this}).ToPtr();
+  }, {this});
 }
 
 frc2::CommandPtr DriveSubsystem::GoBackward(double speed) {
   return frc2::cmd::Run([this, speed] {
     Drive(units::meters_per_second_t{-speed}, 0_mps, 0_rad_per_s);
-  }, {this}).ToPtr();
+  }, {this});
 }
 
 frc2::CommandPtr DriveSubsystem::Stop() {
   return frc2::cmd::RunOnce([this] {
     Drive(0_mps, 0_mps, 0_rad_per_s);
-  }, {this}).ToPtr();
+  }, {this});
 }
 
 frc2::CommandPtr DriveSubsystem::ResetOrientation() {
   return frc2::cmd::RunOnce([this] {
     m_pose = frc::Pose2d{m_pose.Translation(), frc::Rotation2d{0_deg}};
-  }, {}).ToPtr();
+  }, {});
 }
 
 void DriveSubsystem::ResetPose(const frc::Pose2d& pose) {

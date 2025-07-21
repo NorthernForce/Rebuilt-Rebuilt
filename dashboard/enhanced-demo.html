@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team 172 Reefscape Dashboard - Enhanced</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a2332 0%, #2d4a32 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #0d1117 0%, #1a2332 100%);
+            padding: 20px;
+            border-bottom: 3px solid #00ff41;
+            box-shadow: 0 4px 12px rgba(0, 255, 65, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            color: #00ff41;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .connection-status {
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dashboard-layout {
+            display: flex;
+            height: calc(100vh - 92px);
+            flex: 1;
+        }
+
+        .main-panel {
+            flex: 2;
+            padding: 24px;
+            border-right: 2px solid rgba(0, 255, 65, 0.2);
+            background: linear-gradient(135deg, rgba(26, 61, 26, 0.3) 0%, rgba(45, 74, 45, 0.3) 100%);
+        }
+
+        .side-panel {
+            flex: 1;
+            padding: 24px;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: inset 4px 0 12px rgba(0, 0, 0, 0.2);
+            min-width: 350px;
+        }
+
+        .field-title {
+            color: #00ff41;
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: 0 0 12px rgba(0, 255, 65, 0.4);
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+        }
+
+        .field-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .field-svg {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            background: linear-gradient(135deg, #1a3d1a 0%, #2d5a2d 100%);
+            border: 3px solid #00ff41;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .field-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .reef-position {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: all;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 2px solid;
+        }
+
+        .reef-position:hover {
+            transform: scale(1.3);
+            z-index: 20;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .reef-position.coral {
+            background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+            border-color: #1976d2;
+        }
+
+        .reef-position.algae {
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            border-color: #388e3c;
+        }
+
+        .reef-position.selected {
+            border-color: #ffff00;
+            border-width: 3px;
+            animation: position-pulse 1.5s infinite;
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.6);
+        }
+
+        .level-indicators {
+            display: flex;
+            gap: 1px;
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .level-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .level-dot.current {
+            background-color: #ffff00;
+            box-shadow: 0 0 6px rgba(255, 255, 0, 0.8);
+            transform: scale(1.5);
+        }
+
+        .coral-station {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%);
+            border: 2px solid #673ab7;
+            border-radius: 6px;
+            cursor: pointer;
+            pointer-events: all;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+        }
+
+        .coral-station:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(156, 39, 176, 0.6);
+        }
+
+        .position-label {
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            pointer-events: none;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .status-panel, .controls-panel {
+            background: linear-gradient(135deg, rgba(45, 55, 72, 0.95) 0%, rgba(74, 85, 104, 0.95) 100%);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .status-panel h3, .controls-panel h3 {
+            margin: 0 0 24px 0;
+            color: #00ff41;
+            border-bottom: 2px solid #00ff41;
+            padding-bottom: 12px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+        }
+
+        .status-section {
+            margin-bottom: 24px;
+        }
+
+        .status-section h4 {
+            margin: 0 0 12px 0;
+            color: #e2e8f0;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+        }
+
+        .alliance-display {
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            border: 2px solid;
+            font-size: 16px;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #3182ce 0%, #4299e1 100%);
+            border-color: #2b77cb;
+            color: white;
+            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
+        }
+
+        .coordinate-display {
+            background: rgba(26, 32, 44, 0.8);
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .coordinate-display div {
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: #e2e8f0;
+        }
+
+        .coordinate-display div:last-child {
+            margin-bottom: 0;
+        }
+
+        .mode-indicator {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #ed8936 0%, #f6ad55 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(237, 137, 54, 0.4);
+        }
+
+        .game-piece-indicator {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #48bb78 0%, #68d391 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+            animation: pulse-piece 2s infinite;
+        }
+
+        .height-display {
+            margin-bottom: 16px;
+            color: #e2e8f0;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .height-value {
+            color: #00ff41;
+            font-weight: bold;
+            font-size: 18px;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+        }
+
+        .height-bars {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .height-bar {
+            flex: 1;
+            padding: 12px 8px;
+            background: rgba(45, 55, 72, 0.8);
+            border: 2px solid rgba(160, 174, 192, 0.3);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            color: #a0aec0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .height-bar.active {
+            background: linear-gradient(135deg, #00ff41 0%, #32ff7e 100%);
+            color: #0d1117;
+            border-color: #00ff41;
+            font-weight: bold;
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(0, 255, 65, 0.4);
+            animation: level-pulse 2s infinite;
+        }
+
+        .command-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(26, 32, 44, 0.8);
+            border: 2px solid rgba(160, 174, 192, 0.3);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .command-select:focus {
+            outline: none;
+            border-color: #00ff41;
+            box-shadow: 0 0 12px rgba(0, 255, 65, 0.3);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .execute-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #68d391 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+        }
+
+        .execute-btn:hover {
+            background: linear-gradient(135deg, #68d391 0%, #9ae6b4 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .stop-btn {
+            background: linear-gradient(135deg, #f56565 0%, #fc8181 100%);
+            color: white;
+            animation: emergency-pulse 2s infinite;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 16px rgba(245, 101, 101, 0.4);
+        }
+
+        .stop-btn:hover {
+            background: linear-gradient(135deg, #fc8181 0%, #feb2b2 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(245, 101, 101, 0.5);
+        }
+
+        .selected-info {
+            background: rgba(26, 32, 44, 0.8);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .selected-position {
+            color: #00ff41;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .selected-info div {
+            color: #e2e8f0;
+            margin-bottom: 4px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-btn {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #4299e1 0%, #63b3ed 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+        }
+
+        .quick-btn:hover {
+            background: linear-gradient(135deg, #63b3ed 0%, #90cdf4 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+        }
+
+        @keyframes position-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(255, 255, 0, 0.6);
+                transform: scale(1.2);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(255, 255, 0, 0.8);
+                transform: scale(1.25);
+            }
+        }
+
+        @keyframes pulse-piece {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes level-pulse {
+            0%, 100% { box-shadow: 0 4px 16px rgba(0, 255, 65, 0.4); }
+            50% { box-shadow: 0 4px 20px rgba(0, 255, 65, 0.6); }
+        }
+
+        @keyframes emergency-pulse {
+            0%, 100% { 
+                box-shadow: 0 4px 16px rgba(245, 101, 101, 0.4);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 4px 24px rgba(245, 101, 101, 0.6);
+                transform: scale(1.02);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <h1>🏁 Team 172 Northern Force - Reefscape Dashboard</h1>
+        <div class="connection-status">Status: Connected</div>
+    </div>
+    
+    <div class="dashboard-layout">
+        <div class="main-panel">
+            <h2 class="field-title">🏁 Field View - BLUE Alliance</h2>
+            
+            <div class="field-container">
+                <svg class="field-svg" viewBox="0 0 600 483">
+                    <defs>
+                        <radialGradient id="fieldGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#2d5a2d" stop-opacity="1" />
+                            <stop offset="100%" stop-color="#1a3d1a" stop-opacity="1" />
+                        </radialGradient>
+                        <pattern id="fieldPattern" patternUnits="userSpaceOnUse" width="20" height="20">
+                            <rect width="20" height="20" fill="none"/>
+                            <circle cx="10" cy="10" r="1" fill="rgba(0,255,65,0.1)"/>
+                        </pattern>
+                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge> 
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Field outline with enhanced styling -->
+                    <rect x="10" y="10" width="580" height="463" 
+                          fill="url(#fieldGradient)" 
+                          stroke="#00ff41" 
+                          stroke-width="3" 
+                          rx="8" />
+                    
+                    <!-- Field pattern overlay -->
+                    <rect x="10" y="10" width="580" height="463" 
+                          fill="url(#fieldPattern)" 
+                          rx="8" />
+                    
+                    <!-- Reef center (hexagonal outline with glow) -->
+                    <polygon points="250,200 350,200 400,241 350,282 250,282 200,241"
+                             fill="rgba(0,255,65,0.1)" 
+                             stroke="#00ff41" 
+                             stroke-width="3"
+                             stroke-dasharray="8,4"
+                             filter="url(#glow)" />
+                    
+                    <!-- Robot position with enhanced visualization -->
+                    <g transform="translate(300, 241) rotate(45)">
+                        <polygon points="-15,0 10,-10 10,10" 
+                                 fill="#0080ff" 
+                                 stroke="white" 
+                                 stroke-width="2" 
+                                 filter="url(#glow)" />
+                        <circle cx="8" cy="0" r="3" fill="white" opacity="0.8" />
+                        <circle cx="0" cy="0" r="20" fill="none" stroke="white" stroke-width="1" stroke-dasharray="4,4" opacity="0.6" />
+                        <text x="0" y="25" text-anchor="middle" fill="white" font-size="12" font-weight="bold">172</text>
+                    </g>
+                    
+                    <!-- Selected position indicator with enhanced animation -->
+                    <g>
+                        <circle cx="180" cy="251" r="25" fill="none" stroke="#ffff00" stroke-width="3" stroke-dasharray="8,4" opacity="0.8">
+                            <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 180 251" to="360 180 251" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="180" cy="251" r="15" fill="rgba(255,255,0,0.2)" stroke="none">
+                            <animate attributeName="r" values="15;20;15" dur="1.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                    
+                    <!-- Field zones visualization -->
+                    <text x="50" y="50" fill="#00ff41" font-size="14" font-weight="bold" opacity="0.7">Red Zone</text>
+                    <text x="520" y="450" fill="#00ff41" font-size="14" font-weight="bold" opacity="0.7">Blue Zone</text>
+                </svg>
+                
+                <!-- Overlay positioned elements -->
+                <div class="field-overlay">
+                    <!-- Coral scoring positions with level indicators -->
+                    <div class="reef-position coral selected" style="left: 168px; top: 243px;" onclick="selectPosition('A', 'coral')">
+                        <div class="position-label">A</div>
+                        <div class="level-indicators">
+                            <div class="level-dot"></div>
+                            <div class="level-dot"></div>
+                            <div class="level-dot"></div>
+                            <div class="level-dot current"></div>
+                        </div>
+                    </div>
+                    <div class="reef-position coral" style="left: 168px; top: 223px;" onclick="selectPosition('B', 'coral')">
+                        <div class="position-label">B</div>
+                        <div class="level-indicators">
+                            <div class="level-dot"></div>
+                            <div class="level-dot current"></div>
+                            <div class="level-dot"></div>
+                            <div class="level-dot"></div>
+                        </div>
+                    </div>
+                    <div class="reef-position coral" style="left: 210px; top: 166px;" onclick="selectPosition('C', 'coral')">
+                        <div class="position-label">C</div>
+                        <div class="level-indicators">
+                            <div class="level-dot"></div>
+                            <div class="level-dot"></div>
+                            <div class="level-dot current"></div>
+                            <div class="level-dot"></div>
+                        </div>
+                    </div>
+                    <div class="reef-position coral" style="left: 225px; top: 155px;" onclick="selectPosition('D', 'coral')">
+                        <div class="position-label">D</div>
+                    </div>
+                    <div class="reef-position coral" style="left: 289px; top: 157px;" onclick="selectPosition('E', 'coral')">
+                        <div class="position-label">E</div>
+                    </div>
+                    <div class="reef-position coral" style="left: 306px; top: 166px;" onclick="selectPosition('F', 'coral')">
+                        <div class="position-label">F</div>
+                    </div>
+                    <div class="reef-position coral" style="left: 339px; top: 220px;" onclick="selectPosition('G', 'coral')">
+                        <div class="position-label">G</div>
+                    </div>
+                    <div class="reef-position coral" style="left: 339px; top: 239px;" onclick="selectPosition('H', 'coral')">
+                        <div class="position-label">H</div>
+                    </div>
+                    <div class="reef-position coral" style="left: 306px; top: 295px;" onclick="selectPosition('I', 'coral')">
+                        <div class="position-label">I</div>
+                    </div>
+                    <div class="reef-position coral" style="left: 289px; top: 306px;" onclick="selectPosition('J', 'coral')">
+                        <div class="position-label">J</div>
+                    </div>
+                    <div class="reef-position coral" style="left: 225px; top: 306px;" onclick="selectPosition('K', 'coral')">
+                        <div class="position-label">K</div>
+                    </div>
+                    <div class="reef-position coral" style="left: 207px; top: 295px;" onclick="selectPosition('L', 'coral')">
+                        <div class="position-label">L</div>
+                    </div>
+                    
+                    <!-- Algae positions -->
+                    <div class="reef-position algae" style="left: 168px; top: 229px;" onclick="selectPosition('AB', 'algae')">
+                        <div class="position-label">AB</div>
+                    </div>
+                    <div class="reef-position algae" style="left: 216px; top: 160px;" onclick="selectPosition('CD', 'algae')">
+                        <div class="position-label">CD</div>
+                    </div>
+                    <div class="reef-position algae" style="left: 297px; top: 160px;" onclick="selectPosition('EF', 'algae')">
+                        <div class="position-label">EF</div>
+                    </div>
+                    <div class="reef-position algae" style="left: 339px; top: 229px;" onclick="selectPosition('GH', 'algae')">
+                        <div class="position-label">GH</div>
+                    </div>
+                    <div class="reef-position algae" style="left: 297px; top: 300px;" onclick="selectPosition('IJ', 'algae')">
+                        <div class="position-label">IJ</div>
+                    </div>
+                    <div class="reef-position algae" style="left: 217px; top: 300px;" onclick="selectPosition('KL', 'algae')">
+                        <div class="position-label">KL</div>
+                    </div>
+                    
+                    <!-- Coral stations -->
+                    <div class="coral-station" style="left: 59px; top: 413px;" onclick="selectPosition('LEFT', 'station')">
+                        <div class="station-icon">🪸</div>
+                        <div class="station-label">CS</div>
+                    </div>
+                    <div class="coral-station" style="left: 55px; top: 48px;" onclick="selectPosition('RIGHT', 'station')">
+                        <div class="station-icon">🪸</div>
+                        <div class="station-label">CS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="side-panel">
+            <div class="status-panel">
+                <h3>Robot Status</h3>
+                
+                <div class="status-section">
+                    <h4>Alliance</h4>
+                    <div class="alliance-display">BLUE ALLIANCE</div>
+                </div>
+
+                <div class="status-section">
+                    <h4>Robot Position</h4>
+                    <div class="coordinate-display">
+                        <div>X: <span id="pos-x">4.25</span> m</div>
+                        <div>Y: <span id="pos-y">3.98</span> m</div>
+                        <div>Θ: <span id="pos-rot">45.0</span>°</div>
+                    </div>
+                </div>
+
+                <div class="status-section">
+                    <h4>Control Mode</h4>
+                    <div class="mode-indicator" id="mode-indicator">AUTONOMOUS</div>
+                </div>
+
+                <div class="status-section">
+                    <h4>Manipulator</h4>
+                    <div class="game-piece-indicator">HAS CORAL</div>
+                </div>
+
+                <div class="status-section">
+                    <h4>Superstructure</h4>
+                    <div class="height-display">
+                        Height: <span class="height-value" id="current-level">L4</span>
+                    </div>
+                    <div class="height-bars">
+                        <div class="height-bar" id="level-L1">L1</div>
+                        <div class="height-bar" id="level-L2">L2</div>
+                        <div class="height-bar" id="level-L3">L3</div>
+                        <div class="height-bar active" id="level-L4">L4</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <h3>Autonomous Controls</h3>
+                
+                <div class="status-section">
+                    <h4>🎯 Selected Position</h4>
+                    <div class="selected-info">
+                        <div class="selected-position" id="selected-pos">A</div>
+                        <div>Type: <span id="selected-type">Coral Scoring</span></div>
+                        <div>Target Height: <span id="target-height">L4</span></div>
+                        <div>Distance: <span id="target-distance">2.3m</span></div>
+                    </div>
+                </div>
+
+                <div class="status-section">
+                    <h4>Command Selection</h4>
+                    <select class="command-select" id="command-select">
+                        <option value="">Select Command...</option>
+                        <option value="moveToPosition">Move to Selected Position</option>
+                        <option value="scoreAndReturn">Score and Return</option>
+                        <option value="collectFromStation">Collect from Coral Station</option>
+                        <option value="removeAlgae">Remove Algae</option>
+                        <option value="autoClimb">Autonomous Climb</option>
+                        <option value="fullCycle">Full Scoring Cycle</option>
+                    </select>
+                </div>
+
+                <div class="status-section">
+                    <h4>Actions</h4>
+                    <button class="action-btn execute-btn" onclick="executeCommand()">🚀 Execute Command</button>
+                    <button class="action-btn stop-btn" onclick="emergencyStop()">🛑 EMERGENCY STOP</button>
+                </div>
+
+                <div class="status-section">
+                    <h4>Quick Actions</h4>
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="quickAction('coral')">🪸 Coral Station</button>
+                        <button class="quick-btn" onclick="quickAction('leave')">🏃 Leave Zone</button>
+                        <button class="quick-btn" onclick="quickAction('algae')">🌿 Remove Algae</button>
+                        <button class="quick-btn" onclick="quickAction('climb')">🧗 Climb</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPosition = 'A';
+        let selectedType = 'coral';
+        let robotPosition = { x: 4.25, y: 3.98, rotation: 45 };
+        let currentLevel = 'L4';
+
+        function selectPosition(position, type = 'coral') {
+            // Remove previous selection
+            document.querySelectorAll('.reef-position, .coral-station').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Add selection to clicked position
+            event.target.closest('.reef-position, .coral-station').classList.add('selected');
+            selectedPosition = position;
+            selectedType = type;
+            
+            document.getElementById('selected-pos').textContent = position;
+            document.getElementById('selected-type').textContent = 
+                type === 'coral' ? 'Coral Scoring' : 
+                type === 'algae' ? 'Algae Removal' : 'Coral Station';
+            
+            // Simulate distance calculation
+            const distance = (Math.random() * 4 + 0.5).toFixed(1);
+            document.getElementById('target-distance').textContent = distance + 'm';
+            
+            console.log('Selected position:', position, 'type:', type);
+        }
+
+        function executeCommand() {
+            const command = document.getElementById('command-select').value;
+            if (!command) {
+                alert('Please select a command first');
+                return;
+            }
+            
+            // Simulate command execution
+            const modeIndicator = document.getElementById('mode-indicator');
+            modeIndicator.textContent = 'EXECUTING';
+            modeIndicator.style.background = 'linear-gradient(135deg, #f6ad55 0%, #ed8936 100%)';
+            
+            setTimeout(() => {
+                modeIndicator.textContent = 'AUTONOMOUS';
+                modeIndicator.style.background = 'linear-gradient(135deg, #ed8936 0%, #f6ad55 100%)';
+                alert(`✅ Command completed: ${command} to position ${selectedPosition}`);
+            }, 3000);
+            
+            console.log('Executing command:', command, 'to position:', selectedPosition);
+        }
+
+        function emergencyStop() {
+            // Simulate emergency stop
+            const modeIndicator = document.getElementById('mode-indicator');
+            modeIndicator.textContent = 'STOPPED';
+            modeIndicator.style.background = 'linear-gradient(135deg, #f56565 0%, #fc8181 100%)';
+            
+            alert('🛑 EMERGENCY STOP ACTIVATED');
+            console.log('EMERGENCY STOP ACTIVATED');
+            
+            setTimeout(() => {
+                modeIndicator.textContent = 'MANUAL';
+                modeIndicator.style.background = 'linear-gradient(135deg, #4299e1 0%, #63b3ed 100%)';
+            }, 2000);
+        }
+
+        function quickAction(action) {
+            const actions = {
+                'coral': '🪸 Moving to nearest coral station',
+                'leave': '🏃 Leaving starting zone',
+                'algae': '🌿 Starting algae removal',
+                'climb': '🧗 Initiating climb sequence'
+            };
+            
+            alert(actions[action]);
+            console.log('Quick action:', action);
+        }
+
+        function updateLevel() {
+            // Cycle through levels
+            const levels = ['L1', 'L2', 'L3', 'L4'];
+            const currentIndex = levels.indexOf(currentLevel);
+            const nextIndex = (currentIndex + 1) % levels.length;
+            currentLevel = levels[nextIndex];
+            
+            // Update display
+            document.getElementById('current-level').textContent = currentLevel;
+            document.getElementById('target-height').textContent = currentLevel;
+            
+            // Update height bars
+            levels.forEach(level => {
+                const bar = document.getElementById(`level-${level}`);
+                bar.classList.toggle('active', level === currentLevel);
+            });
+        }
+
+        // Simulate robot position updates
+        function updateRobotPosition() {
+            robotPosition.x += (Math.random() - 0.5) * 0.02;
+            robotPosition.y += (Math.random() - 0.5) * 0.02;
+            robotPosition.rotation += (Math.random() - 0.5) * 2;
+            
+            document.getElementById('pos-x').textContent = robotPosition.x.toFixed(2);
+            document.getElementById('pos-y').textContent = robotPosition.y.toFixed(2);
+            document.getElementById('pos-rot').textContent = (robotPosition.rotation % 360).toFixed(1);
+        }
+
+        // Update position every 100ms
+        setInterval(updateRobotPosition, 100);
+
+        // Toggle autonomous mode every 7 seconds for demo
+        setInterval(() => {
+            const indicator = document.getElementById('mode-indicator');
+            if (indicator.textContent === 'AUTONOMOUS') {
+                indicator.textContent = 'MANUAL';
+                indicator.style.background = 'linear-gradient(135deg, #4299e1 0%, #63b3ed 100%)';
+            } else if (indicator.textContent === 'MANUAL') {
+                indicator.textContent = 'AUTONOMOUS';
+                indicator.style.background = 'linear-gradient(135deg, #ed8936 0%, #f6ad55 100%)';
+            }
+        }, 7000);
+
+        // Update level every 4 seconds for demo
+        setInterval(updateLevel, 4000);
+
+        console.log('🏁 Team 172 Reefscape Dashboard Enhanced - Ready for Competition! 🤖');
+    </script>
+</body>
+</html>

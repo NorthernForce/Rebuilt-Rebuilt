@@ -57,8 +57,12 @@ void RobotContainer::ConfigureBindings() {
   
   // Emergency stop (X button)
   m_driverController.X().OnTrue(frc2::cmd::RunOnce([this] {
-    m_drive.Stop().Schedule();
-    m_manipulator.Stop().Schedule();
+    // Stop all subsystems
+    m_drive.Drive(0_mps, 0_mps, 0_rad_per_s);
+    m_manipulator.SetState(ManipulatorSubsystem::State::IDLE);
+    m_climber.Stop();
+    m_algaeExtractor.Stop();
+    m_superstructure.Stop();
   }));
   
   // Operator controller bindings
@@ -126,7 +130,7 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
     );
   } else {
     // Default do nothing
-    return frc2::cmd::Print("Do Nothing Auto").ToPtr();
+    return frc2::cmd::Print("Do Nothing Auto");
   }
 }
 

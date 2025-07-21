@@ -1,5 +1,6 @@
 #include "subsystems/AprilTagsSubsystem.h"
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/Timer.h>
 
 AprilTagsSubsystem::AprilTagsSubsystem() {
     SetName("AprilTagsSubsystem");
@@ -37,7 +38,7 @@ void AprilTagsSubsystem::UpdatePoseEstimation() {
         
         // Create a simple pose estimate (placeholder)
         m_lastPoseEstimate.pose = m_referencePose; // Use reference pose for now
-        m_lastPoseEstimate.timestamp = units::second_t{static_cast<double>(frc::Timer::GetFPGATimestamp().value())};
+        m_lastPoseEstimate.timestamp = frc::Timer::GetFPGATimestamp();
         m_lastPoseEstimate.ambiguity = 0.1; // Low ambiguity
         m_lastPoseEstimate.tagIds = m_visibleTags;
         m_lastPoseEstimate.isValid = true;

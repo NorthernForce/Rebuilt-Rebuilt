@@ -62,8 +62,8 @@ frc::Pose2d ConvertPoseByAlliance(const frc::Pose2d& pose, frc::DriverStation::A
     return pose;
   } else {
     return frc::Pose2d{
-      kFieldLength.value() - pose.X().value(),
-      kFieldWidth.value() - pose.Y().value(),
+      units::meter_t{kFieldLength.value() - pose.X().value()},
+      units::meter_t{kFieldWidth.value() - pose.Y().value()},
       pose.Rotation() + frc::Rotation2d{180.0_deg}
     };
   }
@@ -74,8 +74,8 @@ frc::Translation2d ConvertTranslationByAlliance(const frc::Translation2d& transl
     return translation;
   } else {
     return frc::Translation2d{
-      kFieldLength.value() - translation.X().value(),
-      kFieldWidth.value() - translation.Y().value()
+      units::meter_t{kFieldLength.value() - translation.X().value()},
+      units::meter_t{kFieldWidth.value() - translation.Y().value()}
     };
   }
 }
