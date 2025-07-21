@@ -2,6 +2,7 @@
 #include <frc/DriverStation.h>
 #include <frc/RobotController.h>
 #include <frc/MathUtil.h>
+#include <logging/LogTypes.h>
 
 using namespace nfr;
 using namespace ctre::phoenix6;
@@ -210,4 +211,13 @@ CommandPtr SwerveDrive::DriveByJoystick(function<double()> xAxis,
                                 .WithRotationalRate(rotationAxis() * maxRotationSpeed);
                         });
     }
+}
+
+void SwerveDrive::Log(const LogContext &log) const
+{
+    log["pose"] << GetState().Pose;
+    auto speeds = GetState().Speeds;
+    log["speeds"] << speeds;
+    meters_per_second_t translationSpeed = units::math::sqrt(speeds.vx * speeds.vx + speeds.vy * speeds.vy);
+    log["speed"] << translationSpeed;
 }
