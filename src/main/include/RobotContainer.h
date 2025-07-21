@@ -5,6 +5,7 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
+#include "subsystems/LEDs.h"
 
 class RobotContainer {
  public:
@@ -12,6 +13,11 @@ class RobotContainer {
 
   frc2::CommandPtr GetAutonomousCommand();
 
+  LEDs* GetLEDs() { return &m_leds; }
+
  private:
   void ConfigureBindings();
+
+  // Subsystems
+  LEDs m_leds;
 };

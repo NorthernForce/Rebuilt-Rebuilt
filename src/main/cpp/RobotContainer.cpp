@@ -10,7 +10,11 @@ RobotContainer::RobotContainer() {
   ConfigureBindings();
 }
 
-void RobotContainer::ConfigureBindings() {}
+void RobotContainer::ConfigureBindings() {
+  // Set default LED command based on game state
+  // For now, set a default command that shows team colors when no alliance selected
+  m_leds.SetDefaultCommand(m_leds.NoAlliance());
+}
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
   return frc2::cmd::Print("No autonomous command configured");
