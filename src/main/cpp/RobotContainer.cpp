@@ -4,14 +4,24 @@
 
 #include "RobotContainer.h"
 
-#include <frc2/command/Commands.h>
+#include <logging/LogTypes.h>
 
-RobotContainer::RobotContainer() {
-  ConfigureBindings();
+#include <frc2/command/Commands.h>
+#include <frc/DriverStation.h>
+
+RobotContainer::RobotContainer()
+{
+    ConfigureBindings();
 }
 
 void RobotContainer::ConfigureBindings() {}
 
-frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-  return frc2::cmd::Print("No autonomous command configured");
+frc2::CommandPtr RobotContainer::GetAutonomousCommand()
+{
+    return frc2::cmd::Print("No autonomous command configured");
+}
+
+void RobotContainer::Log(const nfr::LogContext &log) const
+{
+    log["match_time"] << frc::DriverStation::GetMatchTime();
 }
