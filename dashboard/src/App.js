@@ -64,6 +64,7 @@ function App() {
             alliance={robotData.alliance}
             selectedPosition={robotData.selectedReefPosition}
             onPositionSelect={handleReefPositionSelect}
+            superstructureHeight={robotData.superstructureHeight}
           />
         </div>
         
