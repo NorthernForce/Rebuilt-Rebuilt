@@ -102,15 +102,6 @@ void Logger::Log(const string& key, span<string> values) {
     }
 }
 
-template<typename T>
-requires ExistsLogMethodFor<T>
-void Logger::Log(const string& key, const T& value) {
-    for (auto& output : outputs)
-    {
-        Log<T>(*output, key, value);
-    }
-}
-
 void Logger::AddOutput(shared_ptr<ILogOutput> output) {
     outputs.push_back(std::move(output));
 }

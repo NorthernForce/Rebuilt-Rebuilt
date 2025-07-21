@@ -11,6 +11,7 @@
 #include "logging/Logger.h"
 #include "logging/NTLogManager.h"
 #include "logging/WPILogManager.h"
+#include "logging/LogTypes.h"
 
 bool isCompetition() {
     return frc::DriverStation::IsFMSAttached();

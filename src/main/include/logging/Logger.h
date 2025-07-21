@@ -10,21 +10,22 @@ namespace nfr
 {
     class LogContext;
     template<typename T>
+    void Log(const LogContext& logContext, const T& t);
+    template<typename T>
     concept HasLogMethod = requires(T t, const LogContext& logContext)
     {
         { t.Log(logContext) } -> std::same_as<void>;
     };
     template<typename T>
-    void Log(const LogContext& logContext, const T& t)
-    {
-        static_assert(HasLogMethod<T>, "Type T does not have a Log method that matches the required signature.");
-    }
-    template<typename T>
-    concept ExistsLogMethodFor = requires(T t, const LogContext& logContext)
-    {
-        { Log<T>(logContext, t) } -> std::same_as<void>;
-    } && !std::same_as<T, double> && !std::same_as<T, int> && !std::same_as<T, long> && !std::same_as<T, bool> && !std::same_as<T, std::string>
-        && !std::same_as<T, std::span<double>> && !std::same_as<T, std::span<long>> && !std::same_as<T, std::span<bool>> && !std::same_as<T, std::span<std::string>>;
+    concept IsCustomLoggable = !std::same_as<std::remove_cvref_t<T>, double> && 
+                              !std::same_as<std::remove_cvref_t<T>, int> && 
+                              !std::same_as<std::remove_cvref_t<T>, long> && 
+                              !std::same_as<std::remove_cvref_t<T>, bool> && 
+                              !std::same_as<std::remove_cvref_t<T>, std::string> &&
+                              !std::same_as<std::remove_cvref_t<T>, std::span<double>> && 
+                              !std::same_as<std::remove_cvref_t<T>, std::span<long>> && 
+                              !std::same_as<std::remove_cvref_t<T>, std::span<bool>> && 
+                              !std::same_as<std::remove_cvref_t<T>, std::span<std::string>>;
     class Logger;
     class LogContext
     {
@@ -48,16 +49,16 @@ namespace nfr
         const LogContext& operator<<(std::span<bool> values) const;
         const LogContext& operator<<(std::span<std::string> values) const;
         template<typename T>
-        requires ExistsLogMethodFor<T>
+        requires IsCustomLoggable<T>
         const LogContext& operator<<(const T& value) const
         {
-            Log<T>(*this, value);
+            Log(*this, value);
             return *this;
         }
         template<typename T>
-        requires ExistsLogMethodFor<T>
+        requires IsCustomLoggable<T>
         const LogContext& operator<<(T&& value) const {
-            Log<T>(*this, std::forward<T>(value));
+            Log(*this, std::forward<T>(value));
             return std::move(*this);
         }
         LogContext operator[](std::string_view newKey) const
@@ -83,9 +84,6 @@ namespace nfr
         void Log(const std::string& key, std::span<long> values);
         void Log(const std::string& key, std::span<bool> values);
         void Log(const std::string& key, std::span<std::string> values);
-        template<typename T>
-        requires ExistsLogMethodFor<T>
-        void Log(const std::string& key, const T& value);
         void AddOutput(std::shared_ptr<ILogOutput> output);
         LogContext operator[](std::string_view key)
         {
@@ -94,6 +92,17 @@ namespace nfr
     private:
         std::vector<std::shared_ptr<ILogOutput>> outputs;
     };
+
+    template<typename T>
+    void Log(const LogContext& logContext, const T& t)
+    {
+        if constexpr (HasLogMethod<T>) {
+            t.Log(logContext);
+        } else {
+            static_assert(sizeof(T) == 0, "No Log specialization found for this type. "
+                         "Either add a Log method to the class or specialize nfr::Log<T>.");
+        }
+    }
 
     extern Logger logger; // Global logger instance
 }
