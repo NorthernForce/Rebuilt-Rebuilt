@@ -59,7 +59,7 @@ namespace nfr
         requires IsCustomLoggable<T>
         const LogContext& operator<<(T&& value) const {
             Log(*this, std::forward<T>(value));
-            return std::move(*this);
+            return *this;
         }
         LogContext operator[](std::string_view newKey) const
         {
