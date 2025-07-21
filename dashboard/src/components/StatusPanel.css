@@ -1,0 +1,187 @@
+.status-panel {
+  background-color: #333;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.status-panel h3 {
+  margin: 0 0 20px 0;
+  color: #00ff41;
+  border-bottom: 2px solid #00ff41;
+  padding-bottom: 10px;
+}
+
+.status-section {
+  margin-bottom: 20px;
+}
+
+.status-section h4 {
+  margin: 0 0 10px 0;
+  color: #ccc;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status-indicator {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.status-indicator.connected {
+  background-color: #4caf50;
+  color: white;
+}
+
+.status-indicator.disconnected {
+  background-color: #f44336;
+  color: white;
+  animation: blink 1s infinite;
+}
+
+.alliance-display {
+  padding: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid;
+}
+
+.alliance-display.blue {
+  background-color: #1976d2;
+  border-color: #0d47a1;
+  color: white;
+}
+
+.alliance-display.red {
+  background-color: #d32f2f;
+  border-color: #b71c1c;
+  color: white;
+}
+
+.coordinate-display {
+  background-color: #2a2a2a;
+  padding: 10px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+.coordinate-display div {
+  margin-bottom: 5px;
+}
+
+.mode-indicator {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.mode-indicator.auto {
+  background-color: #ff9800;
+  color: black;
+}
+
+.mode-indicator.manual {
+  background-color: #2196f3;
+  color: white;
+}
+
+.game-piece-indicator {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.game-piece-indicator.has-piece {
+  background-color: #4caf50;
+  color: white;
+}
+
+.game-piece-indicator.no-piece {
+  background-color: #666;
+  color: #ccc;
+}
+
+.height-display {
+  margin-bottom: 10px;
+  color: #ccc;
+}
+
+.height-value {
+  color: #00ff41;
+  font-weight: bold;
+}
+
+.height-bars {
+  display: flex;
+  gap: 5px;
+}
+
+.height-bar {
+  flex: 1;
+  padding: 8px 4px;
+  background-color: #2a2a2a;
+  border: 1px solid #666;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  transition: all 0.2s ease;
+}
+
+.height-bar.active {
+  background-color: #00ff41;
+  color: black;
+  border-color: #00ff41;
+  font-weight: bold;
+}
+
+.health-indicators {
+  background-color: #2a2a2a;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.health-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.health-label {
+  color: #ccc;
+  font-size: 12px;
+}
+
+.health-status {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.health-status.good {
+  background-color: #4caf50;
+  color: white;
+}
+
+.health-status.warning {
+  background-color: #ff9800;
+  color: black;
+}
+
+.health-status.error {
+  background-color: #f44336;
+  color: white;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.5; }
+}

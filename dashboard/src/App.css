@@ -1,0 +1,46 @@
+.App {
+  text-align: center;
+  background-color: #1a1a1a;
+  min-height: 100vh;
+  color: white;
+}
+
+.App-header {
+  background-color: #2c2c2c;
+  padding: 20px;
+  border-bottom: 2px solid #4a4a4a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.App-header h1 {
+  margin: 0;
+  color: #00ff41; /* Team 172 green */
+  font-size: 1.8rem;
+}
+
+.connection-status {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.dashboard-layout {
+  display: flex;
+  height: calc(100vh - 120px);
+}
+
+.main-panel {
+  flex: 3;
+  padding: 20px;
+  background-color: #1e1e1e;
+}
+
+.side-panel {
+  flex: 1;
+  padding: 20px;
+  background-color: #2a2a2a;
+  border-left: 2px solid #4a4a4a;
+  min-width: 300px;
+}
