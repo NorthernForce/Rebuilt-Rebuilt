@@ -8,11 +8,11 @@
 
 class RobotContainer
 {
-public:
-  RobotContainer();
+  public:
+    RobotContainer();
 
-  frc2::CommandPtr GetAutonomousCommand();
+    frc2::CommandPtr GetAutonomousCommand();
 
-private:
-  void ConfigureBindings();
+  private:
+    void ConfigureBindings();
 };
