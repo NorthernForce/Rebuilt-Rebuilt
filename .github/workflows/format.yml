@@ -39,7 +39,7 @@ jobs:
 
       - name: Format C++ files
         run: |
-          find src -name "*.cpp" -o -name "*.h" -o -name "*.hpp" | xargs -r clang-format-18 -i --style=Google
+          find src -name "*.cpp" -o -name "*.h" -o -name "*.hpp" | xargs -r clang-format-18 -i --style=file
 
       - name: Check for changes
         id: verify-changed-files
