@@ -182,3 +182,14 @@ ctre_sim/
 # clangd
 /.cache
 compile_commands.json
+
+# React Dashboard
+dashboard/node_modules/
+dashboard/build/
+dashboard/.env.local
+dashboard/.env.development.local
+dashboard/.env.test.local
+dashboard/.env.production.local
+dashboard/npm-debug.log*
+dashboard/yarn-debug.log*
+dashboard/yarn-error.log*

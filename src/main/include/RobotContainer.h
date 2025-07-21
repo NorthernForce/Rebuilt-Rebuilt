@@ -10,12 +10,8 @@
 #include <memory>
 
 #include "Constants.h"
-
-// Forward declarations for subsystems (will be added later)
-class DriveSubsystem;
-class ManipulatorSubsystem;
-class SuperstructureSubsystem;
-class ClimberSubsystem;
+#include "subsystems/DriveSubsystem.h"
+#include "subsystems/ManipulatorSubsystem.h"
 
 class RobotContainer {
  public:
@@ -30,15 +26,19 @@ class RobotContainer {
  private:
   void ConfigureBindings();
   
+  // Apply deadband and square inputs for better control
+  static double ProcessJoystickInput(double input);
+  
   // Controllers
   frc2::CommandXboxController m_driverController{Constants::Controller::kDriverControllerPort};
   frc2::CommandXboxController m_operatorController{Constants::Controller::kOperatorControllerPort};
   
-  // Subsystems (will be implemented later)
-  // std::unique_ptr<DriveSubsystem> m_drive;
-  // std::unique_ptr<ManipulatorSubsystem> m_manipulator;
-  // std::unique_ptr<SuperstructureSubsystem> m_superstructure;
-  // std::unique_ptr<ClimberSubsystem> m_climber;
+  // Subsystems
+  DriveSubsystem m_drive;
+  ManipulatorSubsystem m_manipulator;
+  
+  // Autonomous mode tracking
+  bool m_autonomousMode = false;
   
   // Autonomous chooser
   frc::SendableChooser<std::string> m_chooser;

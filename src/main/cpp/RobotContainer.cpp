@@ -7,13 +7,22 @@
 #include <frc2/command/Commands.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/DriverStation.h>
+#include <frc/MathUtil.h>
+
+#include "FieldConstants.h"
 
 RobotContainer::RobotContainer() {
-  // Initialize subsystems here when they're implemented
+  // Configure default commands
+  m_drive.SetDefaultCommand(m_drive.DriveByJoystick(
+    [this] { return ProcessJoystickInput(-m_driverController.GetLeftY()); },
+    [this] { return ProcessJoystickInput(-m_driverController.GetLeftX()); },
+    [this] { return ProcessJoystickInput(-m_driverController.GetRightX()); }
+  ));
   
   // Configure autonomous chooser
   m_chooser.SetDefaultOption("Simple Leave", "SimpleLeave");
   m_chooser.AddOption("Do Nothing", "DoNothing");
+  m_chooser.AddOption("Drive to Reef", "DriveToReef");
   
   frc::SmartDashboard::PutData("Auto Choices", &m_chooser);
   
@@ -21,13 +30,56 @@ RobotContainer::RobotContainer() {
 }
 
 void RobotContainer::ConfigureBindings() {
-  // Placeholder for control bindings
-  // Will be implemented when subsystems are added
+  // Driver controller bindings
   
-  // Example bindings (commented out until subsystems exist):
-  // m_driverController.Back().OnTrue(frc2::cmd::Print("Reset orientation"));
-  // m_driverController.A().WhileTrue(frc2::cmd::Print("Climb extend"));
-  // m_driverController.B().WhileTrue(frc2::cmd::Print("Climb retract"));
+  // Reset robot orientation (back button)
+  m_driverController.Back().OnTrue(m_drive.ResetOrientation());
+  
+  // Reef positioning (bumpers)
+  m_driverController.LeftBumper().WhileTrue(m_drive.DriveToNearestReef());
+  m_driverController.RightBumper().WhileTrue(m_drive.DriveToNearestReef());
+  
+  // Quick movements for fine positioning (D-pad)
+  m_driverController.POVUp().WhileTrue(m_drive.GoForward(0.3));
+  m_driverController.POVDown().WhileTrue(m_drive.GoBackward(0.3));
+  m_driverController.POVLeft().WhileTrue(m_drive.StrafeLeft(0.3));
+  m_driverController.POVRight().WhileTrue(m_drive.StrafeRight(0.3));
+  
+  // Manipulator controls
+  m_driverController.RightTrigger().WhileTrue(m_manipulator.Outtake());
+  m_driverController.LeftTrigger().WhileTrue(m_manipulator.Intake());
+  
+  // Autonomous mode toggle (Y button)
+  m_driverController.Y().OnTrue(frc2::cmd::RunOnce([this] {
+    m_autonomousMode = !m_autonomousMode;
+    frc::SmartDashboard::PutBoolean("Autonomous Mode", m_autonomousMode);
+  }));
+  
+  // Emergency stop (X button)
+  m_driverController.X().OnTrue(frc2::cmd::RunOnce([this] {
+    m_drive.Stop().Schedule();
+    m_manipulator.Stop().Schedule();
+  }));
+  
+  // Operator controller bindings
+  
+  // Additional manipulator controls
+  m_operatorController.RightTrigger().WhileTrue(m_manipulator.Outtake());
+  m_operatorController.LeftTrigger().WhileTrue(m_manipulator.Intake());
+  m_operatorController.A().WhileTrue(m_manipulator.SlowOuttake());
+  m_operatorController.B().WhileTrue(m_manipulator.Purge());
+  
+  // Additional drive controls for operator
+  m_operatorController.LeftBumper().WhileTrue(m_drive.StrafeLeft(0.4));
+  m_operatorController.RightBumper().WhileTrue(m_drive.StrafeRight(0.4));
+}
+
+double RobotContainer::ProcessJoystickInput(double input) {
+  // Apply deadband
+  input = frc::ApplyDeadband(input, Constants::Controller::kJoystickDeadband);
+  
+  // Square input for better fine control while keeping sign
+  return input * std::abs(input);
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
@@ -35,7 +87,14 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
   
   if (selected == "SimpleLeave") {
     // Simple autonomous that moves forward for 2 seconds
-    return frc2::cmd::Print("Simple Leave Auto - Moving forward").ToPtr();
+    return m_drive.GoForward(1.0).WithTimeout(2_s);
+  } else if (selected == "DriveToReef") {
+    // Drive to a reef position
+    return frc2::cmd::Sequence(
+      frc2::cmd::Print("Starting autonomous - driving to reef"),
+      m_drive.DriveToPose(FieldConstants::ReefPositions::kA).WithTimeout(5_s),
+      frc2::cmd::Print("Arrived at reef position")
+    );
   } else {
     // Default do nothing
     return frc2::cmd::Print("Do Nothing Auto").ToPtr();
@@ -43,11 +102,46 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
 }
 
 void RobotContainer::Periodic() {
-  // Periodic updates for robot container
-  // This will include vision updates, field display updates, etc.
+  // Update dashboard with robot status
+  frc::SmartDashboard::PutBoolean("Autonomous Mode", m_autonomousMode);
+  frc::SmartDashboard::PutString("Alliance", 
+    frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue ? "Blue" : "Red");
+  
+  // Update robot pose for dashboard (this would be sent via NetworkTables to React app)
+  auto pose = m_drive.GetPose();
+  frc::SmartDashboard::PutNumberArray("Robot Pose", {
+    pose.X().value(),
+    pose.Y().value(), 
+    pose.Rotation().Degrees().value()
+  });
+  
+  // If in autonomous mode and not in auto period, allow manual override
+  if (m_autonomousMode && frc::DriverStation::IsTeleopEnabled()) {
+    // Check if driver is giving manual input
+    bool hasManualInput = 
+      std::abs(m_driverController.GetLeftY()) > Constants::Controller::kJoystickDeadband ||
+      std::abs(m_driverController.GetLeftX()) > Constants::Controller::kJoystickDeadband ||
+      std::abs(m_driverController.GetRightX()) > Constants::Controller::kJoystickDeadband;
+    
+    if (hasManualInput) {
+      // Temporarily disable autonomous mode for manual control
+      frc::SmartDashboard::PutBoolean("Manual Override Active", true);
+    } else {
+      frc::SmartDashboard::PutBoolean("Manual Override Active", false);
+    }
+  }
 }
 
 void RobotContainer::AutonomousInit() {
   // Initialize autonomous mode
-  // Set up any auto-specific configurations
+  m_autonomousMode = true;
+  frc::SmartDashboard::PutBoolean("Autonomous Mode", true);
+  
+  // Reset robot pose to starting position (field-relative)
+  auto alliance = frc::DriverStation::GetAlliance().value_or(frc::DriverStation::Alliance::kBlue);
+  if (alliance == frc::DriverStation::Alliance::kBlue) {
+    m_drive.ResetPose(frc::Pose2d{1.5_m, 1.5_m, frc::Rotation2d{0_deg}});
+  } else {
+    m_drive.ResetPose(frc::Pose2d{15_m, 6.5_m, frc::Rotation2d{180_deg}});
+  }
 }
