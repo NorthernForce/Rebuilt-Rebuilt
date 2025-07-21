@@ -11,6 +11,7 @@
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 #include <concepts>
+#include <logging/Logger.h>
 
 namespace nfr
 {
@@ -144,5 +145,6 @@ namespace nfr
             std::function<double()> yAxis,
             std::function<double()> rotationAxis,
             bool fieldRelative = true);
+        void Log(const nfr::LogContext& log) const;
     };
 }

@@ -89,4 +89,5 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 void RobotContainer::Log(const nfr::LogContext &log) const
 {
     log["match_time"] << frc::DriverStation::GetMatchTime();
+    log["drive"] << drive;
 }
