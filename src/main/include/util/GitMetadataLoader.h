@@ -26,6 +26,32 @@ struct GitMetadata
     int total_commit_count;
 };
 
+#include <logging/Logger.h>
+
+template<>
+inline void nfr::Log(const nfr::LogContext& logContext, const GitMetadata& metadata)
+{
+    logContext["branch"] << metadata.branch;
+    logContext["build_host"] << metadata.build_host;
+    logContext["build_user_email"] << metadata.build_user_email;
+    logContext["build_user_name"] << metadata.build_user_name;
+    logContext["build_version"] << metadata.build_version;
+    logContext["closest_tag_commit_count"] << metadata.closest_tag_commit_count;
+    logContext["closest_tag_name"] << metadata.closest_tag_name;
+    logContext["commit_id"] << metadata.commit_id;
+    logContext["commit_id_abbrev"] << metadata.commit_id_abbrev;
+    logContext["commit_id_describe"] << metadata.commit_id_describe;
+    logContext["commit_message_full"] << metadata.commit_message_full;
+    logContext["commit_message_short"] << metadata.commit_message_short;
+    logContext["commit_time"] << metadata.commit_time;
+    logContext["commit_user_email"] << metadata.commit_user_email;
+    logContext["commit_user_name"] << metadata.commit_user_name;
+    logContext["dirty"] << metadata.dirty;
+    logContext["remote_origin_url"] << metadata.remote_origin_url;
+    logContext["tags"] << metadata.tags;
+    logContext["total_commit_count"] << metadata.total_commit_count;
+}
+
 extern GitMetadata loadGitMetadata(const std::string& filePath);
 
 #include <frc/Filesystem.h>

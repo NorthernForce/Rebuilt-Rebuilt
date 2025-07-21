@@ -8,15 +8,18 @@
 
 #include "util/GitMetadataLoader.h"
 #include <frc/DriverStation.h>
+#include "logging/Logger.h"
+#include "logging/NTLogManager.h"
+#include "logging/WPILogManager.h"
 
 bool isCompetition() {
     return frc::DriverStation::IsFMSAttached();
 }
 
 Robot::Robot() {
-    nfr::logger.addLogManager(std::make_shared<nfr::WPILogManager>());
+    nfr::logger.AddOutput(std::make_shared<nfr::WPILogManager>());
     if (!isCompetition()) {
-        nfr::logger.addLogManager(std::make_shared<nfr::NTLogManager>());
+        nfr::logger.AddOutput(std::make_shared<nfr::NTLogManager>());
     }
     nfr::logger["git"] << getGitMetadata();
 }
