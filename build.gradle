@@ -37,27 +37,8 @@ wpi.cpp.debugSimulation = false
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
-def reflectCppVersion = "0.19.0"
-def reflectCppUrl = "https://github.com/getml/reflect-cpp/archive/refs/tags/v${reflectCppVersion}.tar.gz"
-def reflectCppDir = file("external/reflect-cpp-${reflectCppVersion}")
-task downloadReflectCpp(type: Download) {
-    src reflectCppUrl
-    dest file("external/reflect-cpp-${reflectCppVersion}.tar.gz")
-    onlyIf { !reflectCppDir.exists() }
-}
-task extractReflectCpp(type: Copy, dependsOn: downloadReflectCpp) {
-    from tarTree(resources.gzip("external/reflect-cpp-${reflectCppVersion}.tar.gz"))
-    into "external"
-    onlyIf { !reflectCppDir.exists() }
-}
-tasks.named("extractReflectCpp") {
-    doLast {
-        println "Reflect C++ extracted to ${reflectCppDir}"
-    }
-}
-
 tasks.withType(CppCompile).configureEach {
-    dependsOn extractReflectCpp, generateGitProperties
+    dependsOn generateGitProperties
 }
 
 nativeUtils.platformConfigs.named('windowsx86-64').configure {
@@ -104,7 +85,6 @@ model {
                 }
                 exportedHeaders {
                     srcDir 'src/main/include'
-                    srcDir "external/reflect-cpp-${reflectCppVersion}/include"
                 }
             }
 
