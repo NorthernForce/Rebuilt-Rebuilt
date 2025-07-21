@@ -61,10 +61,7 @@ First, install the required toolchain for building RoboRIO binaries:
 
 ### Deploy Commands
 ```bash
-# Deploy robot code to RoboRIO
-./gradlew deploy
-
-# Deploy and start robot program
+# Deploy robot code to RoboRIO (this also starts the robot program)
 ./gradlew deploy
 ```
 
