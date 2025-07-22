@@ -8,18 +8,20 @@
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <frc/RobotController.h>
 #include <memory>
+#include <subsystems/elevator/ElevatorSensor.h>
 
 using namespace std;
 using namespace units;
+using namespace frc2;
 
 class ElevatorIO;
 class ElevatorIOTalonFX;
 class ElevatorMoveToPositionCommand;
 class ElevatorHomingCommand;
 
-class Elevator: public frc2::SubsystemBase {
+class Elevator: public SubsystemBase {
     public:
-    Elevator(string name, ElevatorIO& motor, meter_t errorTolerance);
+    Elevator(string name, ElevatorIO& motor, ElevatorSensorIO& sensor, meter_t errorTolerance);
     
     void SetTargetPosition(meter_t position);
     void Stop();
@@ -28,20 +30,23 @@ class Elevator: public frc2::SubsystemBase {
     bool IsAtTargetPosition();
     bool IsAtPosition(meter_t position);
     ElevatorIO& GetIO();
+    ElevatorSensorIO& GetSensor();
     void Periodic() override;
 
-    frc2::CommandPtr GetMoveToPositionCommand(meter_t position);
-    frc2::CommandPtr GetHomingCommand(double homingSpeed);
-    frc2::CommandPtr GetStopCommand();
+    CommandPtr GetMoveToPositionCommand(meter_t position);
+    CommandPtr GetHomingCommand(double homingSpeed);
+    CommandPtr GetStopCommand();
 
     private:
     string m_name;
     ElevatorIO& m_motor;
+    ElevatorSensorIO& m_sensor;
     meter_t m_targetState;
     meter_t m_errorTolerance;
+    bool m_hasResetPosition = false;
 };
 
-class ElevatorMoveToPositionCommand: public frc2::CommandHelper<frc2::Command, ElevatorMoveToPositionCommand> {
+class ElevatorMoveToPositionCommand: public CommandHelper<Command, ElevatorMoveToPositionCommand> {
     public:
     ElevatorMoveToPositionCommand(Elevator* elevator, meter_t position);
     void Initialize() override;
@@ -53,7 +58,7 @@ class ElevatorMoveToPositionCommand: public frc2::CommandHelper<frc2::Command, E
     meter_t m_position;
 };
 
-class ElevatorHomingCommand: public frc2::CommandHelper<frc2::Command, ElevatorHomingCommand> {
+class ElevatorHomingCommand: public CommandHelper<Command, ElevatorHomingCommand> {
     public:
     ElevatorHomingCommand(Elevator* elevator, double speed);
     void Initialize() override;
@@ -64,6 +69,18 @@ class ElevatorHomingCommand: public frc2::CommandHelper<frc2::Command, ElevatorH
     private:
     Elevator* m_elevator;
     double m_speed;
+};
+
+class ElevatorHoldAtPositionCommand: public CommandHelper<Command, ElevatorHoldAtPositionCommand> {
+    public:
+    ElevatorHoldAtPositionCommand(Elevator* elevator, meter_t position);
+    void Initialize() override;
+    bool IsFinished() override;
+    void End(bool interrupted) override;
+
+    private:
+    Elevator* m_elevator;
+    meter_t m_position;
 };
 
 class ElevatorIO {

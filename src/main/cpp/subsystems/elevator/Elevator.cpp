@@ -1,6 +1,10 @@
 #include "subsystems/elevator/Elevator.h"
 
-Elevator::Elevator(string name, ElevatorIO& motor, meter_t errorTolerance): m_motor(motor){
+Elevator::Elevator(string name, ElevatorIO& motor, ElevatorSensorIO& sensor, meter_t errorTolerance)
+: 
+    m_motor(motor),
+    m_sensor(sensor)
+{
     m_name = name;
     m_errorTolerance = errorTolerance;
 }
@@ -16,17 +20,17 @@ void Elevator::Stop()
     m_motor.Stop();
 }
 
-frc2::CommandPtr Elevator::GetMoveToPositionCommand(meter_t position)
+CommandPtr Elevator::GetMoveToPositionCommand(meter_t position)
 {
     return ElevatorMoveToPositionCommand(this, position).ToPtr();
 }
 
-frc2::CommandPtr Elevator::GetHomingCommand(double homingSpeed)
+CommandPtr Elevator::GetHomingCommand(double homingSpeed)
 {
     return ElevatorHomingCommand(this, homingSpeed).ToPtr();
 }
 
-frc2::CommandPtr Elevator::GetStopCommand()
+CommandPtr Elevator::GetStopCommand()
 {
     return Run([&] {Stop(); });
 }
@@ -34,6 +38,13 @@ frc2::CommandPtr Elevator::GetStopCommand()
 void Elevator::Periodic()
 {
     m_motor.Update();
+    if (m_sensor.IsAtLimit() && !m_hasResetPosition)
+    {
+        m_motor.ResetPosition();
+        m_hasResetPosition = true;
+    } else {
+        m_hasResetPosition = false;
+    }
 }
 
 meter_t Elevator::GetPosition()
@@ -59,4 +70,9 @@ bool Elevator::IsAtPosition(meter_t position)
 ElevatorIO& Elevator::GetIO()
 {
     return m_motor;
+}
+
+ElevatorSensorIO& Elevator::GetSensor()
+{
+    return m_sensor;
 }

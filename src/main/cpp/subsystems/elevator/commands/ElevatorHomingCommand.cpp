@@ -19,7 +19,7 @@ void ElevatorHomingCommand::Execute()
 
 bool ElevatorHomingCommand::IsFinished()
 {
-    return false; //TODO
+    return m_elevator -> GetSensor().IsAtLimit();
 }
 
 void ElevatorHomingCommand::End(bool interrupted)
