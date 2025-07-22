@@ -69,6 +69,7 @@ class ElevatorHomingCommand: public frc2::CommandHelper<frc2::Command, ElevatorH
 class ElevatorIO {
     public:
     ElevatorIO() = default;
+    virtual ~ElevatorIO();
     virtual void SetTargetPosition(meter_t position) = 0;
     virtual void SetSpeed(double speed, bool overrideLowerLimit) = 0;
     virtual void SetLowerLimitEnable(bool enableLowerLimit) = 0;
@@ -77,12 +78,12 @@ class ElevatorIO {
     virtual void SetVoltage(volt_t) = 0;
     virtual void Update() = 0;
 
-    virtual meter_t GetPosition() = 0;
+    virtual turn_t GetPosition() = 0;
     virtual celsius_t GetTemperature() = 0;
     virtual volt_t GetVoltage() = 0;
-    virtual meters_per_second_t GetVelocity() = 0;
-    virtual radians_per_second_t GetRotorVelocity() = 0;
-    virtual ampere_t GetCurrent();
+    virtual turns_per_second_t GetVelocity() = 0;
+    virtual turns_per_second_t GetRotorVelocity() = 0;
+    virtual ampere_t GetCurrent() = 0;
     virtual bool GetIsPresent() = 0;
 };
 
@@ -114,22 +115,22 @@ class ElevatorIOTalonFX: public ElevatorIO {
     void SetVoltage(volt_t) override;
     void Update() override;
 
-    meter_t GetPosition() = 0;
-    celsius_t GetTemperature() = 0;
-    volt_t GetVoltage() = 0;
-    meters_per_second_t GetVelocity() = 0;
-    radians_per_second_t GetRotorVelocity() = 0;
+    turn_t GetPosition();
+    celsius_t GetTemperature();
+    volt_t GetVoltage();
+    turns_per_second_t GetVelocity();
+    turns_per_second_t GetRotorVelocity();
     ampere_t GetCurrent();
-    bool GetIsPresent() = 0;
+    bool GetIsPresent();
 
     private:
     shared_ptr<ctre::phoenix6::hardware::TalonFX> m_motor;
     ctre::phoenix6::StatusSignal<angle::turn_t> m_position;
     ctre::phoenix6::StatusSignal<temperature::celsius_t> m_temperature;
     ctre::phoenix6::StatusSignal<voltage::volt_t> m_voltage;
-    ctre::phoenix6::StatusSignal<current::ampere_t> m_current;
     ctre::phoenix6::StatusSignal<angular_velocity::turns_per_second_t> m_velocity;
     ctre::phoenix6::StatusSignal<angular_velocity::turns_per_second_t> m_rotorVelocity;
+    ctre::phoenix6::StatusSignal<current::ampere_t> m_current;
     ctre::phoenix6::controls::MotionMagicExpoVoltage m_motionMagicVoltage;
     ctre::phoenix6::controls::DutyCycleOut m_dutyCycleOut;
     ctre::phoenix6::controls::VoltageOut m_voltageOut;

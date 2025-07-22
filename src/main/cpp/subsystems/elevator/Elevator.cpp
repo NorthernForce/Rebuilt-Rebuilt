@@ -38,7 +38,7 @@ void Elevator::Periodic()
 
 meter_t Elevator::GetPosition()
 {
-    return m_motor.GetPosition();
+    return meter_t(m_motor.GetPosition().value());
 }
 
 meter_t Elevator::GetTargetPosition()

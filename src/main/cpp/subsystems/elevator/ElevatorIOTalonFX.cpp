@@ -107,3 +107,38 @@ void ElevatorIOTalonFX::Update()
 {
     ctre::phoenix6::BaseStatusSignal::RefreshAll(m_temperature, m_position, m_current, m_velocity, m_rotorVelocity, m_voltage);
 }
+
+turn_t ElevatorIOTalonFX::GetPosition()
+{
+    return m_motor -> GetPosition().GetValue();
+}
+
+celsius_t ElevatorIOTalonFX::GetTemperature()
+{
+    return m_motor -> GetDeviceTemp().GetValue();
+}
+
+volt_t ElevatorIOTalonFX::GetVoltage()
+{
+    return m_motor -> GetMotorVoltage().GetValue();
+}
+
+turns_per_second_t ElevatorIOTalonFX::GetVelocity()
+{
+    return m_motor -> GetVelocity().GetValue();
+}
+
+turns_per_second_t ElevatorIOTalonFX::GetRotorVelocity()
+{
+    return m_motor -> GetRotorVelocity().GetValue();
+}
+
+ampere_t ElevatorIOTalonFX::GetCurrent()
+{
+    return m_motor -> GetTorqueCurrent().GetValue();
+}
+
+bool ElevatorIOTalonFX::GetIsPresent()
+{
+    return m_motor -> IsConnected();
+}

@@ -1,5 +1,9 @@
 #include <subsystems/elevator/Elevator.h>
 
+ElevatorIO::~ElevatorIO()
+{
+}
+
 void ElevatorIO::SetTargetPosition(meter_t position)
 {
 }
