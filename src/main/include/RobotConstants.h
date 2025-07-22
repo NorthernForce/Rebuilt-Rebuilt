@@ -1,0 +1,67 @@
+#pragma once
+#include <string>
+#include <units/math.h>
+#include <ctre/phoenix6/TalonFX.hpp>
+#include <memory>
+#include <subsystems/elevator/ElevatorSensor.h>
+#include <subsystems/elevator/Elevator.h>
+
+using namespace std;
+using namespace units;
+
+namespace RobotConstants {
+    namespace ElevatorConstants {
+        constexpr double kHomingSpeed = 0.25;
+        constexpr meter_t kTolerance = 0.006_m;
+    }
+
+    namespace InnerElevatorConstants {
+        constexpr int kId = 2;
+        constexpr int kSensorId = 0;
+
+        constexpr double kGearBoxRatio = 12.0;
+        constexpr double kSprocketTeeth = 16.0;
+
+        constexpr double kS = 0.017384;
+        constexpr double kV = 0.726186;
+        constexpr double kA = 0.015;
+        constexpr double kP = 18;
+        constexpr double kI = 0;
+        constexpr double kD = 0;
+        constexpr double kG = 0.21;
+        constexpr turns_per_second_t kCruiseVelocity = 160_tps;
+        constexpr turns_per_second_squared_t kAcceleration = 0_tr_per_s_sq;
+        constexpr turns_per_second_cubed_t kJerk = 0_tr_per_s_cu;
+        
+        constexpr meter_t kLowerLimit = 0_m;
+        constexpr meter_t kUpperLimit = 0.63_m;
+        constexpr kilogram_t kInnerElevatorMass = 2.72_kg;
+
+        constexpr ElevatorIO::ElevatorConstants kConstants = ElevatorIO::ElevatorConstants(kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity, kAcceleration, kJerk, kSprocketCircumference, kGearBoxRatio, true, kLowerLimit, kUpperLimit, kInnerElevatorMass);
+    }
+
+    namespace OuterElevatorConstants {
+        constexpr int kId = 3;
+        constexpr int kSensorId = 1;
+
+        constexpr double kGearBoxRatio = 16.0;
+        constexpr double kSprocketTeeth = 22.0;
+
+        constexpr double kS = 0.052289;
+        constexpr double kV = 0.504647;
+        constexpr double kA = 0.015;
+        constexpr double kP = 18;
+        constexpr double kI = 0;
+        constexpr double kD = 0;
+        constexpr double kG = 0.31;
+        constexpr turns_per_second_t kCruiseVelocity = 160_tps;
+        constexpr turns_per_second_squared_t kAcceleration = 0_tr_per_s_sq;
+        constexpr turns_per_second_cubed_t kJerk = 0_tr_per_s_cu;
+        
+        constexpr meter_t kLowerLimit = 0_m;
+        constexpr meter_t kUpperLimit = 0.68_m;
+        constexpr kilogram_t kInnerElevatorMass = 2.72_kg;
+
+        constexpr ElevatorIO::ElevatorConstants kConstants = ElevatorIO::ElevatorConstants(kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity, kAcceleration, kJerk, kSprocketCircumference, kGearBoxRatio, true, kLowerLimit, kUpperLimit, kInnerElevatorMass);
+    }
+}

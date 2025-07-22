@@ -22,7 +22,6 @@ class ElevatorHomingCommand;
 class Elevator: public SubsystemBase {
     public:
     Elevator(string name, ElevatorIO& motor, ElevatorSensorIO& sensor, meter_t errorTolerance);
-    
     void SetTargetPosition(meter_t position);
     void Stop();
     meter_t GetPosition();
@@ -85,6 +84,24 @@ class ElevatorHoldAtPositionCommand: public CommandHelper<Command, ElevatorHoldA
 
 class ElevatorIO {
     public:
+    struct ElevatorConstants {
+        double kS;
+        double kV;
+        double kA;
+        double kP;
+        double kI;
+        double kD;
+        double kG;
+        turns_per_second_t kCruiseVelocity;
+        turns_per_second_squared_t kAcceleration;
+        turns_per_second_cubed_t kJerk;
+        meter_t kSprocketCircumference;
+        double kGearRatio;
+        bool kInverted;
+        meter_t kLowerLimit;
+        meter_t kUpperLimit;
+        kilogram_t kMass;
+    };
     ElevatorIO() = default;
     virtual ~ElevatorIO();
     virtual void SetTargetPosition(meter_t position) = 0;
@@ -106,22 +123,6 @@ class ElevatorIO {
 
 class ElevatorIOTalonFX: public ElevatorIO {
     public:
-    struct ElevatorConstants {
-        double kS;
-        double kV;
-        double kA;
-        double kP;
-        double kI;
-        double kD;
-        double kG;
-        turns_per_second_t kCruiseVelocity;
-        turns_per_second_squared_t kAcceleration;
-        turns_per_second_cubed_t kJerk;
-        meter_t kSprocketCircumference;
-        double kGearRatio;
-        bool kInverted;
-        meter_t kUpperLimit;
-    };
     ElevatorIOTalonFX(int id, double kS, double kV, double kA, double kP, double kI, double kD, double kG, turns_per_second_t cruiseVelocity, turns_per_second_squared_t acceleration, turns_per_second_cubed_t jerk, meter_t sprocketCircumference, double gearRatio, bool inverted, meter_t upperLimit);
     ElevatorIOTalonFX(int id, ElevatorConstants constants);
     void SetTargetPosition(meter_t position) override;
