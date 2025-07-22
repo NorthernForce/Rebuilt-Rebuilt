@@ -1,33 +1,17 @@
 #include <subsystems/elevator/Elevator.h>
 
-ElevatorIO::~ElevatorIO()
-{
-}
+ElevatorIO::~ElevatorIO() {}
 
-void ElevatorIO::SetTargetPosition(meter_t position)
-{
-}
+void ElevatorIO::SetTargetPosition(meter_t position) {}
 
-void ElevatorIO::SetSpeed(double speed, bool overrideLowerLimit)
-{
-}
+void ElevatorIO::SetSpeed(double speed, bool overrideLowerLimit) {}
 
-void ElevatorIO::SetLowerLimitEnable(bool enableLowerLimit)
-{
-}
+void ElevatorIO::SetLowerLimitEnable(bool enableLowerLimit) {}
 
-void ElevatorIO::ResetPosition()
-{
-}
+void ElevatorIO::ResetPosition() {}
 
-void ElevatorIO::Stop()
-{
-}
+void ElevatorIO::Stop() {}
 
-void ElevatorIO::SetVoltage(volt_t voltage)
-{
-}
+void ElevatorIO::SetVoltage(volt_t voltage) {}
 
-void ElevatorIO::Update()
-{
-}
+void ElevatorIO::Update() {}

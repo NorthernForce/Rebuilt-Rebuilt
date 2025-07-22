@@ -1,9 +1,5 @@
 #include <subsystems/elevator/ElevatorSensor.h>
 
-ElevatorSensorIO::~ElevatorSensorIO()
-{
-}
+ElevatorSensorIO::~ElevatorSensorIO() {}
 
-bool ElevatorSensorIO::IsAtLimit()
-{
-}
+bool ElevatorSensorIO::IsAtLimit() {}
