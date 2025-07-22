@@ -1,21 +1,25 @@
 #pragma once
-#include <ctre/phoenix6/TalonFX.hpp>
-#include <memory>
-#include <string>
 #include <subsystems/elevator/Elevator.h>
 #include <subsystems/elevator/ElevatorSensor.h>
 #include <units/math.h>
 
+#include <ctre/phoenix6/TalonFX.hpp>
+#include <memory>
+#include <string>
+
 using namespace std;
 using namespace units;
 
-namespace RobotConstants {
-namespace ElevatorConstants {
+namespace RobotConstants
+{
+namespace ElevatorConstants
+{
 constexpr double kHomingSpeed = 0.25;
 constexpr meter_t kTolerance = 0.006_m;
-} // namespace ElevatorConstants
+}  // namespace ElevatorConstants
 
-namespace InnerElevatorConstants {
+namespace InnerElevatorConstants
+{
 constexpr int kId = 2;
 constexpr int kSensorId = 0;
 
@@ -42,9 +46,10 @@ constexpr ElevatorIO::ElevatorConstants kConstants =
                                   kAcceleration, kJerk, kSprocketCircumference,
                                   kGearBoxRatio, true, kLowerLimit, kUpperLimit,
                                   kInnerElevatorMass);
-} // namespace InnerElevatorConstants
+}  // namespace InnerElevatorConstants
 
-namespace OuterElevatorConstants {
+namespace OuterElevatorConstants
+{
 constexpr int kId = 3;
 constexpr int kSensorId = 1;
 
@@ -71,5 +76,5 @@ constexpr ElevatorIO::ElevatorConstants kConstants =
                                   kAcceleration, kJerk, kSprocketCircumference,
                                   kGearBoxRatio, true, kLowerLimit, kUpperLimit,
                                   kInnerElevatorMass);
-} // namespace OuterElevatorConstants
-} // namespace RobotConstants
+}  // namespace OuterElevatorConstants
+}  // namespace RobotConstants
