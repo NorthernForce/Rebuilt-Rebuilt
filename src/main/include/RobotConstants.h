@@ -2,8 +2,9 @@
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <memory>
 #include <string>
-#include <subsystems/elevator/Elevator.h>
-#include <subsystems/elevator/ElevatorSensor.h>
+#include <subsystems/superstructure/elevator/Elevator.h>
+#include <subsystems/superstructure/elevator/ElevatorSensor.h>
+#include <subsystems/superstructure/Superstructure.h>
 #include <units/math.h>
 
 using namespace std;
@@ -13,6 +14,15 @@ namespace RobotConstants {
 namespace ElevatorConstants {
 constexpr double kHomingSpeed = 0.25;
 constexpr meter_t kTolerance = 0.006_m;
+//TODO fix values
+enum SuperstructurePresets {
+    L1,
+    L2,
+    L3,
+    L4,
+    CORAL_STATION,
+    START
+};
 } // namespace ElevatorConstants
 
 namespace InnerElevatorConstants {
@@ -21,6 +31,8 @@ constexpr int kSensorId = 0;
 
 constexpr double kGearBoxRatio = 12.0;
 constexpr double kSprocketTeeth = 16.0;
+constexpr meter_t kSprocketPitch = 0.25_in;
+constexpr meter_t kSprocketCircumference = kSprocketPitch * kSprocketTeeth;
 
 constexpr double kS = 0.017384;
 constexpr double kV = 0.726186;
@@ -35,13 +47,13 @@ constexpr turns_per_second_cubed_t kJerk = 0_tr_per_s_cu;
 
 constexpr meter_t kLowerLimit = 0_m;
 constexpr meter_t kUpperLimit = 0.63_m;
-constexpr kilogram_t kInnerElevatorMass = 2.72_kg;
+constexpr kilogram_t kElevatorMass = 2.72_kg;
 
 constexpr ElevatorIO::ElevatorConstants kConstants =
     ElevatorIO::ElevatorConstants(kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity,
                                   kAcceleration, kJerk, kSprocketCircumference,
                                   kGearBoxRatio, true, kLowerLimit, kUpperLimit,
-                                  kInnerElevatorMass);
+                                  kElevatorMass);
 } // namespace InnerElevatorConstants
 
 namespace OuterElevatorConstants {
@@ -50,6 +62,8 @@ constexpr int kSensorId = 1;
 
 constexpr double kGearBoxRatio = 16.0;
 constexpr double kSprocketTeeth = 22.0;
+constexpr meter_t kSprocketPitch = 0.25_in;
+constexpr meter_t kSprocketCircumference = kSprocketPitch * kSprocketTeeth;
 
 constexpr double kS = 0.052289;
 constexpr double kV = 0.504647;
@@ -64,12 +78,12 @@ constexpr turns_per_second_cubed_t kJerk = 0_tr_per_s_cu;
 
 constexpr meter_t kLowerLimit = 0_m;
 constexpr meter_t kUpperLimit = 0.68_m;
-constexpr kilogram_t kInnerElevatorMass = 2.72_kg;
+constexpr kilogram_t kElevatorMass = 2.72_kg;
 
 constexpr ElevatorIO::ElevatorConstants kConstants =
     ElevatorIO::ElevatorConstants(kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity,
                                   kAcceleration, kJerk, kSprocketCircumference,
                                   kGearBoxRatio, true, kLowerLimit, kUpperLimit,
-                                  kInnerElevatorMass);
+                                  kElevatorMass);
 } // namespace OuterElevatorConstants
 } // namespace RobotConstants

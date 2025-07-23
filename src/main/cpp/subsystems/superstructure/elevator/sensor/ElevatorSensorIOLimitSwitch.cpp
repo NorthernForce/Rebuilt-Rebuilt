@@ -1,4 +1,4 @@
-#include <subsystems/elevator/ElevatorSensor.h>
+#include <subsystems/superstructure/elevator/ElevatorSensor.h>
 
 ElevatorSensorIOLimitSwitch::ElevatorSensorIOLimitSwitch(int channel) {
   m_digitalInput = make_shared<DigitalInput>(channel);

@@ -1,4 +1,4 @@
-#include "subsystems/elevator/Elevator.h"
+#include "subsystems/superstructure/elevator/Elevator.h"
 
 Elevator::Elevator(string name, ElevatorIO &motor, ElevatorSensorIO &sensor,
                    meter_t errorTolerance)
@@ -10,6 +10,11 @@ Elevator::Elevator(string name, ElevatorIO &motor, ElevatorSensorIO &sensor,
 void Elevator::SetTargetPosition(meter_t position) {
   m_targetState = position;
   m_motor.SetTargetPosition(position);
+}
+
+void Elevator::Set(double speed)
+{
+  m_motor.SetSpeed(speed, false);
 }
 
 void Elevator::Stop() { m_motor.Stop(); }
@@ -24,6 +29,10 @@ CommandPtr Elevator::GetHomingCommand(double homingSpeed) {
 
 CommandPtr Elevator::GetStopCommand() {
   return Run([&] { Stop(); });
+}
+
+CommandPtr Elevator::GetManualControlCommand(double speed) {
+  return Run([&] { Set(speed); });
 }
 
 void Elevator::Periodic() {
