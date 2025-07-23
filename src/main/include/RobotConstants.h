@@ -1,10 +1,7 @@
 #pragma once
-#include <ctre/phoenix6/TalonFX.hpp>
-#include <memory>
-#include <string>
+#include <subsystems/superstructure/Superstructure.h>
 #include <subsystems/superstructure/elevator/Elevator.h>
 #include <subsystems/superstructure/elevator/ElevatorSensor.h>
-#include <subsystems/superstructure/Superstructure.h>
 #include <units/math.h>
 
 #include <ctre/phoenix6/TalonFX.hpp>
@@ -20,8 +17,9 @@ namespace ElevatorConstants
 {
 constexpr double kHomingSpeed = 0.25;
 constexpr meter_t kTolerance = 0.006_m;
-//TODO fix values
-enum SuperstructurePresets {
+// TODO fix values
+enum SuperstructurePresets
+{
     L1,
     L2,
     L3,
@@ -29,7 +27,7 @@ enum SuperstructurePresets {
     CORAL_STATION,
     START
 };
-} // namespace ElevatorConstants
+}  // namespace ElevatorConstants
 
 namespace InnerElevatorConstants
 {
@@ -61,7 +59,7 @@ constexpr ElevatorIO::ElevatorConstants kConstants =
                                   kAcceleration, kJerk, kSprocketCircumference,
                                   kGearBoxRatio, true, kLowerLimit, kUpperLimit,
                                   kElevatorMass);
-} // namespace InnerElevatorConstants
+}  // namespace InnerElevatorConstants
 
 namespace OuterElevatorConstants
 {
@@ -93,5 +91,5 @@ constexpr ElevatorIO::ElevatorConstants kConstants =
                                   kAcceleration, kJerk, kSprocketCircumference,
                                   kGearBoxRatio, true, kLowerLimit, kUpperLimit,
                                   kElevatorMass);
-} // namespace OuterElevatorConstants
-} // namespace RobotConstants
+}  // namespace OuterElevatorConstants
+}  // namespace RobotConstants

@@ -1,6 +1,8 @@
 #include <subsystems/superstructure/Superstructure.h>
 
-SuperstructureGoToPositionCommand::SuperstructureGoToPositionCommand(Superstructure *superstructure, Superstructure::SuperstructureState position)
+SuperstructureGoToPositionCommand::SuperstructureGoToPositionCommand(
+    Superstructure *superstructure,
+    Superstructure::SuperstructureState position)
 {
     AddRequirements({superstructure});
     m_superstructure = superstructure;
@@ -9,18 +11,21 @@ SuperstructureGoToPositionCommand::SuperstructureGoToPositionCommand(Superstruct
 
 void SuperstructureGoToPositionCommand::Initialize()
 {
-    m_superstructure -> SetTarget(m_position);
-    m_superstructure -> GetInnerElevator() -> SetTargetPosition(m_position.innerElevatorPosition);
-    m_superstructure -> GetOuterElevator() -> SetTargetPosition(m_position.outerElevatorPosition);
+    m_superstructure->SetTarget(m_position);
+    m_superstructure->GetInnerElevator()->SetTargetPosition(
+        m_position.innerElevatorPosition);
+    m_superstructure->GetOuterElevator()->SetTargetPosition(
+        m_position.outerElevatorPosition);
 }
 
 bool SuperstructureGoToPositionCommand::IsFinished()
 {
-    return m_superstructure -> IsAtPosition(m_position);
+    return m_superstructure->IsAtPosition(m_position);
 }
 
-
-SuperstructureHoldAtPositionCommand::SuperstructureHoldAtPositionCommand(Superstructure *superstructure, Superstructure::SuperstructureState position)
+SuperstructureHoldAtPositionCommand::SuperstructureHoldAtPositionCommand(
+    Superstructure *superstructure,
+    Superstructure::SuperstructureState position)
 {
     AddRequirements({superstructure});
     m_superstructure = superstructure;
@@ -29,9 +34,11 @@ SuperstructureHoldAtPositionCommand::SuperstructureHoldAtPositionCommand(Superst
 
 void SuperstructureHoldAtPositionCommand::Initialize()
 {
-    m_superstructure -> SetTarget(m_position);
-    m_superstructure -> GetInnerElevator() -> SetTargetPosition(m_position.innerElevatorPosition);
-    m_superstructure -> GetOuterElevator() -> SetTargetPosition(m_position.outerElevatorPosition);
+    m_superstructure->SetTarget(m_position);
+    m_superstructure->GetInnerElevator()->SetTargetPosition(
+        m_position.innerElevatorPosition);
+    m_superstructure->GetOuterElevator()->SetTargetPosition(
+        m_position.outerElevatorPosition);
 }
 
 bool SuperstructureHoldAtPositionCommand::IsFinished()
@@ -39,21 +46,25 @@ bool SuperstructureHoldAtPositionCommand::IsFinished()
     return false;
 }
 
-SuperstructureHomingCommand::SuperstructureHomingCommand(Superstructure *superstructure, double innerElevatorSpeed, double outerElevatorSpeed)
+SuperstructureHomingCommand::SuperstructureHomingCommand(
+    Superstructure *superstructure, double innerElevatorSpeed,
+    double outerElevatorSpeed)
 {
     AddRequirements({superstructure});
     m_superstructure = superstructure;
-    AddCommands(
-        ElevatorHomingCommand(m_superstructure -> GetInnerElevator(), innerElevatorSpeed),
-        ElevatorHomingCommand(m_superstructure -> GetOuterElevator(), outerElevatorSpeed)
-    );
+    AddCommands(ElevatorHomingCommand(m_superstructure->GetInnerElevator(),
+                                      innerElevatorSpeed),
+                ElevatorHomingCommand(m_superstructure->GetOuterElevator(),
+                                      outerElevatorSpeed));
 }
 
-SuperstructureManualControlCommand::SuperstructureManualControlCommand(Superstructure *superstructure, double *innerElevatorSpeed, double *outerElevatorSpeed)
+SuperstructureManualControlCommand::SuperstructureManualControlCommand(
+    Superstructure *superstructure, double *innerElevatorSpeed,
+    double *outerElevatorSpeed)
 {
     AddRequirements({superstructure});
     m_superstructure = superstructure;
     AddCommands(
-        
+
     );
 }

@@ -1,66 +1,82 @@
 #include <subsystems/superstructure/elevator/Elevator.h>
 
 ElevatorHoldAtPositionCommand::ElevatorHoldAtPositionCommand(Elevator *elevator,
-                                                             meter_t position) {
-  AddRequirements({elevator});
-  m_elevator = elevator;
-  m_position = position;
+                                                             meter_t position)
+{
+    AddRequirements({elevator});
+    m_elevator = elevator;
+    m_position = position;
 }
 
-void ElevatorHoldAtPositionCommand::Initialize() {
-  m_elevator->GetIO().SetTargetPosition(m_position);
+void ElevatorHoldAtPositionCommand::Initialize()
+{
+    m_elevator->GetIO().SetTargetPosition(m_position);
 }
 
-bool ElevatorHoldAtPositionCommand::IsFinished() { return false; }
-
-void ElevatorHoldAtPositionCommand::End(bool interrupted) {
-  m_elevator->GetIO().Stop();
+bool ElevatorHoldAtPositionCommand::IsFinished()
+{
+    return false;
 }
 
-ElevatorHomingCommand::ElevatorHomingCommand(Elevator *elevator, double speed) {
-  AddRequirements({elevator});
-  m_elevator = elevator;
-  m_speed = speed;
+void ElevatorHoldAtPositionCommand::End(bool interrupted)
+{
+    m_elevator->GetIO().Stop();
 }
 
-void ElevatorHomingCommand::Initialize() {
-  m_elevator->GetIO().SetLowerLimitEnable(false);
+ElevatorHomingCommand::ElevatorHomingCommand(Elevator *elevator, double speed)
+{
+    AddRequirements({elevator});
+    m_elevator = elevator;
+    m_speed = speed;
 }
 
-void ElevatorHomingCommand::Execute() {
-  m_elevator->GetIO().SetSpeed(-m_speed, true);
+void ElevatorHomingCommand::Initialize()
+{
+    m_elevator->GetIO().SetLowerLimitEnable(false);
 }
 
-bool ElevatorHomingCommand::IsFinished() {
-  return m_elevator->GetSensor().IsAtLimit();
+void ElevatorHomingCommand::Execute()
+{
+    m_elevator->GetIO().SetSpeed(-m_speed, true);
 }
 
-void ElevatorHomingCommand::End(bool interrupted) {
-  m_elevator->GetIO().Stop();
-  m_elevator->GetIO().ResetPosition();
-  m_elevator->GetIO().SetLowerLimitEnable(true);
+bool ElevatorHomingCommand::IsFinished()
+{
+    return m_elevator->GetSensor().IsAtLimit();
+}
+
+void ElevatorHomingCommand::End(bool interrupted)
+{
+    m_elevator->GetIO().Stop();
+    m_elevator->GetIO().ResetPosition();
+    m_elevator->GetIO().SetLowerLimitEnable(true);
 }
 
 ElevatorMoveToPositionCommand::ElevatorMoveToPositionCommand(Elevator *elevator,
-                                                             meter_t position) {
-  AddRequirements({elevator});
-  m_elevator = elevator;
-  m_position = position;
+                                                             meter_t position)
+{
+    AddRequirements({elevator});
+    m_elevator = elevator;
+    m_position = position;
 }
 
-void ElevatorMoveToPositionCommand::Initialize() {
-  m_elevator->SetTargetPosition(m_position);
+void ElevatorMoveToPositionCommand::Initialize()
+{
+    m_elevator->SetTargetPosition(m_position);
 }
 
-bool ElevatorMoveToPositionCommand::IsFinished() {
-  return m_elevator->IsAtTargetPosition();
+bool ElevatorMoveToPositionCommand::IsFinished()
+{
+    return m_elevator->IsAtTargetPosition();
 }
 
-void ElevatorMoveToPositionCommand::End(bool interrupted) {
-  m_elevator->Stop();
+void ElevatorMoveToPositionCommand::End(bool interrupted)
+{
+    m_elevator->Stop();
 }
 
-ElevatorManualControlCommand::ElevatorManualControlCommand(Elevator *elevator, double *speed)
+ElevatorManualControlCommand::ElevatorManualControlCommand(Elevator *elevator,
+                                                           double *speed)
 {
     AddRequirements({elevator});
     m_elevator = elevator;
@@ -69,5 +85,5 @@ ElevatorManualControlCommand::ElevatorManualControlCommand(Elevator *elevator, d
 
 void ElevatorManualControlCommand::Initialize()
 {
-    m_elevator -> GetIO().SetSpeed(*m_speed, false);
+    m_elevator->GetIO().SetSpeed(*m_speed, false);
 }

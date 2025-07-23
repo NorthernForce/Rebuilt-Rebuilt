@@ -1,19 +1,19 @@
 #include <subsystems/superstructure/Superstructure.h>
 
-Superstructure::SuperstructureState GetPresetState(RobotConstants::ElevatorConstants::SuperstructurePresets preset);
+Superstructure::SuperstructureState GetPresetState(
+    RobotConstants::ElevatorConstants::SuperstructurePresets preset);
 
 Superstructure::Superstructure(Elevator* innerElevator, Elevator* outerElevator)
-:
-    m_innerElevator(innerElevator),
-    m_outerElevator(outerElevator)
+    : m_innerElevator(innerElevator), m_outerElevator(outerElevator)
 {
-    m_target = GetPresetState(RobotConstants::ElevatorConstants::SuperstructurePresets::START);
+    m_target = GetPresetState(
+        RobotConstants::ElevatorConstants::SuperstructurePresets::START);
 }
 
 void Superstructure::Stop()
 {
-    m_innerElevator -> GetIO().Stop();
-    m_outerElevator -> GetIO().Stop();
+    m_innerElevator->GetIO().Stop();
+    m_outerElevator->GetIO().Stop();
 }
 
 void Superstructure::SetTarget(SuperstructureState target)
@@ -23,7 +23,8 @@ void Superstructure::SetTarget(SuperstructureState target)
 
 Superstructure::SuperstructureState Superstructure::GetState()
 {
-    return SuperstructureState(m_innerElevator -> GetPosition(), m_outerElevator -> GetPosition());
+    return SuperstructureState(m_innerElevator->GetPosition(),
+                               m_outerElevator->GetPosition());
 }
 
 Superstructure::SuperstructureState Superstructure::GetTargetState()
@@ -31,10 +32,12 @@ Superstructure::SuperstructureState Superstructure::GetTargetState()
     return m_target;
 }
 
-Superstructure::SuperstructureState Superstructure::GetPresetState(RobotConstants::ElevatorConstants::SuperstructurePresets preset)
+Superstructure::SuperstructureState Superstructure::GetPresetState(
+    RobotConstants::ElevatorConstants::SuperstructurePresets preset)
 {
-    //TODO fix values
-    switch(preset){
+    // TODO fix values
+    switch (preset)
+    {
         case RobotConstants::ElevatorConstants::L1:
             return Superstructure::SuperstructureState(0_m, 0_m);
         case RobotConstants::ElevatorConstants::L2:
@@ -52,12 +55,14 @@ Superstructure::SuperstructureState Superstructure::GetPresetState(RobotConstant
 
 bool Superstructure::IsAtTarget()
 {
-    return m_innerElevator -> IsAtTargetPosition() && m_outerElevator -> IsAtTargetPosition();
+    return m_innerElevator->IsAtTargetPosition() &&
+           m_outerElevator->IsAtTargetPosition();
 }
 
 bool Superstructure::IsAtPosition(SuperstructureState position)
 {
-    return m_innerElevator -> IsAtPosition(position.innerElevatorPosition) && m_outerElevator -> IsAtPosition(position.outerElevatorPosition);
+    return m_innerElevator->IsAtPosition(position.innerElevatorPosition) &&
+           m_outerElevator->IsAtPosition(position.outerElevatorPosition);
 }
 
 Elevator* Superstructure::GetInnerElevator()
@@ -75,17 +80,24 @@ CommandPtr Superstructure::GetGoToPositionCommand(SuperstructureState position)
     return SuperstructureGoToPositionCommand(this, position).ToPtr();
 }
 
-CommandPtr Superstructure::GetHoldAtPositionCommand(SuperstructureState position)
+CommandPtr Superstructure::GetHoldAtPositionCommand(
+    SuperstructureState position)
 {
     return SuperstructureHoldAtPositionCommand(this, position).ToPtr();
 }
 
-CommandPtr Superstructure::GetHomingCommand(double innerElevatorSpeed, double outerElevatorSpeed)
+CommandPtr Superstructure::GetHomingCommand(double innerElevatorSpeed,
+                                            double outerElevatorSpeed)
 {
-    return SuperstructureHomingCommand(this, innerElevatorSpeed, outerElevatorSpeed).ToPtr();
+    return SuperstructureHomingCommand(this, innerElevatorSpeed,
+                                       outerElevatorSpeed)
+        .ToPtr();
 }
 
-CommandPtr Superstructure::GetManualControlCommand(double* innerElevatorSpeed, double* outerElevatorSpeed)
+CommandPtr Superstructure::GetManualControlCommand(double* innerElevatorSpeed,
+                                                   double* outerElevatorSpeed)
 {
-    return SuperstructureManualControlCommand(this, innerElevatorSpeed, outerElevatorSpeed).ToPtr();
+    return SuperstructureManualControlCommand(this, innerElevatorSpeed,
+                                              outerElevatorSpeed)
+        .ToPtr();
 }

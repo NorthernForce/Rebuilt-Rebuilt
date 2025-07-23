@@ -16,10 +16,13 @@ void Elevator::SetTargetPosition(meter_t position)
 
 void Elevator::Set(double speed)
 {
-  m_motor.SetSpeed(speed, false);
+    m_motor.SetSpeed(speed, false);
 }
 
-void Elevator::Stop() { m_motor.Stop(); }
+void Elevator::Stop()
+{
+    m_motor.Stop();
+}
 
 CommandPtr Elevator::GetMoveToPositionCommand(meter_t position)
 {
@@ -31,8 +34,9 @@ CommandPtr Elevator::GetHomingCommand(double homingSpeed)
     return ElevatorHomingCommand(this, homingSpeed).ToPtr();
 }
 
-CommandPtr Elevator::GetManualControlCommand(double speed) {
-  return Run([&] { Set(speed); });
+CommandPtr Elevator::GetManualControlCommand(double speed)
+{
+    return Run([&] { Set(speed); });
 }
 
 CommandPtr Elevator::GetStopCommand()

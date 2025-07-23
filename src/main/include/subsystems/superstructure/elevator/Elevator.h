@@ -7,6 +7,7 @@
 #include <frc2/command/sysid/SysIdRoutine.h>
 #include <subsystems/superstructure/elevator/ElevatorSensor.h>
 #include <units/math.h>
+
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <memory>
 #include <string>
@@ -20,25 +21,26 @@ class ElevatorIOTalonFX;
 class ElevatorMoveToPositionCommand;
 class ElevatorHomingCommand;
 
-class Elevator : public SubsystemBase {
-public:
-  Elevator(string name, ElevatorIO &motor, ElevatorSensorIO &sensor,
-           meter_t errorTolerance);
-  void SetTargetPosition(meter_t position);
-  void Set(double speed);
-  void Stop();
-  meter_t GetPosition();
-  meter_t GetTargetPosition();
-  bool IsAtTargetPosition();
-  bool IsAtPosition(meter_t position);
-  ElevatorIO &GetIO();
-  ElevatorSensorIO &GetSensor();
-  void Periodic() override;
+class Elevator : public SubsystemBase
+{
+  public:
+    Elevator(string name, ElevatorIO &motor, ElevatorSensorIO &sensor,
+             meter_t errorTolerance);
+    void SetTargetPosition(meter_t position);
+    void Set(double speed);
+    void Stop();
+    meter_t GetPosition();
+    meter_t GetTargetPosition();
+    bool IsAtTargetPosition();
+    bool IsAtPosition(meter_t position);
+    ElevatorIO &GetIO();
+    ElevatorSensorIO &GetSensor();
+    void Periodic() override;
 
-  CommandPtr GetMoveToPositionCommand(meter_t position);
-  CommandPtr GetHomingCommand(double homingSpeed);
-  CommandPtr GetStopCommand();
-  CommandPtr GetManualControlCommand(double speed);
+    CommandPtr GetMoveToPositionCommand(meter_t position);
+    CommandPtr GetHomingCommand(double homingSpeed);
+    CommandPtr GetStopCommand();
+    CommandPtr GetManualControlCommand(double speed);
 
   private:
     string m_name;
@@ -92,13 +94,16 @@ class ElevatorHoldAtPositionCommand
     meter_t m_position;
 };
 
-class ElevatorManualControlCommand: public CommandHelper<Command, ElevatorManualControlCommand> {
+class ElevatorManualControlCommand
+    : public CommandHelper<Command, ElevatorManualControlCommand>
+{
   public:
-  ElevatorManualControlCommand(Elevator *elevator, double *speed);
-  void Initialize() override;
+    ElevatorManualControlCommand(Elevator *elevator, double *speed);
+    void Initialize() override;
+
   private:
-  Elevator *m_elevator;
-  double *m_speed;
+    Elevator *m_elevator;
+    double *m_speed;
 };
 
 class ElevatorIO
