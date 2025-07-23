@@ -3,7 +3,3 @@
 ElevatorSensorIO::~ElevatorSensorIO()
 {
 }
-
-bool ElevatorSensorIO::IsAtLimit()
-{
-}

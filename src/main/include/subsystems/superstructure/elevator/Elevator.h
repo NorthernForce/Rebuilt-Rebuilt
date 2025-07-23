@@ -124,7 +124,7 @@ class ElevatorIO
         kilogram_t kMass;
     };
     ElevatorIO() = default;
-    virtual ~ElevatorIO();
+    virtual ~ElevatorIO() = 0;
     virtual void SetTargetPosition(meter_t position) = 0;
     virtual void SetSpeed(double speed, bool overrideLowerLimit) = 0;
     virtual void SetLowerLimitEnable(bool enableLowerLimit) = 0;

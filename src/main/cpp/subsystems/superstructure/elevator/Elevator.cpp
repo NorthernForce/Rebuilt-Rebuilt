@@ -21,10 +21,6 @@ void Elevator::Set(double speed)
 
 void Elevator::Stop() { m_motor.Stop(); }
 
-CommandPtr Elevator::GetMoveToPositionCommand(meter_t position) {
-  return ElevatorMoveToPositionCommand(this, position).ToPtr();
-}
-
 CommandPtr Elevator::GetMoveToPositionCommand(meter_t position)
 {
     return ElevatorMoveToPositionCommand(this, position).ToPtr();
