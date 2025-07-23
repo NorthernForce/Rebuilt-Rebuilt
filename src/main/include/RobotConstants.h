@@ -7,11 +7,17 @@
 #include <subsystems/superstructure/Superstructure.h>
 #include <units/math.h>
 
+#include <ctre/phoenix6/TalonFX.hpp>
+#include <memory>
+#include <string>
+
 using namespace std;
 using namespace units;
 
-namespace RobotConstants {
-namespace ElevatorConstants {
+namespace RobotConstants
+{
+namespace ElevatorConstants
+{
 constexpr double kHomingSpeed = 0.25;
 constexpr meter_t kTolerance = 0.006_m;
 //TODO fix values
@@ -25,7 +31,8 @@ enum SuperstructurePresets {
 };
 } // namespace ElevatorConstants
 
-namespace InnerElevatorConstants {
+namespace InnerElevatorConstants
+{
 constexpr int kId = 2;
 constexpr int kSensorId = 0;
 
@@ -56,7 +63,8 @@ constexpr ElevatorIO::ElevatorConstants kConstants =
                                   kElevatorMass);
 } // namespace InnerElevatorConstants
 
-namespace OuterElevatorConstants {
+namespace OuterElevatorConstants
+{
 constexpr int kId = 3;
 constexpr int kSensorId = 1;
 
