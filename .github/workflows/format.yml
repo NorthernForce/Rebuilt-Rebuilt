@@ -14,12 +14,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run clang-format check
-        uses: jidicula/clang-format-action@v4.13.0
+      - name: Set up JDK
+        uses: actions/setup-java@v4
         with:
-          clang-format-version: '18'
-          check-path: 'src'
-          fallback-style: 'Google'
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Check formatting with Spotless
+        run: ./gradlew spotlessCheck -Ptoolchain-optional-roboRio
 
   format-fix:
     name: Auto-format Code
@@ -32,14 +37,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.head_ref }}
 
-      - name: Install clang-format
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-format-18
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Format C++ files
-        run: |
-          find src -name "*.cpp" -o -name "*.h" -o -name "*.hpp" | xargs -r clang-format-18 -i --style=file
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Format C++ files with Spotless
+        run: ./gradlew spotlessApply -Ptoolchain-optional-roboRio
 
       - name: Check for changes
         id: verify-changed-files
@@ -56,5 +64,5 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
-          git commit -m "Auto-format code with clang-format"
+          git commit -m "Auto-format code with Spotless"
           git push

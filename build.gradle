@@ -2,6 +2,7 @@ plugins {
     id "cpp"
     id "google-test-test-suite"
     id "edu.wpi.first.GradleRIO" version "2025.1.1-beta-3"
+    id "com.diffplug.spotless" version "6.25.0"
 }
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -100,32 +101,10 @@ model {
     }
 }
 
-// Custom task to format C++ code using clang-format
-task format {
-    description = 'Format C++ source files using clang-format'
-    group = 'formatting'
-    
-    doLast {
-        // Find all C++ source files
-        def sourceFiles = []
-        fileTree(dir: 'src', includes: ['**/*.cpp', '**/*.cc', '**/*.h']).each { file ->
-            sourceFiles << file.absolutePath
-        }
-        
-        if (sourceFiles.isEmpty()) {
-            println 'No C++ files found to format'
-            return
-        }
-        
-        println "Formatting ${sourceFiles.size()} C++ files..."
-        
-        // Run clang-format on each file
-        sourceFiles.each { filePath ->
-            exec {
-                commandLine 'clang-format', '-i', '--style=file', filePath
-            }
-        }
-        
-        println 'Formatting complete!'
+// Spotless configuration for C++ formatting
+spotless {
+    cpp {
+        target 'src/**/*.cpp', 'src/**/*.h', 'src/**/*.hpp'
+        clangFormat('18.1.3')
     }
 }
