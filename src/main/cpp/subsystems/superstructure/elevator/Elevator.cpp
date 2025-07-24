@@ -1,8 +1,10 @@
 #include "subsystems/superstructure/elevator/Elevator.h"
 
+frc2::sysid::SysIdRoutine GetSysIdRoutine();
+
 Elevator::Elevator(string name, ElevatorIO &motor, ElevatorSensorIO &sensor,
                    meter_t errorTolerance)
-    : m_motor(motor), m_sensor(sensor)
+    : m_motor(motor), m_sensor(sensor), m_sysIdRoutine(GetSysIdRoutine())
 {
     m_name = name;
     m_errorTolerance = errorTolerance;
@@ -87,4 +89,41 @@ ElevatorIO &Elevator::GetIO()
 ElevatorSensorIO &Elevator::GetSensor()
 {
     return m_sensor;
+}
+
+frc2::sysid::SysIdRoutine Elevator::GetSysIdRoutine()
+{
+    return frc2::sysid::SysIdRoutine(
+        frc2::sysid::Config(std::nullopt, 4_V, 4_s, 
+        [](frc::sysid::State state)
+            {
+                ctre::phoenix6::SignalLogger::WriteString(
+                    "SysId_State",
+                    frc::sysid::SysIdRoutineLog::StateEnumToString(state));
+            }), 
+        frc2::sysid::Mechanism{
+            [this](units::volt_t output)
+            { m_motor.SetVoltage(output); },
+            {},
+            this});
+}
+
+CommandPtr Elevator::GetSysIdQuasistaticForward()
+{
+    return m_sysIdRoutine.Quasistatic(frc2::sysid::Direction::kForward);
+}
+
+CommandPtr Elevator::GetSysIdQuasistaticReverse()
+{
+    return m_sysIdRoutine.Quasistatic(frc2::sysid::Direction::kReverse);
+}
+
+CommandPtr Elevator::GetSysIdDynamicForward()
+{
+    return m_sysIdRoutine.Quasistatic(frc2::sysid::Direction::kForward);
+}
+
+CommandPtr Elevator::GetSysIdDynamicReverse()
+{
+    return m_sysIdRoutine.Quasistatic(frc2::sysid::Direction::kReverse);
 }

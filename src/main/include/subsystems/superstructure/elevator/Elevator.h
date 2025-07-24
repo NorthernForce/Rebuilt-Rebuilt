@@ -9,6 +9,7 @@
 #include <units/math.h>
 
 #include <ctre/phoenix6/TalonFX.hpp>
+#include <ctre/phoenix6/SignalLogger.hpp>
 #include <memory>
 #include <string>
 
@@ -42,6 +43,12 @@ class Elevator : public SubsystemBase
     CommandPtr GetStopCommand();
     CommandPtr GetManualControlCommand(double speed);
 
+    frc2::sysid::SysIdRoutine GetSysIdRoutine();
+    CommandPtr GetSysIdQuasistaticForward();
+    CommandPtr GetSysIdQuasistaticReverse();
+    CommandPtr GetSysIdDynamicForward();
+    CommandPtr GetSysIdDynamicReverse();
+
   private:
     string m_name;
     ElevatorIO &m_motor;
@@ -49,61 +56,7 @@ class Elevator : public SubsystemBase
     meter_t m_targetState;
     meter_t m_errorTolerance;
     bool m_hasResetPosition = false;
-};
-
-class ElevatorMoveToPositionCommand
-    : public CommandHelper<Command, ElevatorMoveToPositionCommand>
-{
-  public:
-    ElevatorMoveToPositionCommand(Elevator *elevator, meter_t position);
-    void Initialize() override;
-    bool IsFinished() override;
-    void End(bool interrupted) override;
-
-  private:
-    Elevator *m_elevator;
-    meter_t m_position;
-};
-
-class ElevatorHomingCommand
-    : public CommandHelper<Command, ElevatorHomingCommand>
-{
-  public:
-    ElevatorHomingCommand(Elevator *elevator, double speed);
-    void Initialize() override;
-    void Execute() override;
-    bool IsFinished() override;
-    void End(bool interrupted) override;
-
-  private:
-    Elevator *m_elevator;
-    double m_speed;
-};
-
-class ElevatorHoldAtPositionCommand
-    : public CommandHelper<Command, ElevatorHoldAtPositionCommand>
-{
-  public:
-    ElevatorHoldAtPositionCommand(Elevator *elevator, meter_t position);
-    void Initialize() override;
-    bool IsFinished() override;
-    void End(bool interrupted) override;
-
-  private:
-    Elevator *m_elevator;
-    meter_t m_position;
-};
-
-class ElevatorManualControlCommand
-    : public CommandHelper<Command, ElevatorManualControlCommand>
-{
-  public:
-    ElevatorManualControlCommand(Elevator *elevator, double *speed);
-    void Initialize() override;
-
-  private:
-    Elevator *m_elevator;
-    double *m_speed;
+    frc2::sysid::SysIdRoutine m_sysIdRoutine;
 };
 
 class ElevatorIO
@@ -189,4 +142,59 @@ class ElevatorIOTalonFX : public ElevatorIO
     ctre::phoenix6::controls::VoltageOut m_voltageOut;
     bool m_isPresent;
     double kG;
+};
+
+class ElevatorMoveToPositionCommand
+    : public CommandHelper<Command, ElevatorMoveToPositionCommand>
+{
+  public:
+    ElevatorMoveToPositionCommand(Elevator *elevator, meter_t position);
+    void Initialize() override;
+    bool IsFinished() override;
+    void End(bool interrupted) override;
+
+  private:
+    Elevator *m_elevator;
+    meter_t m_position;
+};
+
+class ElevatorHomingCommand
+    : public CommandHelper<Command, ElevatorHomingCommand>
+{
+  public:
+    ElevatorHomingCommand(Elevator *elevator, double speed);
+    void Initialize() override;
+    void Execute() override;
+    bool IsFinished() override;
+    void End(bool interrupted) override;
+
+  private:
+    Elevator *m_elevator;
+    double m_speed;
+};
+
+class ElevatorHoldAtPositionCommand
+    : public CommandHelper<Command, ElevatorHoldAtPositionCommand>
+{
+  public:
+    ElevatorHoldAtPositionCommand(Elevator *elevator, meter_t position);
+    void Initialize() override;
+    bool IsFinished() override;
+    void End(bool interrupted) override;
+
+  private:
+    Elevator *m_elevator;
+    meter_t m_position;
+};
+
+class ElevatorManualControlCommand
+    : public CommandHelper<Command, ElevatorManualControlCommand>
+{
+  public:
+    ElevatorManualControlCommand(Elevator *elevator, double *speed);
+    void Initialize() override;
+
+  private:
+    Elevator *m_elevator;
+    double *m_speed;
 };
