@@ -2,6 +2,8 @@
 #include "RobotConstants.h"
 #include "subsystems/Manipulator/Commands/Intake.h"
 #include "subsystems/Manipulator/Commands/Outtake.h"
+#include <memory>
+#include <frc2/command/WaitUntilCommand.h>
 
 using namespace ctre::phoenix6;
 
@@ -19,7 +21,6 @@ Manipulator::Manipulator() : m_motor(ManipulatorConstants::kMotorId), m_sensor(M
         config.Commutation.MotorArrangement = signals::MotorArrangementValue::Minion_JST;
         config.Commutation.AdvancedHallSupport = signals::AdvancedHallSupportValue::Enabled;
         m_motor.GetConfigurator().Apply(config);
-        m_sensor = frc::DigitalInput{ManipulatorConstants::kSensorId};
         m_timer.Start();
 }
 
@@ -44,16 +45,24 @@ void Manipulator::setCanIntake(bool canIntake) {
 }
 
 frc2::CommandPtr Manipulator::intake() {
-    // ?
+    return Intake(this).ToPtr();
 }
 
+
 frc2::CommandPtr Manipulator::outtake() {
-    // ?
+        return Outtake(this).ToPtr();
 }
 
 frc2::CommandPtr Manipulator::slowOuttake() {
-    // ?
+    return frc2::cmd::RunOnce([this] {
+        m_state = ManipulatorState::SLOW_OUTTAKING;
+    }).AlongWith(
+        frc2::cmd::WaitUntil([this] {
+            return !hasCoralInSensor();
+        })
+    );
 }
+
 
 ManipulatorState Manipulator::getState() {
         return m_state;

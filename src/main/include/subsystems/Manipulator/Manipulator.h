@@ -8,6 +8,9 @@
 #include <frc2/command/Command.h>
 #include <frc2/command/Commands.h>
 #include <frc2/command/CommandPtr.h>
+#include <frc/Timer.h>
+#include <memory>
+
 
 enum class ManipulatorState {
             HUNGRY,
@@ -27,7 +30,6 @@ class Manipulator : public frc2::SubsystemBase {
         bool hasCoral();
         void setCanIntake(bool canIntake);
         bool hasCoralInSensor();
-        void setCanIntake(bool canIntake);
         void Periodic() override;
         frc2::CommandPtr intake();
         frc2::CommandPtr outtake();

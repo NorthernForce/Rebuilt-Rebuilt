@@ -3,7 +3,7 @@
 #include <frc2/command/Command.h>
 #include "subsystems/Manipulator/Manipulator.h"
 
-class Outtake : public frc2::Command {
+class Outtake : public frc2::CommandHelper<frc2::Command, Outtake> {
     public:
         explicit Outtake(Manipulator* manipulator);
         void Initialize() override;
