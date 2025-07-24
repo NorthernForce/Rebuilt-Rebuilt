@@ -1,29 +1,37 @@
 #include "subsystems/Manipulator/Manipulator.h"
 
+#include <frc2/command/Commands.h>
+#include <frc2/command/WaitUntilCommand.h>
+
+#include <memory>
+
 #include "RobotConstants.h"
 #include "subsystems/Manipulator/Commands/Intake.h"
 #include "subsystems/Manipulator/Commands/Outtake.h"
-#include <memory>
-#include <frc2/command/WaitUntilCommand.h>
-#include <frc2/command/Commands.h>
 
 using namespace ctre::phoenix6;
 
-Manipulator::Manipulator() : m_motor(ManipulatorConstants::kMotorId), m_sensor(ManipulatorConstants::kSensorId), config() {
-        config.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
-        config.MotorOutput.Inverted = ManipulatorConstants::kMotorInverted
-                ? signals::InvertedValue::Clockwise_Positive
-                : signals::InvertedValue::CounterClockwise_Positive
-        ;
-        /*
-        IS THIS RIGHT 40_A
-        */
-        config.CurrentLimits.StatorCurrentLimit = 40_A;
-        config.CurrentLimits.StatorCurrentLimitEnable = true;
-        config.Commutation.MotorArrangement = signals::MotorArrangementValue::Minion_JST;
-        config.Commutation.AdvancedHallSupport = signals::AdvancedHallSupportValue::Enabled;
-        m_motor.GetConfigurator().Apply(config);
-        m_timer.Start();
+Manipulator::Manipulator()
+    : m_motor(ManipulatorConstants::kMotorId),
+      m_sensor(ManipulatorConstants::kSensorId),
+      config()
+{
+    config.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
+    config.MotorOutput.Inverted =
+        ManipulatorConstants::kMotorInverted
+            ? signals::InvertedValue::Clockwise_Positive
+            : signals::InvertedValue::CounterClockwise_Positive;
+    /*
+    IS THIS RIGHT 40_A
+    */
+    config.CurrentLimits.StatorCurrentLimit = 40_A;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.Commutation.MotorArrangement =
+        signals::MotorArrangementValue::Minion_JST;
+    config.Commutation.AdvancedHallSupport =
+        signals::AdvancedHallSupportValue::Enabled;
+    m_motor.GetConfigurator().Apply(config);
+    m_timer.Start();
 }
 
 void Manipulator::set(double speed)
@@ -51,28 +59,27 @@ void Manipulator::setCanIntake(bool canIntake)
     m_canIntake = canIntake;
 }
 
-frc2::CommandPtr Manipulator::intake() {
+frc2::CommandPtr Manipulator::intake()
+{
     return Intake(this).ToPtr();
 }
 
-
-frc2::CommandPtr Manipulator::outtake() {
-        return Outtake(this).ToPtr();
+frc2::CommandPtr Manipulator::outtake()
+{
+    return Outtake(this).ToPtr();
 }
 
-frc2::CommandPtr Manipulator::slowOuttake() {
-    return frc2::cmd::RunOnce([this] {
-        m_state = ManipulatorState::SLOW_OUTTAKING;
-    }).AlongWith(
-        frc2::cmd::WaitUntil([this] {
-            return !hasCoralInSensor();
-        })
-    );
+frc2::CommandPtr Manipulator::slowOuttake()
+{
+    return frc2::cmd::RunOnce([this]
+                              { m_state = ManipulatorState::SLOW_OUTTAKING; })
+        .AlongWith(
+            frc2::cmd::WaitUntil([this] { return !hasCoralInSensor(); }));
 }
 
-
-ManipulatorState Manipulator::getState() {
-        return m_state;
+ManipulatorState Manipulator::getState()
+{
+    return m_state;
 }
 
 void Manipulator::setState(ManipulatorState state)
