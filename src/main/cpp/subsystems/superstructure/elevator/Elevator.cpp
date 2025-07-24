@@ -94,18 +94,18 @@ ElevatorSensorIO &Elevator::GetSensor()
 frc2::sysid::SysIdRoutine Elevator::GetSysIdRoutine()
 {
     return frc2::sysid::SysIdRoutine(
-        frc2::sysid::Config(std::nullopt, 4_V, 4_s, 
-        [](frc::sysid::State state)
+        frc2::sysid::Config(
+            std::nullopt, 4_V, 4_s,
+            [](frc::sysid::State state)
             {
                 ctre::phoenix6::SignalLogger::WriteString(
                     "SysId_State",
                     frc::sysid::SysIdRoutineLog::StateEnumToString(state));
-            }), 
-        frc2::sysid::Mechanism{
-            [this](units::volt_t output)
-            { m_motor.SetVoltage(output); },
-            {},
-            this});
+            }),
+        frc2::sysid::Mechanism{[this](units::volt_t output)
+                               { m_motor.SetVoltage(output); },
+                               {},
+                               this});
 }
 
 CommandPtr Elevator::GetSysIdQuasistaticForward()
