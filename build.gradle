@@ -105,6 +105,6 @@ model {
 spotless {
     cpp {
         target 'src/**/*.cpp', 'src/**/*.h', 'src/**/*.hpp'
-        clangFormat('18.1.3')
+        clangFormat('18.1.3').style('file:.clang-format')
     }
 }
