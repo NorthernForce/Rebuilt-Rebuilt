@@ -8,6 +8,7 @@
 #include <frc2/command/button/CommandXboxController.h>
 
 #include "subsystems/SwerveDrive.h"
+#include "subsystems/superstructure/Superstructure.h"
 
 class RobotContainer
 {
@@ -19,6 +20,10 @@ class RobotContainer
   private:
     void ConfigureBindings();
     nfr::SwerveDrive drive;
+    Superstructure m_superstructure;
     std::optional<frc2::CommandPtr> resetModulesCommand;
     frc2::CommandXboxController driverController{0};
+    Elevator* ConstructInnerElevator();
+    Elevator* ConstructOuterElevator();
 };
+

@@ -44,10 +44,47 @@ RobotContainer::RobotContainer()
             DriveConstants::kMaxTranslationSpeed,
             DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
             TunerConstants::FrontRight, TunerConstants::BackLeft,
-            TunerConstants::BackRight)
+            TunerConstants::BackRight),
+    m_superstructure(ConstructInnerElevator(), ConstructOuterElevator())
 {
     drive.SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
+}
+
+Elevator* RobotContainer::ConstructInnerElevator()
+{
+    auto motor = ElevatorIOTalonFX(
+        InnerElevatorConstants::kId,
+        InnerElevatorConstants::kConstants
+    );
+    auto sensor = ElevatorSensorIOLimitSwitch(
+        InnerElevatorConstants::kSensorId
+    );
+    auto elevator = Elevator(
+        string("Inner Elevator"),
+        motor,
+        sensor,
+        ElevatorConstants::kTolerance
+    );
+    return &elevator;
+}
+
+Elevator* RobotContainer::ConstructOuterElevator()
+{
+    auto motor = ElevatorIOTalonFX(
+        OuterElevatorConstants::kId,
+        OuterElevatorConstants::kConstants
+    );
+    auto sensor = ElevatorSensorIOLimitSwitch(
+        OuterElevatorConstants::kSensorId
+    );
+    auto elevator = Elevator(
+        string("Outer Elevator"),
+        motor,
+        sensor,
+        ElevatorConstants::kTolerance
+    );
+    return &elevator;
 }
 
 std::function<double()> ProcessInput(std::function<double()> input)

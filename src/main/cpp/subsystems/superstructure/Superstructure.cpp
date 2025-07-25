@@ -1,13 +1,13 @@
 #include <subsystems/superstructure/Superstructure.h>
 
 Superstructure::SuperstructureState GetPresetState(
-    RobotConstants::ElevatorConstants::SuperstructurePresets preset);
+    ElevatorConstants::SuperstructurePresets preset);
 
 Superstructure::Superstructure(Elevator* innerElevator, Elevator* outerElevator)
     : m_innerElevator(innerElevator), m_outerElevator(outerElevator)
 {
     m_target = GetPresetState(
-        RobotConstants::ElevatorConstants::SuperstructurePresets::START);
+        ElevatorConstants::SuperstructurePresets::START);
 }
 
 void Superstructure::Stop()
@@ -33,22 +33,22 @@ Superstructure::SuperstructureState Superstructure::GetTargetState()
 }
 
 Superstructure::SuperstructureState Superstructure::GetPresetState(
-    RobotConstants::ElevatorConstants::SuperstructurePresets preset)
+    ElevatorConstants::SuperstructurePresets preset)
 {
     // TODO fix values
     switch (preset)
     {
-        case RobotConstants::ElevatorConstants::L1:
+        case ElevatorConstants::L1:
             return Superstructure::SuperstructureState(0_m, 0_m);
-        case RobotConstants::ElevatorConstants::L2:
+        case ElevatorConstants::L2:
             return Superstructure::SuperstructureState(0_m, 0_m);
-        case RobotConstants::ElevatorConstants::L3:
+        case ElevatorConstants::L3:
             return Superstructure::SuperstructureState(0_m, 0_m);
-        case RobotConstants::ElevatorConstants::L4:
+        case ElevatorConstants::L4:
             return Superstructure::SuperstructureState(0_m, 0_m);
-        case RobotConstants::ElevatorConstants::CORAL_STATION:
+        case ElevatorConstants::CORAL_STATION:
             return Superstructure::SuperstructureState(0_m, 0_m);
-        case RobotConstants::ElevatorConstants::START:
+        case ElevatorConstants::START:
             return Superstructure::SuperstructureState(0_m, 0_m);
     }
 }

@@ -13,7 +13,7 @@
 #include <memory>
 #include <string>
 
-#include "RobotConstants.h"
+#include "constants/Constants.h"
 
 using namespace std;
 using namespace units;
@@ -33,7 +33,7 @@ class Superstructure : public frc2::SubsystemBase
     SuperstructureState GetState();
     SuperstructureState GetTargetState();
     SuperstructureState GetPresetState(
-        RobotConstants::ElevatorConstants::SuperstructurePresets preset);
+        ElevatorConstants::SuperstructurePresets preset);
     bool IsAtTarget();
     bool IsAtPosition(SuperstructureState position);
     Elevator* GetInnerElevator();

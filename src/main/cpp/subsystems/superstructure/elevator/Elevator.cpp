@@ -2,7 +2,7 @@
 
 frc2::sysid::SysIdRoutine GetSysIdRoutine();
 
-Elevator::Elevator(string name, ElevatorIO &motor, ElevatorSensorIO &sensor,
+Elevator::Elevator(string name, ElevatorIO& motor, ElevatorSensorIO& sensor,
                    meter_t errorTolerance)
     : m_motor(motor), m_sensor(sensor), m_sysIdRoutine(GetSysIdRoutine())
 {
