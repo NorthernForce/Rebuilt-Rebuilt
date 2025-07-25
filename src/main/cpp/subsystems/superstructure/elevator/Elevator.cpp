@@ -81,12 +81,12 @@ bool Elevator::IsAtPosition(meter_t position)
     return units::math::abs(GetPosition() - position) <= m_errorTolerance;
 }
 
-ElevatorIO &Elevator::GetIO()
+ElevatorIO& Elevator::GetIO()
 {
     return m_motor;
 }
 
-ElevatorSensorIO &Elevator::GetSensor()
+ElevatorSensorIO& Elevator::GetSensor()
 {
     return m_sensor;
 }

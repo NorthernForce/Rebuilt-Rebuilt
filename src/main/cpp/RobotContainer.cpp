@@ -45,7 +45,7 @@ RobotContainer::RobotContainer()
             DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
             TunerConstants::FrontRight, TunerConstants::BackLeft,
             TunerConstants::BackRight),
-    m_superstructure(ConstructInnerElevator(), ConstructOuterElevator())
+      m_superstructure(ConstructInnerElevator(), ConstructOuterElevator())
 {
     drive.SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
@@ -53,37 +53,23 @@ RobotContainer::RobotContainer()
 
 Elevator* RobotContainer::ConstructInnerElevator()
 {
-    auto motor = ElevatorIOTalonFX(
-        InnerElevatorConstants::kId,
-        InnerElevatorConstants::kConstants
-    );
-    auto sensor = ElevatorSensorIOLimitSwitch(
-        InnerElevatorConstants::kSensorId
-    );
-    auto elevator = Elevator(
-        string("Inner Elevator"),
-        motor,
-        sensor,
-        ElevatorConstants::kTolerance
-    );
+    auto motor = ElevatorIOTalonFX(InnerElevatorConstants::kId,
+                                   InnerElevatorConstants::kConstants);
+    auto sensor =
+        ElevatorSensorIOLimitSwitch(InnerElevatorConstants::kSensorId);
+    auto elevator = Elevator(string("Inner Elevator"), motor, sensor,
+                             ElevatorConstants::kTolerance);
     return &elevator;
 }
 
 Elevator* RobotContainer::ConstructOuterElevator()
 {
-    auto motor = ElevatorIOTalonFX(
-        OuterElevatorConstants::kId,
-        OuterElevatorConstants::kConstants
-    );
-    auto sensor = ElevatorSensorIOLimitSwitch(
-        OuterElevatorConstants::kSensorId
-    );
-    auto elevator = Elevator(
-        string("Outer Elevator"),
-        motor,
-        sensor,
-        ElevatorConstants::kTolerance
-    );
+    auto motor = ElevatorIOTalonFX(OuterElevatorConstants::kId,
+                                   OuterElevatorConstants::kConstants);
+    auto sensor =
+        ElevatorSensorIOLimitSwitch(OuterElevatorConstants::kSensorId);
+    auto elevator = Elevator(string("Outer Elevator"), motor, sensor,
+                             ElevatorConstants::kTolerance);
     return &elevator;
 }
 

@@ -6,8 +6,7 @@ Superstructure::SuperstructureState GetPresetState(
 Superstructure::Superstructure(Elevator* innerElevator, Elevator* outerElevator)
     : m_innerElevator(innerElevator), m_outerElevator(outerElevator)
 {
-    m_target = GetPresetState(
-        ElevatorConstants::SuperstructurePresets::START);
+    m_target = GetPresetState(ElevatorConstants::SuperstructurePresets::START);
 }
 
 void Superstructure::Stop()

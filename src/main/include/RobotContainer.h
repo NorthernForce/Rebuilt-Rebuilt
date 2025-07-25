@@ -26,4 +26,3 @@ class RobotContainer
     Elevator* ConstructInnerElevator();
     Elevator* ConstructOuterElevator();
 };
-

@@ -25,7 +25,7 @@ class ElevatorHomingCommand;
 class Elevator : public SubsystemBase
 {
   public:
-    Elevator(string name, ElevatorIO& motor, ElevatorSensorIO& sensor,
+    Elevator(string name, ElevatorIO &motor, ElevatorSensorIO &sensor,
              meter_t errorTolerance);
     void SetTargetPosition(meter_t position);
     void Set(double speed);
