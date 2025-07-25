@@ -8,8 +8,8 @@
 #include <subsystems/superstructure/elevator/ElevatorSensor.h>
 #include <units/math.h>
 
-#include <ctre/phoenix6/TalonFX.hpp>
 #include <ctre/phoenix6/SignalLogger.hpp>
+#include <ctre/phoenix6/TalonFX.hpp>
 #include <memory>
 #include <string>
 
