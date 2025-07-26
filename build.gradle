@@ -105,6 +105,8 @@ model {
 spotless {
     cpp {
         target 'src/**/*.cpp', 'src/**/*.h', 'src/**/*.hpp'
+        // Automatically downloads and installs clang-format 18.1.3 if not available
+        // This eliminates the need for developers to manually install clang-format
         clangFormat('18.1.3').style('file:.clang-format')
     }
 }
