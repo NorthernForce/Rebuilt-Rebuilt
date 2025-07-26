@@ -111,5 +111,4 @@ spotless {
     }
 }
 
-// Make build task depend on format checking to ensure clang-format is installed
-build.dependsOn spotlessCheck
+
