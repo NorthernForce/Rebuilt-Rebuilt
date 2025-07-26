@@ -110,3 +110,6 @@ spotless {
         clangFormat('18.1.3').style('file:.clang-format')
     }
 }
+
+// Make build task depend on format checking to ensure clang-format is installed
+build.dependsOn spotlessCheck
