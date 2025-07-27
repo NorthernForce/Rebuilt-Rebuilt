@@ -120,10 +120,10 @@ CommandPtr Elevator::GetSysIdQuasistaticReverse()
 
 CommandPtr Elevator::GetSysIdDynamicForward()
 {
-    return m_sysIdRoutine.Quasistatic(frc2::sysid::Direction::kForward);
+    return m_sysIdRoutine.Dynamic(frc2::sysid::Direction::kForward);
 }
 
 CommandPtr Elevator::GetSysIdDynamicReverse()
 {
-    return m_sysIdRoutine.Quasistatic(frc2::sysid::Direction::kReverse);
+    return m_sysIdRoutine.Dynamic(frc2::sysid::Direction::kReverse);
 }

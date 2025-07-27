@@ -119,13 +119,13 @@ class ElevatorIOTalonFX : public ElevatorIO
     void SetVoltage(volt_t) override;
     void Update() override;
 
-    turn_t GetPosition();
-    celsius_t GetTemperature();
-    volt_t GetVoltage();
-    turns_per_second_t GetVelocity();
-    turns_per_second_t GetRotorVelocity();
-    ampere_t GetCurrent();
-    bool GetIsPresent();
+    turn_t GetPosition() override;
+    celsius_t GetTemperature() override;
+    volt_t GetVoltage() override;
+    turns_per_second_t GetVelocity() override;
+    turns_per_second_t GetRotorVelocity() override;
+    ampere_t GetCurrent() override;
+    bool GetIsPresent() override;
 
   private:
     shared_ptr<ctre::phoenix6::hardware::TalonFX> m_motor;

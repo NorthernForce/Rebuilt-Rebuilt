@@ -64,7 +64,8 @@ SuperstructureManualControlCommand::SuperstructureManualControlCommand(
 {
     AddRequirements({superstructure});
     m_superstructure = superstructure;
-    AddCommands(
+    AddCommands(ElevatorManualControlCommand(m_superstructure->GetInnerElevator(), innerElevatorSpeed),
+    ElevatorManualControlCommand(m_superstructure->GetOuterElevator(), outerElevatorSpeed)
 
     );
 }

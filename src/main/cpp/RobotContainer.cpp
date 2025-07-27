@@ -57,9 +57,9 @@ Elevator* RobotContainer::ConstructInnerElevator()
                                    InnerElevatorConstants::kConstants);
     auto sensor =
         ElevatorSensorIOLimitSwitch(InnerElevatorConstants::kSensorId);
-    auto elevator = Elevator(string("Inner Elevator"), motor, sensor,
+    auto* elevator = new Elevator(string("Inner Elevator"), motor, sensor,
                              ElevatorConstants::kTolerance);
-    return &elevator;
+    return elevator;
 }
 
 Elevator* RobotContainer::ConstructOuterElevator()
@@ -68,9 +68,9 @@ Elevator* RobotContainer::ConstructOuterElevator()
                                    OuterElevatorConstants::kConstants);
     auto sensor =
         ElevatorSensorIOLimitSwitch(OuterElevatorConstants::kSensorId);
-    auto elevator = Elevator(string("Outer Elevator"), motor, sensor,
+    auto* elevator = new Elevator(string("Outer Elevator"), motor, sensor,
                              ElevatorConstants::kTolerance);
-    return &elevator;
+    return elevator;
 }
 
 std::function<double()> ProcessInput(std::function<double()> input)
