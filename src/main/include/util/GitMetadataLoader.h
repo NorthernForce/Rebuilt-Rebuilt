@@ -27,8 +27,9 @@ struct GitMetadata
 
 #include <logging/Logger.h>
 
-template<>
-inline void nfr::Log(const nfr::LogContext& logContext, const GitMetadata& metadata)
+template <>
+inline void nfr::Log(const nfr::LogContext& logContext,
+                     const GitMetadata& metadata)
 {
     logContext["branch"] << metadata.branch;
     logContext["build_host"] << metadata.build_host;
@@ -56,6 +57,7 @@ extern GitMetadata loadGitMetadata(const std::string& filePath);
 #include <frc/Filesystem.h>
 inline const GitMetadata& getGitMetadata()
 {
-    static const GitMetadata metadata = loadGitMetadata(frc::filesystem::GetDeployDirectory() + "/git.properties");
+    static const GitMetadata metadata = loadGitMetadata(
+        frc::filesystem::GetDeployDirectory() + "/git.properties");
     return metadata;
 }

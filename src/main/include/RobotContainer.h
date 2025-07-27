@@ -16,7 +16,7 @@ class RobotContainer
     RobotContainer();
 
     frc2::CommandPtr GetAutonomousCommand();
-    
+
     void Log(const nfr::LogContext &log) const;
 
   private:

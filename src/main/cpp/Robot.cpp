@@ -4,14 +4,14 @@
 
 #include "Robot.h"
 
+#include <frc/DriverStation.h>
 #include <frc2/command/CommandScheduler.h>
 
-#include "util/GitMetadataLoader.h"
-#include <frc/DriverStation.h>
+#include "logging/LogTypes.h"
 #include "logging/Logger.h"
 #include "logging/NTLogManager.h"
 #include "logging/WPILogManager.h"
-#include "logging/LogTypes.h"
+#include "util/GitMetadataLoader.h"
 
 bool isCompetition()
 {
@@ -21,7 +21,8 @@ bool isCompetition()
 Robot::Robot()
 {
     nfr::logger.AddOutput(std::make_shared<nfr::WPILogManager>());
-    if (!isCompetition()) {
+    if (!isCompetition())
+    {
         nfr::logger.AddOutput(std::make_shared<nfr::NTLogManager>());
     }
     nfr::logger["git"] << getGitMetadata();
