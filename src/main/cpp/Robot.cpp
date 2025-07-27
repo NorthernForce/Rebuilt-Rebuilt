@@ -13,11 +13,13 @@
 #include "logging/WPILogManager.h"
 #include "logging/LogTypes.h"
 
-bool isCompetition() {
+bool isCompetition()
+{
     return frc::DriverStation::IsFMSAttached();
 }
 
-Robot::Robot() {
+Robot::Robot()
+{
     nfr::logger.AddOutput(std::make_shared<nfr::WPILogManager>());
     if (!isCompetition()) {
         nfr::logger.AddOutput(std::make_shared<nfr::NTLogManager>());
@@ -31,11 +33,17 @@ void Robot::RobotPeriodic()
     nfr::logger["robot"] << m_container;
 }
 
-void Robot::DisabledInit() {}
+void Robot::DisabledInit()
+{
+}
 
-void Robot::DisabledPeriodic() {}
+void Robot::DisabledPeriodic()
+{
+}
 
-void Robot::DisabledExit() {}
+void Robot::DisabledExit()
+{
+}
 
 void Robot::AutonomousInit()
 {
@@ -47,9 +55,13 @@ void Robot::AutonomousInit()
     }
 }
 
-void Robot::AutonomousPeriodic() {}
+void Robot::AutonomousPeriodic()
+{
+}
 
-void Robot::AutonomousExit() {}
+void Robot::AutonomousExit()
+{
+}
 
 void Robot::TeleopInit()
 {
@@ -59,18 +71,26 @@ void Robot::TeleopInit()
     }
 }
 
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic()
+{
+}
 
-void Robot::TeleopExit() {}
+void Robot::TeleopExit()
+{
+}
 
 void Robot::TestInit()
 {
     frc2::CommandScheduler::GetInstance().CancelAll();
 }
 
-void Robot::TestPeriodic() {}
+void Robot::TestPeriodic()
+{
+}
 
-void Robot::TestExit() {}
+void Robot::TestExit()
+{
+}
 
 #ifndef RUNNING_FRC_TESTS
 int main()

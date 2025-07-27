@@ -31,7 +31,10 @@ deploy {
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 
+// Set this to true to enable desktop support.
 def includeDesktopSupport = true
+
+// Set to true to run simulation in debug mode
 wpi.cpp.debugSimulation = false
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
@@ -112,5 +115,35 @@ model {
             wpi.cpp.deps.wpilib(it)
             wpi.cpp.deps.googleTest(it)
         }
+    }
+}
+
+// Custom task to format C++ code using clang-format
+task format {
+    description = 'Format C++ source files using clang-format'
+    group = 'formatting'
+    
+    doLast {
+        // Find all C++ source files
+        def sourceFiles = []
+        fileTree(dir: 'src', includes: ['**/*.cpp', '**/*.cc', '**/*.h']).each { file ->
+            sourceFiles << file.absolutePath
+        }
+        
+        if (sourceFiles.isEmpty()) {
+            println 'No C++ files found to format'
+            return
+        }
+        
+        println "Formatting ${sourceFiles.size()} C++ files..."
+        
+        // Run clang-format on each file
+        sourceFiles.each { filePath ->
+            exec {
+                commandLine 'clang-format', '-i', '--style=file', filePath
+            }
+        }
+        
+        println 'Formatting complete!'
     }
 }

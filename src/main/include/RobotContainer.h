@@ -5,17 +5,23 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
+#include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
+
+#include "subsystems/SwerveDrive.h"
 
 class RobotContainer
 {
-public:
+  public:
     RobotContainer();
 
     frc2::CommandPtr GetAutonomousCommand();
-
+    
     void Log(const nfr::LogContext &log) const;
 
-private:
+  private:
     void ConfigureBindings();
+    nfr::SwerveDrive drive;
+    std::optional<frc2::CommandPtr> resetModulesCommand;
+    frc2::CommandXboxController driverController{0};
 };
