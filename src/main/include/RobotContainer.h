@@ -6,6 +6,7 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
+#include <logging/Logger.h>
 
 #include "subsystems/SwerveDrive.h"
 
@@ -15,6 +16,8 @@ class RobotContainer
     RobotContainer();
 
     frc2::CommandPtr GetAutonomousCommand();
+
+    void Log(const nfr::LogContext &log) const;
 
   private:
     void ConfigureBindings();
