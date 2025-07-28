@@ -1,111 +1,109 @@
 #include "subsystems/Localizer.h"
+#include "subsystems/apriltag/PhotonVisionCameraIO.h"
+#include "subsystems/apriltag/LimeLightCameraIO.h"
+#include "subsystems/apriltag/PhotonVisionCameraSimIO.h"
 #include "constants/Constants.h"
-#include <frc/apriltag/AprilTagFields.h>
-#include <units/time.h>
+#include <frc/RobotBase.h>
 
 namespace nfr
 {
 
 Localizer::Localizer()
-    : m_frontLeftCamera(CameraConstants::kFrontLeftCameraName),
-      m_centerCamera(CameraConstants::kCenterCameraName),
-      m_frontLeftPoseEstimator(
-          frc::LoadAprilTagLayoutField(frc::AprilTagField::k2024Crescendo),
-          photon::PoseStrategy::MULTI_TAG_PNP_ON_COPROCESSOR,
-          CameraConstants::kFrontLeftCameraTransform),
-      m_centerPoseEstimator(
-          frc::LoadAprilTagLayoutField(frc::AprilTagField::k2024Crescendo),
-          photon::PoseStrategy::MULTI_TAG_PNP_ON_COPROCESSOR,
-          CameraConstants::kCenterCameraTransform),
-      m_fieldLayout(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2024Crescendo))
 {
-    // Configure fallback strategies for pose estimators
-    m_frontLeftPoseEstimator.SetMultiTagFallbackStrategy(
-        photon::PoseStrategy::CLOSEST_TO_REFERENCE_POSE);
-    m_centerPoseEstimator.SetMultiTagFallbackStrategy(
-        photon::PoseStrategy::CLOSEST_TO_REFERENCE_POSE);
-    
     // Start the timer - we haven't had any estimates yet
     m_timeSinceLastEstimate.Start();
+    
+    // Initialize cameras based on robot mode
+    InitializeCameras();
+}
+
+void Localizer::InitializeCameras()
+{
+    if (frc::RobotBase::IsReal())
+    {
+        // Real robot - create PhotonVision and LimeLight cameras
+        
+        // PhotonVision cameras
+        auto frontLeftIO = std::make_unique<PhotonVisionCameraIO>(
+            CameraConstants::kFrontLeftCameraName,
+            CameraConstants::kFrontLeftCameraTransform);
+        m_cameras.push_back(std::make_unique<AprilTagCamera>(
+            std::move(frontLeftIO), "FrontLeft"));
+            
+        auto centerIO = std::make_unique<PhotonVisionCameraIO>(
+            CameraConstants::kCenterCameraName,
+            CameraConstants::kCenterCameraTransform);
+        m_cameras.push_back(std::make_unique<AprilTagCamera>(
+            std::move(centerIO), "Center"));
+        
+        // LimeLight cameras
+        auto frontRightIO = std::make_unique<LimeLightCameraIO>(
+            CameraConstants::kFrontRightCameraName,
+            CameraConstants::kFrontRightCameraTransform);
+        m_cameras.push_back(std::make_unique<AprilTagCamera>(
+            std::move(frontRightIO), "FrontRight"));
+            
+        auto centerBackIO = std::make_unique<LimeLightCameraIO>(
+            CameraConstants::kCenterBackCameraName,
+            CameraConstants::kCenterBackCameraTransform);
+        m_cameras.push_back(std::make_unique<AprilTagCamera>(
+            std::move(centerBackIO), "CenterBack"));
+    }
+    else
+    {
+        // Simulation - create PhotonVision simulation cameras
+        auto frontLeftSimIO = std::make_unique<PhotonVisionCameraSimIO>(
+            CameraConstants::kFrontLeftCameraName,
+            CameraConstants::kFrontLeftCameraTransform);
+        m_cameras.push_back(std::make_unique<AprilTagCamera>(
+            std::move(frontLeftSimIO), "FrontLeft-Sim"));
+            
+        auto centerSimIO = std::make_unique<PhotonVisionCameraSimIO>(
+            CameraConstants::kCenterCameraName,
+            CameraConstants::kCenterCameraTransform);
+        m_cameras.push_back(std::make_unique<AprilTagCamera>(
+            std::move(centerSimIO), "Center-Sim"));
+    }
 }
 
 void Localizer::UpdateWithReferencePose(const frc::Pose2d& pose)
 {
-    units::second_t timestamp = frc::Timer::GetFPGATimestamp();
+    // Convert Pose2d to Pose3d for camera reference
+    frc::Pose3d pose3d{pose.X(), pose.Y(), 0_m, 
+                       frc::Rotation3d{0_deg, 0_deg, pose.Rotation().Radians()}};
     
-    // Update LimeLight robot orientation
-    LimelightHelpers::SetRobotOrientation(
-        CameraConstants::kLimelightFLName,
-        pose.Rotation().Degrees().value(), 0, 0, 0, 0, 0);
-        
-    LimelightHelpers::SetRobotOrientation(
-        CameraConstants::kLimelightCenterName,
-        pose.Rotation().Degrees().value(), 0, 0, 0, 0, 0);
-    
-    // Set reference poses for improved accuracy (convert Pose2d to Pose3d)
-    frc::Pose3d pose3d{pose.X(), pose.Y(), 0_m, frc::Rotation3d{0_deg, 0_deg, pose.Rotation().Radians()}};
-    m_frontLeftPoseEstimator.SetReferencePose(pose3d);
-    m_centerPoseEstimator.SetReferencePose(pose3d);
+    // Update all cameras with reference pose
+    for (auto& camera : m_cameras)
+    {
+        camera->SetReferencePose(pose3d);
+    }
 }
 
 void Localizer::Periodic()
 {
     // Clear previous estimates
     m_estimatedPoses.clear();
-    m_frontLeftPoses.clear();
-    m_centerPoses.clear();
-    m_frontRightPoses.clear();
-    m_centerBackPoses.clear();
     
-    // Process LimeLight estimates
-    auto frontRightEstimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(
-        CameraConstants::kLimelightFLName);
-    if (frontRightEstimate.tagCount > 0)
-    {
-        EstimatedPose pose{frontRightEstimate.pose, units::second_t{frontRightEstimate.timestampSeconds}};
-        m_frontRightPoses.push_back(pose.pose);
-        m_estimatedPoses.push_back(pose);
-    }
+    // Update all cameras and collect poses
+    bool hadAnyEstimates = false;
     
-    auto centerBackEstimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(
-        CameraConstants::kLimelightCenterName);
-    if (centerBackEstimate.tagCount > 0)
+    for (auto& camera : m_cameras)
     {
-        EstimatedPose pose{centerBackEstimate.pose, units::second_t{centerBackEstimate.timestampSeconds}};
-        m_centerBackPoses.push_back(pose.pose);
-        m_estimatedPoses.push_back(pose);
-    }
-    
-    // Process PhotonVision front left camera results
-    auto frontLeftResults = m_frontLeftCamera.GetAllUnreadResults();
-    for (const auto& result : frontLeftResults)
-    {
-        auto estimate = m_frontLeftPoseEstimator.Update(result);
-        if (estimate.has_value())
+        camera->Periodic();
+        
+        const auto& poses = camera->GetRobotPoses();
+        const auto& timestamps = camera->GetTimestamps();
+        
+        // Add poses with camera identification
+        for (size_t i = 0; i < poses.size() && i < timestamps.size(); ++i)
         {
-            EstimatedPose pose{estimate.value().estimatedPose.ToPose2d(), 
-                             estimate.value().timestamp};
-            m_frontLeftPoses.push_back(pose.pose);
-            m_estimatedPoses.push_back(pose);
-        }
-    }
-    
-    // Process PhotonVision center camera results
-    auto centerResults = m_centerCamera.GetAllUnreadResults();
-    for (const auto& result : centerResults)
-    {
-        auto estimate = m_centerPoseEstimator.Update(result);
-        if (estimate.has_value())
-        {
-            EstimatedPose pose{estimate.value().estimatedPose.ToPose2d(), 
-                             estimate.value().timestamp};
-            m_centerPoses.push_back(pose.pose);
-            m_estimatedPoses.push_back(pose);
+            m_estimatedPoses.emplace_back(poses[i], timestamps[i], camera->GetName());
+            hadAnyEstimates = true;
         }
     }
     
     // Restart timer if we got any estimates
-    if (!m_estimatedPoses.empty())
+    if (hadAnyEstimates)
     {
         m_timeSinceLastEstimate.Restart();
     }
@@ -116,24 +114,24 @@ const std::vector<EstimatedPose>& Localizer::GetEstimatedPoses() const
     return m_estimatedPoses;
 }
 
-const std::vector<frc::Pose2d>& Localizer::GetFrontLeftPoses() const
+std::vector<frc::Pose2d> Localizer::GetPosesFromCamera(const std::string& cameraName) const
 {
-    return m_frontLeftPoses;
+    std::vector<frc::Pose2d> poses;
+    
+    for (const auto& estimate : m_estimatedPoses)
+    {
+        if (estimate.cameraName == cameraName)
+        {
+            poses.push_back(estimate.pose);
+        }
+    }
+    
+    return poses;
 }
 
-const std::vector<frc::Pose2d>& Localizer::GetCenterPoses() const
+const std::vector<std::unique_ptr<AprilTagCamera>>& Localizer::GetCameras() const
 {
-    return m_centerPoses;
-}
-
-const std::vector<frc::Pose2d>& Localizer::GetFrontRightPoses() const
-{
-    return m_frontRightPoses;
-}
-
-const std::vector<frc::Pose2d>& Localizer::GetCenterBackPoses() const
-{
-    return m_centerBackPoses;
+    return m_cameras;
 }
 
 units::second_t Localizer::GetTimeSinceLastEstimate() const
@@ -143,7 +141,58 @@ units::second_t Localizer::GetTimeSinceLastEstimate() const
 
 bool Localizer::HasHadRecentEstimate() const
 {
-    return !m_timeSinceLastEstimate.HasElapsed(0.5_s);
+    return !m_timeSinceLastEstimate.HasElapsed(VisionConstants::kEstimateTimeout);
+}
+
+int Localizer::GetConnectedCameraCount() const
+{
+    int count = 0;
+    for (const auto& camera : m_cameras)
+    {
+        if (camera->IsConnected())
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+int Localizer::GetTotalTargetCount() const
+{
+    int total = 0;
+    for (const auto& camera : m_cameras)
+    {
+        total += camera->GetTargetCount();
+    }
+    return total;
+}
+
+void Localizer::Log(const nfr::LogContext& log) const
+{
+    log["connected_cameras"] << GetConnectedCameraCount();
+    log["total_cameras"] << static_cast<int>(m_cameras.size());
+    log["total_targets"] << GetTotalTargetCount();
+    log["total_poses"] << static_cast<int>(m_estimatedPoses.size());
+    log["time_since_estimate"] << GetTimeSinceLastEstimate().value();
+    log["has_recent_estimate"] << HasHadRecentEstimate();
+    
+    // Log each camera
+    for (size_t i = 0; i < m_cameras.size(); ++i)
+    {
+        const auto& camera = m_cameras[i];
+        camera->Log(log["cameras"][camera->GetName()]);
+    }
+    
+    // Log recent poses summary
+    if (!m_estimatedPoses.empty())
+    {
+        const auto& latestPose = m_estimatedPoses.back();
+        log["latest_pose/x"] << latestPose.pose.X().value();
+        log["latest_pose/y"] << latestPose.pose.Y().value();
+        log["latest_pose/rotation"] << latestPose.pose.Rotation().Degrees().value();
+        log["latest_pose/camera"] << latestPose.cameraName;
+        log["latest_pose/timestamp"] << latestPose.timestamp.value();
+    }
 }
 
 }  // namespace nfr

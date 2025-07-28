@@ -104,7 +104,7 @@ void RobotContainer::Periodic()
         units::second_t currentTime = frc::Timer::GetFPGATimestamp();
         units::second_t estimateAge = currentTime - estimatedPose.timestamp;
         
-        if (estimateAge < 0.1_s)  // Only use estimates less than 100ms old
+        if (estimateAge < VisionConstants::kMaxEstimateAge)
         {
             drive.AddVisionMeasurement(estimatedPose.pose, estimatedPose.timestamp);
         }

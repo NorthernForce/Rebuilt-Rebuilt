@@ -12,4 +12,14 @@ const frc::Transform3d CameraConstants::kCenterCameraTransform{
     frc::Translation3d{0.0_m, 0.0_m, 0.5_m},  // Center of robot, 50cm up  
     frc::Rotation3d{0_deg, -15_deg, 0_deg}     // Slight downward tilt
 };
+
+const frc::Transform3d CameraConstants::kFrontRightCameraTransform{
+    frc::Translation3d{0.3_m, -0.2_m, 0.5_m}, // 30cm forward, 20cm right, 50cm up
+    frc::Rotation3d{0_deg, -15_deg, 0_deg}     // Slight downward tilt
+};
+
+const frc::Transform3d CameraConstants::kCenterBackCameraTransform{
+    frc::Translation3d{-0.3_m, 0.0_m, 0.5_m}, // 30cm back, center, 50cm up
+    frc::Rotation3d{0_deg, -15_deg, 180_deg}   // Facing backwards with slight downward tilt
+};
 }  // namespace nfr

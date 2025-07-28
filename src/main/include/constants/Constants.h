@@ -2,6 +2,7 @@
 
 #include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 #include <units/frequency.h>
+#include <units/time.h>
 #include <frc/geometry/Transform3d.h>
 #include <frc/geometry/Translation3d.h>
 #include <frc/geometry/Rotation3d.h>
@@ -29,17 +30,34 @@ class DriveConstants
         pathplanner::PIDConstants(0.1, 0.0, 0.0);
 };
 
+class VisionConstants
+{
+  public:
+    // Maximum age for vision estimates to be considered valid
+    static constexpr units::second_t kMaxEstimateAge = 0.1_s;
+    
+    // Timeout for considering vision system has recent estimates  
+    static constexpr units::second_t kEstimateTimeout = 0.5_s;
+    
+    // AprilTag field layout
+    static constexpr const char* kAprilTagFieldLayout = "2024-crescendo.json";
+};
+
 class CameraConstants
 {
   public:
     // Camera transforms relative to robot center
     static const frc::Transform3d kFrontLeftCameraTransform;
     static const frc::Transform3d kCenterCameraTransform;
+    static const frc::Transform3d kFrontRightCameraTransform;
+    static const frc::Transform3d kCenterBackCameraTransform;
     
-    // Camera names
+    // PhotonVision camera names
     static constexpr const char* kFrontLeftCameraName = "front_left_camera";
     static constexpr const char* kCenterCameraName = "center_camera";
-    static constexpr const char* kLimelightFLName = "limelight-fl";
-    static constexpr const char* kLimelightCenterName = "limelight-ctr";
+    
+    // LimeLight camera names
+    static constexpr const char* kFrontRightCameraName = "limelight-fl";
+    static constexpr const char* kCenterBackCameraName = "limelight-ctr";
 };
 }  // namespace nfr
