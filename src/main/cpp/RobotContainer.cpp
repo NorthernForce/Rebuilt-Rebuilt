@@ -98,7 +98,11 @@ void RobotContainer::Periodic()
     for (const auto& estimatedPose : estimatedPoses)
     {
         // Only use recent estimates to avoid stale data
-        if (localizer.HasHadRecentEstimate())
+        // Check that the estimate is from this periodic cycle (very recent)
+        units::second_t currentTime = frc::Timer::GetFPGATimestamp();
+        units::second_t estimateAge = currentTime - estimatedPose.timestamp;
+        
+        if (estimateAge < 0.1_s)  // Only use estimates less than 100ms old
         {
             drive.AddVisionMeasurement(estimatedPose.pose, estimatedPose.timestamp);
         }

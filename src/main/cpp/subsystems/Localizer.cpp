@@ -24,6 +24,9 @@ Localizer::Localizer()
         photon::PoseStrategy::CLOSEST_TO_REFERENCE_POSE);
     m_centerPoseEstimator.SetMultiTagFallbackStrategy(
         photon::PoseStrategy::CLOSEST_TO_REFERENCE_POSE);
+    
+    // Start the timer - we haven't had any estimates yet
+    m_timeSinceLastEstimate.Start();
 }
 
 void Localizer::UpdateWithReferencePose(const frc::Pose2d& pose)

@@ -27,6 +27,18 @@ struct EstimatedPose
 
 /**
  * AprilTag detection and pose estimation subsystem using PhotonVision and LimeLight
+ * 
+ * This subsystem integrates multiple cameras for robust robot localization:
+ * - 2 PhotonVision cameras for high-accuracy pose estimation
+ * - 2 LimeLight devices for additional pose data using MegaTag2
+ * 
+ * The subsystem automatically:
+ * - Processes camera data each periodic cycle
+ * - Provides pose estimates with timestamps
+ * - Integrates with SwerveDrive for improved odometry
+ * - Tracks estimate freshness for validation
+ * 
+ * Camera positions must be configured in Constants.cpp to match physical mounting.
  */
 class Localizer : public frc2::SubsystemBase
 {
