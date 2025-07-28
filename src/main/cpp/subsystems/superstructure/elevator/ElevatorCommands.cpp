@@ -76,14 +76,14 @@ void ElevatorMoveToPositionCommand::End(bool interrupted)
 }
 
 ElevatorManualControlCommand::ElevatorManualControlCommand(Elevator *elevator,
-                                                           double *speed)
+                                                           function<double()> speed)
 {
     AddRequirements({elevator});
     m_elevator = elevator;
     m_speed = speed;
 }
 
-void ElevatorManualControlCommand::Initialize()
+void ElevatorManualControlCommand::Execute()
 {
-    m_elevator->GetIO().SetSpeed(*m_speed, false);
+    m_elevator->GetIO().SetSpeed(m_speed(), false);
 }

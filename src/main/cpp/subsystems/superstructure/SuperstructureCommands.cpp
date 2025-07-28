@@ -59,8 +59,8 @@ SuperstructureHomingCommand::SuperstructureHomingCommand(
 }
 
 SuperstructureManualControlCommand::SuperstructureManualControlCommand(
-    Superstructure *superstructure, double *innerElevatorSpeed,
-    double *outerElevatorSpeed)
+    Superstructure *superstructure, function<double()> innerElevatorSpeed,
+    function<double()> outerElevatorSpeed)
 {
     AddRequirements({superstructure});
     m_superstructure = superstructure;

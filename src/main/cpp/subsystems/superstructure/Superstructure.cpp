@@ -49,6 +49,8 @@ Superstructure::SuperstructureState Superstructure::GetPresetState(
             return Superstructure::SuperstructureState(0_m, 0_m);
         case ElevatorConstants::START:
             return Superstructure::SuperstructureState(0_m, 0_m);
+        default:
+            return Superstructure::SuperstructureState(0_m, 0_m);
     }
 }
 
@@ -93,8 +95,8 @@ CommandPtr Superstructure::GetHomingCommand(double innerElevatorSpeed,
         .ToPtr();
 }
 
-CommandPtr Superstructure::GetManualControlCommand(double* innerElevatorSpeed,
-                                                   double* outerElevatorSpeed)
+CommandPtr Superstructure::GetManualControlCommand(function<double()> innerElevatorSpeed,
+                                                   function<double()> outerElevatorSpeed)
 {
     return SuperstructureManualControlCommand(this, innerElevatorSpeed,
                                               outerElevatorSpeed)

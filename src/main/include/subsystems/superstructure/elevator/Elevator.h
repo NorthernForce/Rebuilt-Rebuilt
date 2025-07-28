@@ -191,10 +191,10 @@ class ElevatorManualControlCommand
     : public CommandHelper<Command, ElevatorManualControlCommand>
 {
   public:
-    ElevatorManualControlCommand(Elevator *elevator, double *speed);
-    void Initialize() override;
+    ElevatorManualControlCommand(Elevator *elevator, function<double()> speed);
+    void Execute() override;
 
   private:
     Elevator *m_elevator;
-    double *m_speed;
+    function<double()> m_speed;
 };

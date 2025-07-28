@@ -42,8 +42,8 @@ class Superstructure : public frc2::SubsystemBase
     CommandPtr GetHoldAtPositionCommand(SuperstructureState position);
     CommandPtr GetHomingCommand(double innerElevatorSpeed,
                                 double outerElevatorSpeed);
-    CommandPtr GetManualControlCommand(double* innerElevatorSpeed,
-                                       double* outerElevatorSpeed);
+    CommandPtr GetManualControlCommand(function<double()> innerElevatorSpeed,
+                                       function<double()> outerElevatorSpeed);
 
   private:
     Elevator* m_innerElevator;
@@ -99,8 +99,8 @@ class SuperstructureManualControlCommand
 {
   public:
     SuperstructureManualControlCommand(Superstructure* superstructure,
-                                       double* innerElevatorSpeed,
-                                       double* outerElevatorSpeed);
+                                       function<double()> innerElevatorSpeed,
+                                       function<double()> outerElevatorSpeed);
 
   private:
     Superstructure* m_superstructure;
