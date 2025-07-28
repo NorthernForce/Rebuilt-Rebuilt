@@ -2,6 +2,11 @@
 
 #include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 #include <units/frequency.h>
+#include <frc/geometry/Transform3d.h>
+#include <frc/geometry/Translation3d.h>
+#include <frc/geometry/Rotation3d.h>
+#include <units/angle.h>
+#include <units/length.h>
 
 namespace nfr
 {
@@ -22,5 +27,19 @@ class DriveConstants
         pathplanner::PIDConstants(0.5, 0.0, 0.0);
     static constexpr pathplanner::PIDConstants kRotationPID =
         pathplanner::PIDConstants(0.1, 0.0, 0.0);
+};
+
+class CameraConstants
+{
+  public:
+    // Camera transforms relative to robot center
+    static const frc::Transform3d kFrontLeftCameraTransform;
+    static const frc::Transform3d kCenterCameraTransform;
+    
+    // Camera names
+    static constexpr const char* kFrontLeftCameraName = "front_left_camera";
+    static constexpr const char* kCenterCameraName = "center_camera";
+    static constexpr const char* kLimelightFLName = "limelight-fl";
+    static constexpr const char* kLimelightCenterName = "limelight-ctr";
 };
 }  // namespace nfr

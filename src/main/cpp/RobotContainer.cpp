@@ -44,7 +44,8 @@ RobotContainer::RobotContainer()
             DriveConstants::kMaxTranslationSpeed,
             DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
             TunerConstants::FrontRight, TunerConstants::BackLeft,
-            TunerConstants::BackRight)
+            TunerConstants::BackRight),
+      localizer()
 {
     drive.SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
@@ -85,4 +86,21 @@ void RobotContainer::ConfigureBindings()
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 {
     return frc2::cmd::Print("No autonomous command configured");
+}
+
+void RobotContainer::Periodic()
+{
+    // Update localizer with current robot pose for reference
+    localizer.UpdateWithReferencePose(drive.GetState().Pose);
+    
+    // Add vision measurements to drivetrain pose estimator
+    const auto& estimatedPoses = localizer.GetEstimatedPoses();
+    for (const auto& estimatedPose : estimatedPoses)
+    {
+        // Only use recent estimates to avoid stale data
+        if (localizer.HasHadRecentEstimate())
+        {
+            drive.AddVisionMeasurement(estimatedPose.pose, estimatedPose.timestamp);
+        }
+    }
 }
