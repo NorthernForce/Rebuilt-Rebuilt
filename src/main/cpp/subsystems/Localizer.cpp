@@ -10,14 +10,14 @@ Localizer::Localizer()
     : m_frontLeftCamera(CameraConstants::kFrontLeftCameraName),
       m_centerCamera(CameraConstants::kCenterCameraName),
       m_frontLeftPoseEstimator(
-          frc::LoadAprilTagLayoutField(frc::AprilTagField::k2025Reefscape),
+          frc::LoadAprilTagLayoutField(frc::AprilTagField::k2024Crescendo),
           photon::PoseStrategy::MULTI_TAG_PNP_ON_COPROCESSOR,
           CameraConstants::kFrontLeftCameraTransform),
       m_centerPoseEstimator(
-          frc::LoadAprilTagLayoutField(frc::AprilTagField::k2025Reefscape),
+          frc::LoadAprilTagLayoutField(frc::AprilTagField::k2024Crescendo),
           photon::PoseStrategy::MULTI_TAG_PNP_ON_COPROCESSOR,
           CameraConstants::kCenterCameraTransform),
-      m_fieldLayout(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2025Reefscape))
+      m_fieldLayout(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2024Crescendo))
 {
     // Configure fallback strategies for pose estimators
     m_frontLeftPoseEstimator.SetMultiTagFallbackStrategy(
@@ -34,17 +34,18 @@ void Localizer::UpdateWithReferencePose(const frc::Pose2d& pose)
     units::second_t timestamp = frc::Timer::GetFPGATimestamp();
     
     // Update LimeLight robot orientation
-    limelightlib::LimelightHelpers::SetRobotOrientation_MegaTag2(
+    LimelightHelpers::SetRobotOrientation(
         CameraConstants::kLimelightFLName,
         pose.Rotation().Degrees().value(), 0, 0, 0, 0, 0);
         
-    limelightlib::LimelightHelpers::SetRobotOrientation_MegaTag2(
+    LimelightHelpers::SetRobotOrientation(
         CameraConstants::kLimelightCenterName,
         pose.Rotation().Degrees().value(), 0, 0, 0, 0, 0);
     
-    // Set reference poses for improved accuracy
-    m_frontLeftPoseEstimator.SetReferencePose(pose);
-    m_centerPoseEstimator.SetReferencePose(pose);
+    // Set reference poses for improved accuracy (convert Pose2d to Pose3d)
+    frc::Pose3d pose3d{pose.X(), pose.Y(), 0_m, frc::Rotation3d{0_deg, 0_deg, pose.Rotation().Radians()}};
+    m_frontLeftPoseEstimator.SetReferencePose(pose3d);
+    m_centerPoseEstimator.SetReferencePose(pose3d);
 }
 
 void Localizer::Periodic()
@@ -57,7 +58,7 @@ void Localizer::Periodic()
     m_centerBackPoses.clear();
     
     // Process LimeLight estimates
-    auto frontRightEstimate = limelightlib::LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(
+    auto frontRightEstimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(
         CameraConstants::kLimelightFLName);
     if (frontRightEstimate.tagCount > 0)
     {
@@ -66,7 +67,7 @@ void Localizer::Periodic()
         m_estimatedPoses.push_back(pose);
     }
     
-    auto centerBackEstimate = limelightlib::LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(
+    auto centerBackEstimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(
         CameraConstants::kLimelightCenterName);
     if (centerBackEstimate.tagCount > 0)
     {

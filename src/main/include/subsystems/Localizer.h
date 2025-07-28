@@ -6,7 +6,7 @@
 #include <frc/geometry/Pose2d.h>
 #include <frc/Timer.h>
 #include <frc/apriltag/AprilTagFieldLayout.h>
-#include <limelightlib-wpicpp/LimelightHelpers.h>
+#include "limelight/LimelightHelpers.h"
 #include <vector>
 #include <units/time.h>
 
