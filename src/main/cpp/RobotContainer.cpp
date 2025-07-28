@@ -6,9 +6,7 @@
 
 #include <frc2/command/Commands.h>
 
-RobotContainer::RobotContainer() {
-  ConfigureBindings();
-}
+RobotContainer::RobotContainer() { ConfigureBindings(); }
 
 void RobotContainer::ConfigureBindings() {}
 

@@ -7,11 +7,11 @@
 #include <frc2/command/CommandPtr.h>
 
 class RobotContainer {
- public:
+public:
   RobotContainer();
 
   frc2::CommandPtr GetAutonomousCommand();
 
- private:
+private:
   void ConfigureBindings();
 };
