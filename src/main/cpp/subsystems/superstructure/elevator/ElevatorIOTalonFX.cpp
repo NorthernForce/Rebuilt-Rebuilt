@@ -38,8 +38,8 @@ ElevatorIOTalonFX::ElevatorIOTalonFX(int id, double kS, double kV, double kA,
     this->kG = kG;
 
     auto &motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 160_tps;
-    motionMagicConfigs.MotionMagicAcceleration = 160_tr_per_s_sq;
+    motionMagicConfigs.MotionMagicCruiseVelocity = kCruiseVelocity;
+    motionMagicConfigs.MotionMagicAcceleration = kAcceleration;
     motionMagicConfigs.MotionMagicJerk = kJerk;
 
     talonFXConfigs.MotorOutput.Inverted =
