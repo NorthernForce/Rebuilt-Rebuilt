@@ -45,8 +45,21 @@ RobotContainer::RobotContainer()
             DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
             TunerConstants::FrontRight, TunerConstants::BackLeft,
             TunerConstants::BackRight),
-      m_superstructure(new Elevator(string("Inner Elevator"), *(new ElevatorIOTalonFX(InnerElevatorConstants::kId, InnerElevatorConstants::kConstants)), *(new ElevatorSensorIOLimitSwitch(InnerElevatorConstants::kSensorId)), ElevatorConstants::kTolerance),
-                       new Elevator(string("Outer Elevator"), *(new ElevatorIOTalonFX(OuterElevatorConstants::kId, OuterElevatorConstants::kConstants)), *(new ElevatorSensorIOLimitSwitch(OuterElevatorConstants::kSensorId)), ElevatorConstants::kTolerance))
+      m_superstructure(
+          new Elevator(
+              string("Inner Elevator"),
+              *(new ElevatorIOTalonFX(InnerElevatorConstants::kId,
+                                      InnerElevatorConstants::kConstants)),
+              *(new ElevatorSensorIOLimitSwitch(
+                  InnerElevatorConstants::kSensorId)),
+              ElevatorConstants::kTolerance),
+          new Elevator(
+              string("Outer Elevator"),
+              *(new ElevatorIOTalonFX(OuterElevatorConstants::kId,
+                                      OuterElevatorConstants::kConstants)),
+              *(new ElevatorSensorIOLimitSwitch(
+                  OuterElevatorConstants::kSensorId)),
+              ElevatorConstants::kTolerance))
 {
     drive.SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();

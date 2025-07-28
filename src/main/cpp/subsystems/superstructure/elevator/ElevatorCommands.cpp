@@ -75,8 +75,8 @@ void ElevatorMoveToPositionCommand::End(bool interrupted)
     m_elevator->Stop();
 }
 
-ElevatorManualControlCommand::ElevatorManualControlCommand(Elevator *elevator,
-                                                           function<double()> speed)
+ElevatorManualControlCommand::ElevatorManualControlCommand(
+    Elevator *elevator, function<double()> speed)
 {
     AddRequirements({elevator});
     m_elevator = elevator;

@@ -95,8 +95,9 @@ CommandPtr Superstructure::GetHomingCommand(double innerElevatorSpeed,
         .ToPtr();
 }
 
-CommandPtr Superstructure::GetManualControlCommand(function<double()> innerElevatorSpeed,
-                                                   function<double()> outerElevatorSpeed)
+CommandPtr Superstructure::GetManualControlCommand(
+    function<double()> innerElevatorSpeed,
+    function<double()> outerElevatorSpeed)
 {
     return SuperstructureManualControlCommand(this, innerElevatorSpeed,
                                               outerElevatorSpeed)
