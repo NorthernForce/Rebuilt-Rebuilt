@@ -11,9 +11,6 @@
 #include <memory>
 #include <string>
 
-using namespace std;
-using namespace units;
-
 namespace nfr
 {
 class DriveConstants
@@ -38,7 +35,7 @@ class DriveConstants
 namespace ElevatorConstants
 {
 constexpr double kHomingSpeed = 0.25;
-constexpr meter_t kTolerance = 0.006_m;
+constexpr units::meter_t kTolerance = 0.006_m;
 // TODO fix values
 enum SuperstructurePresets
 {
@@ -58,8 +55,8 @@ constexpr int kSensorId = 0;
 
 constexpr double kGearBoxRatio = 12.0;
 constexpr double kSprocketTeeth = 16.0;
-constexpr meter_t kSprocketPitch = 0.25_in;
-constexpr meter_t kSprocketCircumference = kSprocketPitch * kSprocketTeeth;
+constexpr units::meter_t kSprocketPitch = 0.25_in;
+constexpr units::meter_t kSprocketCircumference = kSprocketPitch * kSprocketTeeth;
 
 constexpr double kS = 0.017384;
 constexpr double kV = 0.726186;
@@ -68,13 +65,13 @@ constexpr double kP = 18;
 constexpr double kI = 0;
 constexpr double kD = 0;
 constexpr double kG = 0.21;
-constexpr turns_per_second_t kCruiseVelocity = 160_tps;
-constexpr turns_per_second_squared_t kAcceleration = 0_tr_per_s_sq;
-constexpr turns_per_second_cubed_t kJerk = 0_tr_per_s_cu;
+constexpr units::turns_per_second_t kCruiseVelocity = 160_tps;
+constexpr units::turns_per_second_squared_t kAcceleration = 0_tr_per_s_sq;
+constexpr units::turns_per_second_cubed_t kJerk = 0_tr_per_s_cu;
 
-constexpr meter_t kLowerLimit = 0_m;
-constexpr meter_t kUpperLimit = 0.63_m;
-constexpr kilogram_t kElevatorMass = 2.72_kg;
+constexpr units::meter_t kLowerLimit = 0_m;
+constexpr units::meter_t kUpperLimit = 0.63_m;
+constexpr units::kilogram_t kElevatorMass = 2.72_kg;
 
 constexpr ElevatorIO::ElevatorConstants kConstants =
     ElevatorIO::ElevatorConstants(kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity,
@@ -90,8 +87,8 @@ constexpr int kSensorId = 1;
 
 constexpr double kGearBoxRatio = 16.0;
 constexpr double kSprocketTeeth = 22.0;
-constexpr meter_t kSprocketPitch = 0.25_in;
-constexpr meter_t kSprocketCircumference = kSprocketPitch * kSprocketTeeth;
+constexpr units::meter_t kSprocketPitch = 0.25_in;
+constexpr units::meter_t kSprocketCircumference = kSprocketPitch * kSprocketTeeth;
 
 constexpr double kS = 0.052289;
 constexpr double kV = 0.504647;
@@ -100,13 +97,13 @@ constexpr double kP = 18;
 constexpr double kI = 0;
 constexpr double kD = 0;
 constexpr double kG = 0.31;
-constexpr turns_per_second_t kCruiseVelocity = 160_tps;
-constexpr turns_per_second_squared_t kAcceleration = 0_tr_per_s_sq;
-constexpr turns_per_second_cubed_t kJerk = 0_tr_per_s_cu;
+constexpr units::turns_per_second_t kCruiseVelocity = 160_tps;
+constexpr units::turns_per_second_squared_t kAcceleration = 0_tr_per_s_sq;
+constexpr units::turns_per_second_cubed_t kJerk = 0_tr_per_s_cu;
 
-constexpr meter_t kLowerLimit = 0_m;
-constexpr meter_t kUpperLimit = 0.68_m;
-constexpr kilogram_t kElevatorMass = 2.72_kg;
+constexpr units::meter_t kLowerLimit = 0_m;
+constexpr units::meter_t kUpperLimit = 0.68_m;
+constexpr units::kilogram_t kElevatorMass = 2.72_kg;
 
 constexpr ElevatorIO::ElevatorConstants kConstants =
     ElevatorIO::ElevatorConstants(kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity,

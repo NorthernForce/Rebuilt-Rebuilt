@@ -1,9 +1,13 @@
 #include <subsystems/superstructure/Superstructure.h>
 
+using namespace std;
+using namespace units;
+using namespace frc2;
+
 Superstructure::SuperstructureState GetPresetState(
     ElevatorConstants::SuperstructurePresets preset);
 
-Superstructure::Superstructure(Elevator* innerElevator, Elevator* outerElevator)
+Superstructure::Superstructure(shared_ptr<Elevator> innerElevator, shared_ptr<Elevator> outerElevator)
     : m_innerElevator(innerElevator), m_outerElevator(outerElevator)
 {
     m_target = GetPresetState(ElevatorConstants::SuperstructurePresets::START);
@@ -11,8 +15,8 @@ Superstructure::Superstructure(Elevator* innerElevator, Elevator* outerElevator)
 
 void Superstructure::Stop()
 {
-    m_innerElevator->GetIO().Stop();
-    m_outerElevator->GetIO().Stop();
+    m_innerElevator->Stop();
+    m_outerElevator->Stop();
 }
 
 void Superstructure::SetTarget(SuperstructureState target)
@@ -68,12 +72,12 @@ bool Superstructure::IsAtPosition(SuperstructureState position)
 
 Elevator* Superstructure::GetInnerElevator()
 {
-    return m_innerElevator;
+    return m_innerElevator.get();
 }
 
 Elevator* Superstructure::GetOuterElevator()
 {
-    return m_outerElevator;
+    return m_outerElevator.get();
 }
 
 CommandPtr Superstructure::GetGoToPositionCommand(SuperstructureState position)

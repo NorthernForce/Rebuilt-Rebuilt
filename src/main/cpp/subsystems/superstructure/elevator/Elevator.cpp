@@ -1,8 +1,12 @@
 #include "subsystems/superstructure/elevator/Elevator.h"
 
+using namespace std;
+using namespace units;
+using namespace frc2;
+
 frc2::sysid::SysIdRoutine GetSysIdRoutine();
 
-Elevator::Elevator(string name, ElevatorIO& motor, ElevatorSensorIO& sensor,
+Elevator::Elevator(std::string name, std::shared_ptr<ElevatorIO> motor, std::shared_ptr<ElevatorSensorIO> sensor,
                    meter_t errorTolerance)
     : m_motor(motor), m_sensor(sensor), m_sysIdRoutine(GetSysIdRoutine())
 {
@@ -13,17 +17,17 @@ Elevator::Elevator(string name, ElevatorIO& motor, ElevatorSensorIO& sensor,
 void Elevator::SetTargetPosition(meter_t position)
 {
     m_targetState = position;
-    m_motor.SetTargetPosition(position);
+    m_motor->SetTargetPosition(position);
 }
 
 void Elevator::Set(double speed)
 {
-    m_motor.SetSpeed(speed, false);
+    m_motor->SetSpeed(speed, false);
 }
 
 void Elevator::Stop()
 {
-    m_motor.Stop();
+    m_motor->Stop();
 }
 
 CommandPtr Elevator::GetMoveToPositionCommand(meter_t position)
@@ -48,10 +52,10 @@ CommandPtr Elevator::GetStopCommand()
 
 void Elevator::Periodic()
 {
-    m_motor.Update();
-    if (m_sensor.IsAtLimit() && !m_hasResetPosition)
+    m_motor->Update();
+    if (m_sensor->IsAtLimit() && !m_hasResetPosition)
     {
-        m_motor.ResetPosition();
+        m_motor->ResetPosition();
         m_hasResetPosition = true;
     }
     else
@@ -62,7 +66,7 @@ void Elevator::Periodic()
 
 meter_t Elevator::GetPosition()
 {
-    return meter_t(m_motor.GetPosition().value());
+    return meter_t(m_motor->GetPosition().value());
 }
 
 meter_t Elevator::GetTargetPosition()
@@ -81,14 +85,14 @@ bool Elevator::IsAtPosition(meter_t position)
     return units::math::abs(GetPosition() - position) <= m_errorTolerance;
 }
 
-ElevatorIO& Elevator::GetIO()
+ElevatorIO* Elevator::GetIO()
 {
-    return m_motor;
+    return m_motor.get();
 }
 
-ElevatorSensorIO& Elevator::GetSensor()
+ElevatorSensorIO* Elevator::GetSensor()
 {
-    return m_sensor;
+    return m_sensor.get();
 }
 
 frc2::sysid::SysIdRoutine Elevator::GetSysIdRoutine()
@@ -103,7 +107,7 @@ frc2::sysid::SysIdRoutine Elevator::GetSysIdRoutine()
                     frc::sysid::SysIdRoutineLog::StateEnumToString(state));
             }),
         frc2::sysid::Mechanism{[this](units::volt_t output)
-                               { m_motor.SetVoltage(output); },
+                               { m_motor->SetVoltage(output); },
                                {},
                                this});
 }

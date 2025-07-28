@@ -4,10 +4,6 @@
 
 #include <memory>
 
-using namespace std;
-using namespace units;
-using namespace frc;
-
 class ElevatorSensorIO
 {
   public:
@@ -23,5 +19,5 @@ class ElevatorSensorIOLimitSwitch : public ElevatorSensorIO
     bool IsAtLimit() override;
 
   private:
-    shared_ptr<DigitalInput> m_digitalInput;
+    std::shared_ptr<frc::DigitalInput> m_digitalInput;
 };

@@ -1,5 +1,9 @@
 #include <subsystems/superstructure/Superstructure.h>
 
+using namespace std;
+using namespace units;
+using namespace frc2;
+
 SuperstructureGoToPositionCommand::SuperstructureGoToPositionCommand(
     Superstructure *superstructure,
     Superstructure::SuperstructureState position)

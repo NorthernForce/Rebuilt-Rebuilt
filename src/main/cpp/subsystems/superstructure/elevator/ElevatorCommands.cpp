@@ -1,5 +1,9 @@
 #include <subsystems/superstructure/elevator/Elevator.h>
 
+using namespace std;
+using namespace units;
+using namespace frc2;
+
 ElevatorHoldAtPositionCommand::ElevatorHoldAtPositionCommand(Elevator *elevator,
                                                              meter_t position)
 {
@@ -10,7 +14,7 @@ ElevatorHoldAtPositionCommand::ElevatorHoldAtPositionCommand(Elevator *elevator,
 
 void ElevatorHoldAtPositionCommand::Initialize()
 {
-    m_elevator->GetIO().SetTargetPosition(m_position);
+    m_elevator->GetIO()->SetTargetPosition(m_position);
 }
 
 bool ElevatorHoldAtPositionCommand::IsFinished()
@@ -20,7 +24,7 @@ bool ElevatorHoldAtPositionCommand::IsFinished()
 
 void ElevatorHoldAtPositionCommand::End(bool interrupted)
 {
-    m_elevator->GetIO().Stop();
+    m_elevator->GetIO()->Stop();
 }
 
 ElevatorHomingCommand::ElevatorHomingCommand(Elevator *elevator, double speed)
@@ -32,24 +36,24 @@ ElevatorHomingCommand::ElevatorHomingCommand(Elevator *elevator, double speed)
 
 void ElevatorHomingCommand::Initialize()
 {
-    m_elevator->GetIO().SetLowerLimitEnable(false);
+    m_elevator->GetIO()->SetLowerLimitEnable(false);
 }
 
 void ElevatorHomingCommand::Execute()
 {
-    m_elevator->GetIO().SetSpeed(-m_speed, true);
+    m_elevator->GetIO()->SetSpeed(-m_speed, true);
 }
 
 bool ElevatorHomingCommand::IsFinished()
 {
-    return m_elevator->GetSensor().IsAtLimit();
+    return m_elevator->GetSensor()->IsAtLimit();
 }
 
 void ElevatorHomingCommand::End(bool interrupted)
 {
-    m_elevator->GetIO().Stop();
-    m_elevator->GetIO().ResetPosition();
-    m_elevator->GetIO().SetLowerLimitEnable(true);
+    m_elevator->GetIO()->Stop();
+    m_elevator->GetIO()->ResetPosition();
+    m_elevator->GetIO()->SetLowerLimitEnable(true);
 }
 
 ElevatorMoveToPositionCommand::ElevatorMoveToPositionCommand(Elevator *elevator,
@@ -85,5 +89,5 @@ ElevatorManualControlCommand::ElevatorManualControlCommand(Elevator *elevator,
 
 void ElevatorManualControlCommand::Execute()
 {
-    m_elevator->GetIO().SetSpeed(m_speed(), false);
+    m_elevator->GetIO()->SetSpeed(m_speed(), false);
 }
