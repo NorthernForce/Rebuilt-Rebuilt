@@ -4,8 +4,10 @@
 
 #include "RobotContainer.h"
 
+#include <frc/DriverStation.h>
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/CommandXboxController.h>
+#include <logging/LogTypes.h>
 
 #include "constants/Constants.h"
 #include "frc/MathUtil.h"
@@ -107,4 +109,11 @@ void RobotContainer::Periodic()
             drive.AddVisionMeasurement(estimatedPose.pose, estimatedPose.timestamp);
         }
     }
+}
+
+void RobotContainer::Log(const nfr::LogContext& log) const
+{
+    log["match_time"] << frc::DriverStation::GetMatchTime();
+    log["drive"] << drive;
+    log["localizer"] << localizer;
 }

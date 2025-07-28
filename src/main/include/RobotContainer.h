@@ -6,6 +6,7 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
+#include <logging/Logger.h>
 
 #include "subsystems/SwerveDrive.h"
 #include "subsystems/Localizer.h"
@@ -21,6 +22,8 @@ class RobotContainer
      * Periodic function to update vision integration
      */
     void Periodic();
+
+    void Log(const nfr::LogContext &log) const;
 
   private:
     void ConfigureBindings();
