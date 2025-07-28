@@ -56,7 +56,8 @@ constexpr int kSensorId = 0;
 constexpr double kGearBoxRatio = 12.0;
 constexpr double kSprocketTeeth = 16.0;
 constexpr units::meter_t kSprocketPitch = 0.25_in;
-constexpr units::meter_t kSprocketCircumference = kSprocketPitch * kSprocketTeeth;
+constexpr units::meter_t kSprocketCircumference =
+    kSprocketPitch * kSprocketTeeth;
 
 constexpr double kS = 0.017384;
 constexpr double kV = 0.726186;
@@ -88,7 +89,8 @@ constexpr int kSensorId = 1;
 constexpr double kGearBoxRatio = 16.0;
 constexpr double kSprocketTeeth = 22.0;
 constexpr units::meter_t kSprocketPitch = 0.25_in;
-constexpr units::meter_t kSprocketCircumference = kSprocketPitch * kSprocketTeeth;
+constexpr units::meter_t kSprocketCircumference =
+    kSprocketPitch * kSprocketTeeth;
 
 constexpr double kS = 0.052289;
 constexpr double kV = 0.504647;

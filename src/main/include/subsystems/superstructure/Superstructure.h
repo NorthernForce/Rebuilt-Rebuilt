@@ -23,7 +23,8 @@ class Superstructure : public frc2::SubsystemBase
         units::meter_t innerElevatorPosition;
         units::meter_t outerElevatorPosition;
     };
-    Superstructure(std::shared_ptr<Elevator> innerElevator, std::shared_ptr<Elevator> outerElevator);
+    Superstructure(std::shared_ptr<Elevator> innerElevator,
+                   std::shared_ptr<Elevator> outerElevator);
     void Stop();
     void SetTarget(SuperstructureState target);
     SuperstructureState GetState();
@@ -37,9 +38,10 @@ class Superstructure : public frc2::SubsystemBase
     frc2::CommandPtr GetGoToPositionCommand(SuperstructureState position);
     frc2::CommandPtr GetHoldAtPositionCommand(SuperstructureState position);
     frc2::CommandPtr GetHomingCommand(double innerElevatorSpeed,
-                                double outerElevatorSpeed);
-    frc2::CommandPtr GetManualControlCommand(std::function<double()> innerElevatorSpeed,
-                                       std::function<double()> outerElevatorSpeed);
+                                      double outerElevatorSpeed);
+    frc2::CommandPtr GetManualControlCommand(
+        std::function<double()> innerElevatorSpeed,
+        std::function<double()> outerElevatorSpeed);
 
   private:
     std::shared_ptr<Elevator> m_innerElevator;
@@ -48,7 +50,8 @@ class Superstructure : public frc2::SubsystemBase
 };
 
 class SuperstructureGoToPositionCommand
-    : public frc2::CommandHelper<frc2::Command, SuperstructureGoToPositionCommand>
+    : public frc2::CommandHelper<frc2::Command,
+                                 SuperstructureGoToPositionCommand>
 {
   public:
     SuperstructureGoToPositionCommand(
@@ -63,7 +66,8 @@ class SuperstructureGoToPositionCommand
 };
 
 class SuperstructureHoldAtPositionCommand
-    : public frc2::CommandHelper<frc2::Command, SuperstructureHoldAtPositionCommand>
+    : public frc2::CommandHelper<frc2::Command,
+                                 SuperstructureHoldAtPositionCommand>
 {
   public:
     SuperstructureHoldAtPositionCommand(
@@ -78,7 +82,8 @@ class SuperstructureHoldAtPositionCommand
 };
 
 class SuperstructureHomingCommand
-    : public frc2::CommandHelper<frc2::ParallelCommandGroup, SuperstructureHomingCommand>
+    : public frc2::CommandHelper<frc2::ParallelCommandGroup,
+                                 SuperstructureHomingCommand>
 {
   public:
     SuperstructureHomingCommand(Superstructure* superstructure,
@@ -91,12 +96,13 @@ class SuperstructureHomingCommand
 
 class SuperstructureManualControlCommand
     : public frc2::CommandHelper<frc2::ParallelCommandGroup,
-                           SuperstructureManualControlCommand>
+                                 SuperstructureManualControlCommand>
 {
   public:
-    SuperstructureManualControlCommand(Superstructure* superstructure,
-                                       std::function<double()> innerElevatorSpeed,
-                                       std::function<double()> outerElevatorSpeed);
+    SuperstructureManualControlCommand(
+        Superstructure* superstructure,
+        std::function<double()> innerElevatorSpeed,
+        std::function<double()> outerElevatorSpeed);
 
   private:
     Superstructure* m_superstructure;

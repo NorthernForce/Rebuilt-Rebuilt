@@ -45,8 +45,21 @@ RobotContainer::RobotContainer()
             DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
             TunerConstants::FrontRight, TunerConstants::BackLeft,
             TunerConstants::BackRight),
-      m_superstructure(make_shared<Elevator>(string("Inner Elevator"), make_shared<ElevatorIOTalonFX>(InnerElevatorConstants::kId, InnerElevatorConstants::kConstants), make_shared<ElevatorSensorIOLimitSwitch>(InnerElevatorConstants::kSensorId), ElevatorConstants::kTolerance),
-                       make_shared<Elevator>(string("Outer Elevator"), make_shared<ElevatorIOTalonFX>(OuterElevatorConstants::kId, OuterElevatorConstants::kConstants), make_shared<ElevatorSensorIOLimitSwitch>(OuterElevatorConstants::kSensorId), ElevatorConstants::kTolerance))
+      m_superstructure(
+          make_shared<Elevator>(string("Inner Elevator"),
+                                make_shared<ElevatorIOTalonFX>(
+                                    InnerElevatorConstants::kId,
+                                    InnerElevatorConstants::kConstants),
+                                make_shared<ElevatorSensorIOLimitSwitch>(
+                                    InnerElevatorConstants::kSensorId),
+                                ElevatorConstants::kTolerance),
+          make_shared<Elevator>(string("Outer Elevator"),
+                                make_shared<ElevatorIOTalonFX>(
+                                    OuterElevatorConstants::kId,
+                                    OuterElevatorConstants::kConstants),
+                                make_shared<ElevatorSensorIOLimitSwitch>(
+                                    OuterElevatorConstants::kSensorId),
+                                ElevatorConstants::kTolerance))
 {
     drive.SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();

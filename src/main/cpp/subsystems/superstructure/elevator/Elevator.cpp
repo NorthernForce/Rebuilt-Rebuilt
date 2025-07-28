@@ -6,7 +6,8 @@ using namespace frc2;
 
 frc2::sysid::SysIdRoutine GetSysIdRoutine();
 
-Elevator::Elevator(std::string name, std::shared_ptr<ElevatorIO> motor, std::shared_ptr<ElevatorSensorIO> sensor,
+Elevator::Elevator(std::string name, std::shared_ptr<ElevatorIO> motor,
+                   std::shared_ptr<ElevatorSensorIO> sensor,
                    meter_t errorTolerance)
     : m_motor(motor), m_sensor(sensor), m_sysIdRoutine(GetSysIdRoutine())
 {

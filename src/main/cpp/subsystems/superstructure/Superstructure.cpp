@@ -7,7 +7,8 @@ using namespace frc2;
 Superstructure::SuperstructureState GetPresetState(
     ElevatorConstants::SuperstructurePresets preset);
 
-Superstructure::Superstructure(shared_ptr<Elevator> innerElevator, shared_ptr<Elevator> outerElevator)
+Superstructure::Superstructure(shared_ptr<Elevator> innerElevator,
+                               shared_ptr<Elevator> outerElevator)
     : m_innerElevator(innerElevator), m_outerElevator(outerElevator)
 {
     m_target = GetPresetState(ElevatorConstants::SuperstructurePresets::START);

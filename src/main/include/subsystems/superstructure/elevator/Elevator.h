@@ -21,7 +21,8 @@ class ElevatorHomingCommand;
 class Elevator : public frc2::SubsystemBase
 {
   public:
-    Elevator(std::string name, std::shared_ptr<ElevatorIO> motor, std::shared_ptr<ElevatorSensorIO> sensor,
+    Elevator(std::string name, std::shared_ptr<ElevatorIO> motor,
+             std::shared_ptr<ElevatorSensorIO> sensor,
              units::meter_t errorTolerance);
     void SetTargetPosition(units::meter_t position);
     void Set(double speed);
@@ -30,8 +31,8 @@ class Elevator : public frc2::SubsystemBase
     units::meter_t GetTargetPosition();
     bool IsAtTargetPosition();
     bool IsAtPosition(units::meter_t position);
-    ElevatorIO* GetIO();
-    ElevatorSensorIO* GetSensor();
+    ElevatorIO *GetIO();
+    ElevatorSensorIO *GetSensor();
     void Periodic() override;
 
     frc2::CommandPtr GetMoveToPositionCommand(units::meter_t position);
@@ -128,10 +129,8 @@ class ElevatorIOTalonFX : public ElevatorIO
     ctre::phoenix6::StatusSignal<units::turn_t> m_position;
     ctre::phoenix6::StatusSignal<units::celsius_t> m_temperature;
     ctre::phoenix6::StatusSignal<units::volt_t> m_voltage;
-    ctre::phoenix6::StatusSignal<units::turns_per_second_t>
-        m_velocity;
-    ctre::phoenix6::StatusSignal<units::turns_per_second_t>
-        m_rotorVelocity;
+    ctre::phoenix6::StatusSignal<units::turns_per_second_t> m_velocity;
+    ctre::phoenix6::StatusSignal<units::turns_per_second_t> m_rotorVelocity;
     ctre::phoenix6::StatusSignal<units::ampere_t> m_current;
     ctre::phoenix6::controls::MotionMagicExpoVoltage m_motionMagicVoltage;
     ctre::phoenix6::controls::DutyCycleOut m_dutyCycleOut;
@@ -187,7 +186,8 @@ class ElevatorManualControlCommand
     : public frc2::CommandHelper<frc2::Command, ElevatorManualControlCommand>
 {
   public:
-    ElevatorManualControlCommand(Elevator *elevator, std::function<double()> speed);
+    ElevatorManualControlCommand(Elevator *elevator,
+                                 std::function<double()> speed);
     void Execute() override;
 
   private:
