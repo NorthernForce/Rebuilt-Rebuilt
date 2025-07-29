@@ -22,19 +22,21 @@ class Superstructure : public frc2::SubsystemBase
     {
         units::meter_t innerElevatorPosition;
         units::meter_t outerElevatorPosition;
+        void Log(const nfr::LogContext& log) const;
     };
     Superstructure(std::shared_ptr<Elevator> innerElevator,
                    std::shared_ptr<Elevator> outerElevator);
     void Stop();
     void SetTarget(SuperstructureState target);
-    SuperstructureState GetState();
-    SuperstructureState GetTargetState();
+    SuperstructureState GetState() const;
+    SuperstructureState GetTargetState() const;
     SuperstructureState GetPresetState(
-        ElevatorConstants::SuperstructurePresets preset);
-    bool IsAtTarget();
-    bool IsAtPosition(SuperstructureState position);
+        ElevatorConstants::SuperstructurePresets preset) const;
+    bool IsAtTarget() const;
+    bool IsAtPosition(SuperstructureState position) const;
     Elevator* GetInnerElevator();
     Elevator* GetOuterElevator();
+    void Log(const nfr::LogContext& log) const;
     frc2::CommandPtr GetGoToPositionCommand(SuperstructureState position);
     frc2::CommandPtr GetHoldAtPositionCommand(SuperstructureState position);
     frc2::CommandPtr GetHomingCommand(double innerElevatorSpeed,

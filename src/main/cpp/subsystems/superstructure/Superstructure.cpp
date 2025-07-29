@@ -25,19 +25,28 @@ void Superstructure::SetTarget(SuperstructureState target)
     m_target = target;
 }
 
-Superstructure::SuperstructureState Superstructure::GetState()
+Superstructure::SuperstructureState Superstructure::GetState() const
 {
     return SuperstructureState(m_innerElevator->GetPosition(),
                                m_outerElevator->GetPosition());
 }
 
-Superstructure::SuperstructureState Superstructure::GetTargetState()
+Superstructure::SuperstructureState Superstructure::GetTargetState() const
 {
     return m_target;
 }
 
+void Superstructure::Log(const nfr::LogContext& log) const
+{
+    log["innerElevator"] << m_innerElevator;
+    log["outerElevator"] << m_outerElevator;
+    log["state"] << GetState();
+    log["targetState"] << GetTargetState();
+    log["isAtTarget"] << IsAtTarget();
+}
+
 Superstructure::SuperstructureState Superstructure::GetPresetState(
-    ElevatorConstants::SuperstructurePresets preset)
+    ElevatorConstants::SuperstructurePresets preset) const
 {
     // TODO fix values
     switch (preset)
@@ -59,13 +68,13 @@ Superstructure::SuperstructureState Superstructure::GetPresetState(
     }
 }
 
-bool Superstructure::IsAtTarget()
+bool Superstructure::IsAtTarget() const
 {
     return m_innerElevator->IsAtTargetPosition() &&
            m_outerElevator->IsAtTargetPosition();
 }
 
-bool Superstructure::IsAtPosition(SuperstructureState position)
+bool Superstructure::IsAtPosition(SuperstructureState position) const
 {
     return m_innerElevator->IsAtPosition(position.innerElevatorPosition) &&
            m_outerElevator->IsAtPosition(position.outerElevatorPosition);

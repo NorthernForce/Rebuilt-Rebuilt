@@ -9,14 +9,14 @@ class ElevatorSensorIO
   public:
     ElevatorSensorIO() = default;
     virtual ~ElevatorSensorIO() = 0;
-    virtual bool IsAtLimit() = 0;
+    virtual bool IsAtLimit() const = 0;
 };
 
 class ElevatorSensorIOLimitSwitch : public ElevatorSensorIO
 {
   public:
     ElevatorSensorIOLimitSwitch(int channel);
-    bool IsAtLimit() override;
+    bool IsAtLimit() const override;
 
   private:
     std::shared_ptr<frc::DigitalInput> m_digitalInput;

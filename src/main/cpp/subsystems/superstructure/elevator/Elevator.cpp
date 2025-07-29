@@ -65,25 +65,33 @@ void Elevator::Periodic()
     }
 }
 
-meter_t Elevator::GetPosition()
+meter_t Elevator::GetPosition() const
 {
     return meter_t(m_motor->GetPosition().value());
 }
 
-meter_t Elevator::GetTargetPosition()
+meter_t Elevator::GetTargetPosition() const
 {
     return m_targetState;
 }
 
-bool Elevator::IsAtTargetPosition()
+bool Elevator::IsAtTargetPosition() const
 {
     return units::math::abs(GetPosition() - GetTargetPosition()) <=
            m_errorTolerance;
 }
 
-bool Elevator::IsAtPosition(meter_t position)
+bool Elevator::IsAtPosition(meter_t position) const
 {
     return units::math::abs(GetPosition() - position) <= m_errorTolerance;
+}
+
+void Elevator::Log(const nfr::LogContext& log) const
+{
+    log["position"] << GetPosition();
+    log["targetPosition"] << GetTargetPosition();
+    log["isAtTarget"] << IsAtTargetPosition();
+    log["isAtLimit"] << GetSensor()->IsAtLimit();
 }
 
 ElevatorIO* Elevator::GetIO()
@@ -91,7 +99,7 @@ ElevatorIO* Elevator::GetIO()
     return m_motor.get();
 }
 
-ElevatorSensorIO* Elevator::GetSensor()
+ElevatorSensorIO* Elevator::GetSensor() const
 {
     return m_sensor.get();
 }

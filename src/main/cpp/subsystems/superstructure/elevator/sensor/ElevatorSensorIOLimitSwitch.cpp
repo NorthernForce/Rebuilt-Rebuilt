@@ -9,7 +9,7 @@ ElevatorSensorIOLimitSwitch::ElevatorSensorIOLimitSwitch(int channel)
     m_digitalInput = std::make_shared<frc::DigitalInput>(channel);
 }
 
-bool ElevatorSensorIOLimitSwitch::IsAtLimit()
+bool ElevatorSensorIOLimitSwitch::IsAtLimit() const
 {
     return m_digitalInput->Get();
 }

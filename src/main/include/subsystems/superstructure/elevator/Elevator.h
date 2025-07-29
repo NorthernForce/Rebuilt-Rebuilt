@@ -12,6 +12,7 @@
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <memory>
 #include <string>
+#include <logging/Logger.h>
 
 class ElevatorIO;
 class ElevatorIOTalonFX;
@@ -27,13 +28,14 @@ class Elevator : public frc2::SubsystemBase
     void SetTargetPosition(units::meter_t position);
     void Set(double speed);
     void Stop();
-    units::meter_t GetPosition();
-    units::meter_t GetTargetPosition();
-    bool IsAtTargetPosition();
-    bool IsAtPosition(units::meter_t position);
+    units::meter_t GetPosition() const;
+    units::meter_t GetTargetPosition() const;
+    bool IsAtTargetPosition() const;
+    bool IsAtPosition(units::meter_t position) const;
     ElevatorIO *GetIO();
-    ElevatorSensorIO *GetSensor();
+    ElevatorSensorIO *GetSensor() const;
     void Periodic() override;
+    void Log(const nfr::LogContext& log) const;
 
     frc2::CommandPtr GetMoveToPositionCommand(units::meter_t position);
     frc2::CommandPtr GetHomingCommand(double homingSpeed);
