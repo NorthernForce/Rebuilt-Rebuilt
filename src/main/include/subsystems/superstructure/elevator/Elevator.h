@@ -5,6 +5,7 @@
 #include <frc2/command/CommandHelper.h>
 #include <frc2/command/SubsystemBase.h>
 #include <frc2/command/sysid/SysIdRoutine.h>
+#include <logging/Logger.h>
 #include <subsystems/superstructure/elevator/ElevatorSensor.h>
 #include <units/math.h>
 
@@ -12,7 +13,6 @@
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <memory>
 #include <string>
-#include <logging/Logger.h>
 
 class ElevatorIO;
 class ElevatorIOTalonFX;
@@ -35,7 +35,7 @@ class Elevator : public frc2::SubsystemBase
     ElevatorIO *GetIO();
     ElevatorSensorIO *GetSensor() const;
     void Periodic() override;
-    void Log(const nfr::LogContext& log) const;
+    void Log(const nfr::LogContext &log) const;
 
     frc2::CommandPtr GetMoveToPositionCommand(units::meter_t position);
     frc2::CommandPtr GetHomingCommand(double homingSpeed);
