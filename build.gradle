@@ -43,11 +43,32 @@ tasks.withType(CppCompile).configureEach {
     dependsOn generateGitProperties
 }
 
+nativeUtils.platformConfigs.named('windowsx86-64').configure {
+  it.cppCompiler.args.add("/std:c++2b")
+}
+nativeUtils.platformConfigs.named('windowsx86').configure {
+  it.cppCompiler.args.add("/std:c++2b")
+}
+nativeUtils.platformConfigs.named('windowsarm64').configure {
+  it.cppCompiler.args.add("/std:c++2b")
+}
+nativeUtils.platformConfigs.named('osxuniversal').configure {
+  it.cppCompiler.args.add("-std=c++2b")
+}
 nativeUtils.platformConfigs.named('linuxx86-64').configure {
+  it.cppCompiler.args.add("-std=c++2b")
+}
+nativeUtils.platformConfigs.named('linuxarm64').configure {
   it.cppCompiler.args.add("-std=c++2b")
 }
 nativeUtils.platformConfigs.named('linuxathena').configure {
   it.cppCompiler.args.add("-std=c++2b")
+}
+nativeUtils.platformConfigs.named('linuxsystemcore').configure {
+  it.cppCompiler.args.add("-std=c++2b")
+}
+nativeUtils.platformConfigs.named('linuxarm32').configure {
+    it.cppCompiler.args.add("-std=c++2b")
 }
 
 
