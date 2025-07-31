@@ -2,6 +2,7 @@
 #include <photon/PhotonCamera.h>
 #include <frc/apriltag/AprilTagFields.h>
 #include <frc/Timer.h>
+#include <units/frequency.h>
 
 namespace nfr
 {
@@ -19,26 +20,23 @@ PhotonVisionCameraSimIO::PhotonVisionCameraSimIO(const std::string& cameraName,
     else
     {
         m_visionSim = std::make_shared<photon::VisionSystemSim>("VisionSim");
-        m_visionSim->AddAprilTags(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2024Crescendo));
+        m_visionSim->AddAprilTags(frc::AprilTagFieldLayout::LoadField(frc::AprilTagField::k2024Crescendo));
     }
     
-    // Create camera simulation
-    auto cameraProperties = photon::SimCameraProperties{};
+    // Create camera simulation with proper constructor
+    photon::SimCameraProperties cameraProperties{};
     cameraProperties.SetCalibration(960, 720, frc::Rotation2d{90_deg});
     cameraProperties.SetCalibError(0.35, 0.10);
-    cameraProperties.SetFPS(15);
+    cameraProperties.SetFPS(15_Hz);
     cameraProperties.SetAvgLatency(50_ms);
     cameraProperties.SetLatencyStdDev(15_ms);
     
-    m_cameraSim = std::make_shared<photon::PhotonCameraSim>(
-        m_cameraName, cameraProperties);
+    // Use new constructor approach
+    m_cameraSim = std::shared_ptr<photon::PhotonCameraSim>(
+        new photon::PhotonCameraSim(m_cameraName, cameraProperties, m_cameraTransform));
     
     // Add camera to vision system
     m_visionSim->AddCamera(m_cameraSim.get(), m_cameraTransform);
-    
-    // Enable processing
-    m_cameraSim->EnableProcessedStream(true);
-    m_cameraSim->EnableRawStream(true);
 }
 
 void PhotonVisionCameraSimIO::UpdateInputs(AprilTagCameraInputs& inputs)

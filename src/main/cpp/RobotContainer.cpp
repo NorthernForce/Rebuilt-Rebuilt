@@ -7,9 +7,12 @@
 #include <frc/DriverStation.h>
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/CommandXboxController.h>
+#include <frc/RobotBase.h>
 #include <logging/LogTypes.h>
 
 #include "constants/Constants.h"
+#include "subsystems/apriltag/PhotonVisionCameraIO.h"
+#include "subsystems/apriltag/LimeLightCameraIO.h"
 #include "frc/MathUtil.h"
 #include "frc/Preferences.h"
 #include "frc/smartdashboard/SmartDashboard.h"
@@ -17,6 +20,78 @@
 
 using namespace std;
 using namespace nfr;
+
+std::vector<CameraConfig> CreateCameraConfigurations()
+{
+    std::vector<CameraConfig> configs;
+    
+    if (frc::RobotBase::IsReal())
+    {
+        // Real robot - create PhotonVision and LimeLight cameras
+        
+        // PhotonVision cameras
+        configs.emplace_back(
+            "FrontLeft",
+            CameraConstants::kFrontLeftCameraName,
+            CameraConstants::kFrontLeftCameraTransform,
+            []() { return std::make_unique<PhotonVisionCameraIO>(
+                CameraConstants::kFrontLeftCameraName,
+                CameraConstants::kFrontLeftCameraTransform); }
+        );
+        
+        configs.emplace_back(
+            "Center", 
+            CameraConstants::kCenterCameraName,
+            CameraConstants::kCenterCameraTransform,
+            []() { return std::make_unique<PhotonVisionCameraIO>(
+                CameraConstants::kCenterCameraName,
+                CameraConstants::kCenterCameraTransform); }
+        );
+        
+        // LimeLight cameras
+        configs.emplace_back(
+            "FrontRight",
+            CameraConstants::kFrontRightCameraName,
+            CameraConstants::kFrontRightCameraTransform,
+            []() { return std::make_unique<LimeLightCameraIO>(
+                CameraConstants::kFrontRightCameraName,
+                CameraConstants::kFrontRightCameraTransform); }
+        );
+        
+        configs.emplace_back(
+            "CenterBack",
+            CameraConstants::kCenterBackCameraName,
+            CameraConstants::kCenterBackCameraTransform,
+            []() { return std::make_unique<LimeLightCameraIO>(
+                CameraConstants::kCenterBackCameraName,
+                CameraConstants::kCenterBackCameraTransform); }
+        );
+    }
+    else
+    {
+        // Simulation - for now just use PhotonVision cameras without full simulation
+        // This can be enhanced later with proper PhotonVision simulation
+        configs.emplace_back(
+            "FrontLeft-Sim",
+            CameraConstants::kFrontLeftCameraName,
+            CameraConstants::kFrontLeftCameraTransform,
+            []() { return std::make_unique<PhotonVisionCameraIO>(
+                CameraConstants::kFrontLeftCameraName,
+                CameraConstants::kFrontLeftCameraTransform); }
+        );
+        
+        configs.emplace_back(
+            "Center-Sim",
+            CameraConstants::kCenterCameraName,
+            CameraConstants::kCenterCameraTransform,
+            []() { return std::make_unique<PhotonVisionCameraIO>(
+                CameraConstants::kCenterCameraName,
+                CameraConstants::kCenterCameraTransform); }
+        );
+    }
+    
+    return configs;
+}
 
 std::array<frc::Rotation2d, 4> getModuleOffsets()
 {
@@ -47,7 +122,7 @@ RobotContainer::RobotContainer()
             DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
             TunerConstants::FrontRight, TunerConstants::BackLeft,
             TunerConstants::BackRight),
-      localizer()
+      localizer(CreateCameraConfigurations(), VisionConstants::kEstimateTimeout)
 {
     drive.SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
@@ -114,6 +189,6 @@ void RobotContainer::Periodic()
 void RobotContainer::Log(const nfr::LogContext& log) const
 {
     log["match_time"] << frc::DriverStation::GetMatchTime();
-    log["drive"] << drive;
+    // log["drive"] << drive; // Temporarily commented out until SwerveDrive has Log method
     log["localizer"] << localizer;
 }

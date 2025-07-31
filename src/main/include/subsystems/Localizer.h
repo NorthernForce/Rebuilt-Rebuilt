@@ -1,16 +1,37 @@
 #pragma once
 
 #include "apriltag/AprilTagCamera.h"
+#include "apriltag/AprilTagCameraIO.h"
 #include <frc2/command/SubsystemBase.h>
 #include <frc/geometry/Pose2d.h>
+#include <frc/geometry/Transform3d.h>
 #include <frc/Timer.h>
 #include <logging/Logger.h>
 #include <vector>
 #include <memory>
 #include <units/time.h>
+#include <string>
+#include <functional>
 
 namespace nfr
 {
+
+/**
+ * Camera configuration for Localizer initialization
+ */
+struct CameraConfig
+{
+    std::string displayName;                                    // Human-readable name for logging
+    std::string deviceName;                                     // Device name for camera hardware
+    frc::Transform3d transform;                                 // Transform relative to robot center
+    std::function<std::unique_ptr<AprilTagCameraIO>()> factory; // Factory function to create IO
+    
+    CameraConfig(const std::string& displayName, 
+                const std::string& deviceName,
+                const frc::Transform3d& transform,
+                std::function<std::unique_ptr<AprilTagCameraIO>()> factory)
+        : displayName(displayName), deviceName(deviceName), transform(transform), factory(factory) {}
+};
 
 /**
  * Estimated pose with timestamp
@@ -54,11 +75,17 @@ class Localizer : public frc2::SubsystemBase
     // Timer to track time since last estimate
     frc::Timer m_timeSinceLastEstimate;
     
+    // Vision timeout constant
+    units::second_t m_estimateTimeout;
+    
   public:
     /**
      * Constructor for Localizer
+     * @param cameraConfigs Vector of camera configurations to initialize
+     * @param estimateTimeout Timeout for considering estimates recent (default: 0.5s)
      */
-    Localizer();
+    Localizer(const std::vector<CameraConfig>& cameraConfigs, 
+              units::second_t estimateTimeout = 0.5_s);
     
     /**
      * Update pose estimators with reference pose for improved accuracy
@@ -119,12 +146,6 @@ class Localizer : public frc2::SubsystemBase
      * @param log Logging context
      */
     void Log(const nfr::LogContext& log) const;
-    
-  private:
-    /**
-     * Initialize cameras based on robot mode (real vs simulation)
-     */
-    void InitializeCameras();
 };
 
 }  // namespace nfr

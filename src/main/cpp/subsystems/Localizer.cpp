@@ -1,68 +1,22 @@
 #include "subsystems/Localizer.h"
-#include "subsystems/apriltag/PhotonVisionCameraIO.h"
-#include "subsystems/apriltag/LimeLightCameraIO.h"
-#include "subsystems/apriltag/PhotonVisionCameraSimIO.h"
-#include "constants/Constants.h"
-#include <frc/RobotBase.h>
+#include <frc/Timer.h>
 
 namespace nfr
 {
 
-Localizer::Localizer()
+Localizer::Localizer(const std::vector<CameraConfig>& cameraConfigs, 
+                     units::second_t estimateTimeout)
+    : m_estimateTimeout(estimateTimeout)
 {
     // Start the timer - we haven't had any estimates yet
     m_timeSinceLastEstimate.Start();
     
-    // Initialize cameras based on robot mode
-    InitializeCameras();
-}
-
-void Localizer::InitializeCameras()
-{
-    if (frc::RobotBase::IsReal())
+    // Initialize cameras from configuration
+    for (const auto& config : cameraConfigs)
     {
-        // Real robot - create PhotonVision and LimeLight cameras
-        
-        // PhotonVision cameras
-        auto frontLeftIO = std::make_unique<PhotonVisionCameraIO>(
-            CameraConstants::kFrontLeftCameraName,
-            CameraConstants::kFrontLeftCameraTransform);
-        m_cameras.push_back(std::make_unique<AprilTagCamera>(
-            std::move(frontLeftIO), "FrontLeft"));
-            
-        auto centerIO = std::make_unique<PhotonVisionCameraIO>(
-            CameraConstants::kCenterCameraName,
-            CameraConstants::kCenterCameraTransform);
-        m_cameras.push_back(std::make_unique<AprilTagCamera>(
-            std::move(centerIO), "Center"));
-        
-        // LimeLight cameras
-        auto frontRightIO = std::make_unique<LimeLightCameraIO>(
-            CameraConstants::kFrontRightCameraName,
-            CameraConstants::kFrontRightCameraTransform);
-        m_cameras.push_back(std::make_unique<AprilTagCamera>(
-            std::move(frontRightIO), "FrontRight"));
-            
-        auto centerBackIO = std::make_unique<LimeLightCameraIO>(
-            CameraConstants::kCenterBackCameraName,
-            CameraConstants::kCenterBackCameraTransform);
-        m_cameras.push_back(std::make_unique<AprilTagCamera>(
-            std::move(centerBackIO), "CenterBack"));
-    }
-    else
-    {
-        // Simulation - create PhotonVision simulation cameras
-        auto frontLeftSimIO = std::make_unique<PhotonVisionCameraSimIO>(
-            CameraConstants::kFrontLeftCameraName,
-            CameraConstants::kFrontLeftCameraTransform);
-        m_cameras.push_back(std::make_unique<AprilTagCamera>(
-            std::move(frontLeftSimIO), "FrontLeft-Sim"));
-            
-        auto centerSimIO = std::make_unique<PhotonVisionCameraSimIO>(
-            CameraConstants::kCenterCameraName,
-            CameraConstants::kCenterCameraTransform);
-        m_cameras.push_back(std::make_unique<AprilTagCamera>(
-            std::move(centerSimIO), "Center-Sim"));
+        auto io = config.factory();
+        auto camera = std::make_unique<AprilTagCamera>(std::move(io), config.displayName);
+        m_cameras.push_back(std::move(camera));
     }
 }
 
@@ -141,7 +95,7 @@ units::second_t Localizer::GetTimeSinceLastEstimate() const
 
 bool Localizer::HasHadRecentEstimate() const
 {
-    return !m_timeSinceLastEstimate.HasElapsed(VisionConstants::kEstimateTimeout);
+    return !m_timeSinceLastEstimate.HasElapsed(m_estimateTimeout);
 }
 
 int Localizer::GetConnectedCameraCount() const
