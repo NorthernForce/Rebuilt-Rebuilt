@@ -258,28 +258,28 @@ TEST_F(LoggingTest, LoggingTransform3dSharedPtr)
 
 TEST_F(LoggingTest, LoggingTwist2dDirect)
 {
-    frc::Twist2d twist{1.0_mps, 2.0_mps, 0.5_rad_per_s};
+    frc::Twist2d twist{1.0_m, 2.0_m, 0.5_rad};
     EXPECT_NO_THROW({ nfr::logger["twist2d"] << twist; });
 }
 
 TEST_F(LoggingTest, LoggingTwist2dSharedPtr)
 {
     auto twist =
-        std::make_shared<frc::Twist2d>(1.0_mps, 2.0_mps, 0.5_rad_per_s);
+        std::make_shared<frc::Twist2d>(1.0_m, 2.0_m, 0.5_rad);
     EXPECT_NO_THROW({ nfr::logger["twist2d_shared"] << twist; });
 }
 
 TEST_F(LoggingTest, LoggingTwist3dDirect)
 {
-    frc::Twist3d twist{1.0_mps,       2.0_mps,       3.0_mps,
-                       0.1_rad_per_s, 0.2_rad_per_s, 0.3_rad_per_s};
+    frc::Twist3d twist{1.0_m,   2.0_m,   3.0_m,
+                       0.1_rad, 0.2_rad, 0.3_rad};
     EXPECT_NO_THROW({ nfr::logger["twist3d"] << twist; });
 }
 
 TEST_F(LoggingTest, LoggingTwist3dSharedPtr)
 {
     auto twist = std::make_shared<frc::Twist3d>(
-        1.0_mps, 2.0_mps, 3.0_mps, 0.1_rad_per_s, 0.2_rad_per_s, 0.3_rad_per_s);
+        1.0_m, 2.0_m, 3.0_m, 0.1_rad, 0.2_rad, 0.3_rad);
     EXPECT_NO_THROW({ nfr::logger["twist3d_shared"] << twist; });
 }
 
@@ -413,13 +413,13 @@ TEST_F(LoggingTest, LoggingUnitsCurrentSharedPtr)
 
 TEST_F(LoggingTest, LoggingUnitsTemperatureDirect)
 {
-    units::celsius_t temperature = 25.0_deg_C;
+    units::celsius_t temperature{25.0};
     EXPECT_NO_THROW({ nfr::logger["temperature"] << temperature; });
 }
 
 TEST_F(LoggingTest, LoggingUnitsTemperatureSharedPtr)
 {
-    auto temperature = std::make_shared<units::celsius_t>(25.0_deg_C);
+    auto temperature = std::make_shared<units::celsius_t>(25.0);
     EXPECT_NO_THROW({ nfr::logger["temperature_shared"] << temperature; });
 }
 
