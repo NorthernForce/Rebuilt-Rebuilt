@@ -32,6 +32,11 @@ template <typename T>
 concept HasPointerLogMethod = requires(T t, const LogContext& logContext) {
     { t->Log(logContext) } -> std::same_as<void>;
 };
+template <typename T>
+concept HasPointeeLogSpecialization =
+    requires(T t, const LogContext& logContext) {
+        { Log(logContext, *t) } -> std::same_as<void>;
+    };
 class Logger;
 class LogContext
 {
@@ -116,12 +121,21 @@ void Log(const LogContext& logContext, const T& t)
             t->Log(logContext);
         }
     }
+    else if constexpr (HasPointeeLogSpecialization<T>)
+    {
+        if (t)
+        {
+            Log(logContext, *t);
+        }
+    }
     else
     {
         static_assert(
             sizeof(T) == 0,
             "No Log specialization found for this type. "
-            "Either add a Log method to the class or specialize nfr::Log<T>.");
+            "Either add a Log method to the class, specialize nfr::Log<T>, "
+            "or if this is a pointer type, ensure the pointed-to type has a "
+            "Log method or specialization.");
     }
 }
 

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <logging/Logger.h>
+
 #include <memory>
 
 namespace nfr
@@ -24,7 +25,7 @@ void Log(const LogContext& logContext, const TestStruct& t)
 struct TestWithMemberLog
 {
     int data;
-    
+
     void Log(const LogContext& logContext) const
     {
         logContext << data;
@@ -33,7 +34,7 @@ struct TestWithMemberLog
 
 class LoggingTest : public ::testing::Test
 {
-protected:
+  protected:
     void SetUp() override
     {
         // Test setup if needed
@@ -43,65 +44,53 @@ protected:
 TEST_F(LoggingTest, LoggingWithSpecialization)
 {
     TestStruct test{42, "hello"};
-    
+
     // This should work - direct logging of object with Log specialization
-    EXPECT_NO_THROW({
-        nfr::logger["test"] << test;
-    });
+    EXPECT_NO_THROW({ nfr::logger["test"] << test; });
 }
 
 TEST_F(LoggingTest, LoggingWithMemberMethod)
 {
     TestWithMemberLog test{100};
-    
+
     // This should work - object with member Log method
-    EXPECT_NO_THROW({
-        nfr::logger["test"] << test;
-    });
+    EXPECT_NO_THROW({ nfr::logger["test"] << test; });
 }
 
 TEST_F(LoggingTest, LoggingSharedPtrWithMemberMethod)
 {
     auto test = std::make_shared<TestWithMemberLog>(200);
-    
+
     // This should work - shared_ptr to object with member Log method
-    EXPECT_NO_THROW({
-        nfr::logger["test"] << test;
-    });
+    EXPECT_NO_THROW({ nfr::logger["test"] << test; });
 }
 
 TEST_F(LoggingTest, LoggingSharedPtrWithSpecialization)
 {
     auto test = std::make_shared<TestStruct>(TestStruct{300, "world"});
-    
+
     // This currently fails but should work after the fix
     // shared_ptr to object with Log specialization
-    EXPECT_NO_THROW({
-        nfr::logger["test"] << test;
-    });
+    EXPECT_NO_THROW({ nfr::logger["test"] << test; });
 }
 
 TEST_F(LoggingTest, LoggingUniquePtrWithSpecialization)
 {
     auto test = std::make_unique<TestStruct>(TestStruct{400, "unique"});
-    
+
     // This currently fails but should work after the fix
     // unique_ptr to object with Log specialization
-    EXPECT_NO_THROW({
-        nfr::logger["test"] << test;
-    });
+    EXPECT_NO_THROW({ nfr::logger["test"] << test; });
 }
 
 TEST_F(LoggingTest, LoggingRawPtrWithSpecialization)
 {
     TestStruct test{500, "raw"};
     TestStruct* testPtr = &test;
-    
+
     // This currently fails but should work after the fix
     // raw pointer to object with Log specialization
-    EXPECT_NO_THROW({
-        nfr::logger["test"] << testPtr;
-    });
+    EXPECT_NO_THROW({ nfr::logger["test"] << testPtr; });
 }
 
-} // namespace nfr
+}  // namespace nfr
