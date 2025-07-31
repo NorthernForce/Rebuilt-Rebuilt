@@ -20,6 +20,7 @@ class Superstructure : public frc2::SubsystemBase
   public:
     struct SuperstructureState
     {
+      public:
         units::meter_t innerElevatorPosition;
         units::meter_t outerElevatorPosition;
         void Log(const nfr::LogContext& log) const;

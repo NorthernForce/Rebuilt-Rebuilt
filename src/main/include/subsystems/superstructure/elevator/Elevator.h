@@ -40,7 +40,7 @@ class Elevator : public frc2::SubsystemBase
     frc2::CommandPtr GetMoveToPositionCommand(units::meter_t position);
     frc2::CommandPtr GetHomingCommand(double homingSpeed);
     frc2::CommandPtr GetStopCommand();
-    frc2::CommandPtr GetManualControlCommand(double speed);
+    frc2::CommandPtr GetManualControlCommand(std::function<double()> speed);
 
     frc2::sysid::SysIdRoutine GetSysIdRoutine();
     frc2::CommandPtr GetSysIdQuasistaticForward();
@@ -81,7 +81,7 @@ class ElevatorIO
         units::kilogram_t kMass;
     };
     ElevatorIO() = default;
-    virtual ~ElevatorIO() = 0;
+    virtual ~ElevatorIO() = default;
     virtual void SetTargetPosition(units::meter_t position) = 0;
     virtual void SetSpeed(double speed, bool overrideLowerLimit) = 0;
     virtual void SetLowerLimitEnable(bool enableLowerLimit) = 0;
@@ -90,13 +90,13 @@ class ElevatorIO
     virtual void SetVoltage(units::volt_t) = 0;
     virtual void Update() = 0;
 
-    virtual units::turn_t GetPosition() = 0;
-    virtual units::celsius_t GetTemperature() = 0;
-    virtual units::volt_t GetVoltage() = 0;
-    virtual units::turns_per_second_t GetVelocity() = 0;
-    virtual units::turns_per_second_t GetRotorVelocity() = 0;
-    virtual units::ampere_t GetCurrent() = 0;
-    virtual bool GetIsPresent() = 0;
+    virtual units::turn_t GetPosition() const = 0;
+    virtual units::celsius_t GetTemperature() const = 0;
+    virtual units::volt_t GetVoltage() const = 0;
+    virtual units::turns_per_second_t GetVelocity() const = 0;
+    virtual units::turns_per_second_t GetRotorVelocity() const = 0;
+    virtual units::ampere_t GetCurrent() const = 0;
+    virtual bool GetIsPresent() const = 0;
 };
 
 class ElevatorIOTalonFX : public ElevatorIO
@@ -104,12 +104,12 @@ class ElevatorIOTalonFX : public ElevatorIO
   public:
     ElevatorIOTalonFX(int id, double kS, double kV, double kA, double kP,
                       double kI, double kD, double kG,
-                      units::turns_per_second_t cruiseVelocity,
-                      units::turns_per_second_squared_t acceleration,
-                      units::turns_per_second_cubed_t jerk,
-                      units::meter_t sprocketCircumference, double gearRatio,
-                      bool inverted, units::meter_t upperLimit);
-    ElevatorIOTalonFX(int id, ElevatorConstants constants);
+                      units::turns_per_second_t kCruiseVelocity,
+                      units::turns_per_second_squared_t kAcceleration,
+                      units::turns_per_second_cubed_t kJerk,
+                      units::meter_t kSprocketCircumference, double kGearRatio,
+                      bool kInverted, units::meter_t kUpperLimit);
+    ElevatorIOTalonFX(int id, ElevatorConstants kConstants);
     void SetTargetPosition(units::meter_t position) override;
     void SetSpeed(double speed, bool overrideLowerLimit) override;
     void SetLowerLimitEnable(bool enableLowerLimit) override;
@@ -118,13 +118,13 @@ class ElevatorIOTalonFX : public ElevatorIO
     void SetVoltage(units::volt_t) override;
     void Update() override;
 
-    units::turn_t GetPosition() override;
-    units::celsius_t GetTemperature() override;
-    units::volt_t GetVoltage() override;
-    units::turns_per_second_t GetVelocity() override;
-    units::turns_per_second_t GetRotorVelocity() override;
-    units::ampere_t GetCurrent() override;
-    bool GetIsPresent() override;
+    units::turn_t GetPosition() const override;
+    units::celsius_t GetTemperature() const override;
+    units::volt_t GetVoltage() const override;
+    units::turns_per_second_t GetVelocity() const override;
+    units::turns_per_second_t GetRotorVelocity() const override;
+    units::ampere_t GetCurrent() const override;
+    bool GetIsPresent() const override;
 
   private:
     std::shared_ptr<ctre::phoenix6::hardware::TalonFX> m_motor;

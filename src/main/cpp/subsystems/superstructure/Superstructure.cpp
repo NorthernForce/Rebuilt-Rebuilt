@@ -4,9 +4,6 @@ using namespace std;
 using namespace units;
 using namespace frc2;
 
-Superstructure::SuperstructureState GetPresetState(
-    ElevatorConstants::SuperstructurePresets preset);
-
 Superstructure::Superstructure(shared_ptr<Elevator> innerElevator,
                                shared_ptr<Elevator> outerElevator)
     : m_innerElevator(innerElevator), m_outerElevator(outerElevator)
@@ -116,4 +113,10 @@ CommandPtr Superstructure::GetManualControlCommand(
     return SuperstructureManualControlCommand(this, innerElevatorSpeed,
                                               outerElevatorSpeed)
         .ToPtr();
+}
+
+void Superstructure::SuperstructureState::Log(const nfr::LogContext& log) const
+{
+    log["innerElevatorPosition"] << this->innerElevatorPosition.value();
+    log["outerELevatorPosition"] << this->outerElevatorPosition.value();
 }

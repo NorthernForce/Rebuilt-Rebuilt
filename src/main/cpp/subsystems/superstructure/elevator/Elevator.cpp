@@ -41,9 +41,9 @@ CommandPtr Elevator::GetHomingCommand(double homingSpeed)
     return ElevatorHomingCommand(this, homingSpeed).ToPtr();
 }
 
-CommandPtr Elevator::GetManualControlCommand(double speed)
+CommandPtr Elevator::GetManualControlCommand(function<double()> speed)
 {
-    return Run([&] { Set(speed); });
+    return Run([&] { Set(speed()); });
 }
 
 CommandPtr Elevator::GetStopCommand()
@@ -88,8 +88,8 @@ bool Elevator::IsAtPosition(meter_t position) const
 
 void Elevator::Log(const nfr::LogContext& log) const
 {
-    log["position"] << GetPosition();
-    log["targetPosition"] << GetTargetPosition();
+    log["position"] << GetPosition().value();
+    log["targetPosition"] << GetTargetPosition().value();
     log["isAtTarget"] << IsAtTargetPosition();
     log["isAtLimit"] << GetSensor()->IsAtLimit();
 }

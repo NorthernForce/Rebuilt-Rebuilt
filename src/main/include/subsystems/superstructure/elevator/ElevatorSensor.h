@@ -8,7 +8,7 @@ class ElevatorSensorIO
 {
   public:
     ElevatorSensorIO() = default;
-    virtual ~ElevatorSensorIO() = 0;
+    virtual ~ElevatorSensorIO() = default;
     virtual bool IsAtLimit() const = 0;
 };
 

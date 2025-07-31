@@ -116,37 +116,37 @@ void ElevatorIOTalonFX::Update()
                                                  m_rotorVelocity, m_voltage);
 }
 
-turn_t ElevatorIOTalonFX::GetPosition()
+turn_t ElevatorIOTalonFX::GetPosition() const
 {
     return m_motor->GetPosition().GetValue();
 }
 
-celsius_t ElevatorIOTalonFX::GetTemperature()
+celsius_t ElevatorIOTalonFX::GetTemperature() const
 {
     return m_motor->GetDeviceTemp().GetValue();
 }
 
-volt_t ElevatorIOTalonFX::GetVoltage()
+volt_t ElevatorIOTalonFX::GetVoltage() const
 {
     return m_motor->GetMotorVoltage().GetValue();
 }
 
-turns_per_second_t ElevatorIOTalonFX::GetVelocity()
+turns_per_second_t ElevatorIOTalonFX::GetVelocity() const
 {
     return m_motor->GetVelocity().GetValue();
 }
 
-turns_per_second_t ElevatorIOTalonFX::GetRotorVelocity()
+turns_per_second_t ElevatorIOTalonFX::GetRotorVelocity() const
 {
     return m_motor->GetRotorVelocity().GetValue();
 }
 
-ampere_t ElevatorIOTalonFX::GetCurrent()
+ampere_t ElevatorIOTalonFX::GetCurrent() const
 {
     return m_motor->GetTorqueCurrent().GetValue();
 }
 
-bool ElevatorIOTalonFX::GetIsPresent()
+bool ElevatorIOTalonFX::GetIsPresent() const
 {
     return m_motor->IsConnected();
 }
