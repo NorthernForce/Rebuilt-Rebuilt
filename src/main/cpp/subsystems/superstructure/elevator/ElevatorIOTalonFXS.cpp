@@ -4,14 +4,12 @@ using namespace std;
 using namespace units;
 using namespace frc2;
 
-ElevatorIOTalonFXS::ElevatorIOTalonFXS(int id, double kS, double kV, double kA,
-                                     double kP, double kI, double kD, double kG,
-                                     turns_per_second_t kCruiseVelocity,
-                                     turns_per_second_squared_t kAcceleration,
-                                     turns_per_second_cubed_t kJerk,
-                                     meter_t kSprocketCircumference,
-                                     double kGearRatio, bool kInverted,
-                                     meter_t kUpperLimit)
+ElevatorIOTalonFXS::ElevatorIOTalonFXS(
+    int id, double kS, double kV, double kA, double kP, double kI, double kD,
+    double kG, turns_per_second_t kCruiseVelocity,
+    turns_per_second_squared_t kAcceleration, turns_per_second_cubed_t kJerk,
+    meter_t kSprocketCircumference, double kGearRatio, bool kInverted,
+    meter_t kUpperLimit)
     : m_motor(std::make_shared<ctre::phoenix6::hardware::TalonFXS>(id)),
 
       m_position(m_motor->GetPosition()),
@@ -66,11 +64,11 @@ ElevatorIOTalonFXS::ElevatorIOTalonFXS(int id, double kS, double kV, double kA,
 
 ElevatorIOTalonFXS::ElevatorIOTalonFXS(int id, ElevatorConstants constants)
     : ElevatorIOTalonFXS(id, constants.kS, constants.kV, constants.kA,
-                        constants.kP, constants.kI, constants.kD, constants.kG,
-                        constants.kCruiseVelocity, constants.kAcceleration,
-                        constants.kJerk, constants.kSprocketCircumference,
-                        constants.kGearRatio, constants.kInverted,
-                        constants.kUpperLimit)
+                         constants.kP, constants.kI, constants.kD, constants.kG,
+                         constants.kCruiseVelocity, constants.kAcceleration,
+                         constants.kJerk, constants.kSprocketCircumference,
+                         constants.kGearRatio, constants.kInverted,
+                         constants.kUpperLimit)
 {
 }
 

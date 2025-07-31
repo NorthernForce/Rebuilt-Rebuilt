@@ -6,14 +6,14 @@
 #include <frc2/command/SubsystemBase.h>
 #include <frc2/command/sysid/SysIdRoutine.h>
 #include <logging/Logger.h>
+#include <rev/SparkMax.h>
+#include <rev/config/SparkMaxConfig.h>
 #include <subsystems/superstructure/elevator/ElevatorSensor.h>
 #include <units/math.h>
 
 #include <ctre/phoenix6/SignalLogger.hpp>
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <ctre/phoenix6/TalonFXS.hpp>
-#include <rev/SparkMax.h>
-#include <rev/config/SparkMaxConfig.h>
 #include <memory>
 #include <string>
 
@@ -146,11 +146,16 @@ class ElevatorIOTalonFX : public ElevatorIO
     double kG;
 };
 
-class ElevatorIOTalonFXS : public ElevatorIO 
+class ElevatorIOTalonFXS : public ElevatorIO
 {
   public:
-    ElevatorIOTalonFXS(int id, double kS, double kV, double kA, double kP, double kI, double kD, double kG, units::turns_per_second_t kCruiseVelocity, units::turns_per_second_squared_t kAcceleration,
-    units::turns_per_second_cubed_t kJerk, units::meter_t kSprocketCircumference, double kGearRatio, bool kInverted, units::meter_t kUpperLimit);
+    ElevatorIOTalonFXS(int id, double kS, double kV, double kA, double kP,
+                       double kI, double kD, double kG,
+                       units::turns_per_second_t kCruiseVelocity,
+                       units::turns_per_second_squared_t kAcceleration,
+                       units::turns_per_second_cubed_t kJerk,
+                       units::meter_t kSprocketCircumference, double kGearRatio,
+                       bool kInverted, units::meter_t kUpperLimit);
     ElevatorIOTalonFXS(int id, ElevatorConstants kConstants);
     void SetTargetPosition(units::meter_t position) override;
     void SetSpeed(double speed, bool overrideLowerLimit) override;
@@ -167,6 +172,7 @@ class ElevatorIOTalonFXS : public ElevatorIO
     units::turns_per_second_t GetRotorVelocity() const override;
     units::ampere_t GetCurrent() const override;
     bool GetIsPresent() const override;
+
   private:
     std::shared_ptr<ctre::phoenix6::hardware::TalonFXS> m_motor;
     ctre::phoenix6::StatusSignal<units::turn_t> m_position;
@@ -185,9 +191,18 @@ class ElevatorIOTalonFXS : public ElevatorIO
 class ElevatorIOSparkMax : public ElevatorIO
 {
   public:
-    ElevatorIOSparkMax(int busId, int id, rev::spark::SparkLowLevel::MotorType motorType, double kS, double kV, double kA, double kP, double kI, double kD, double kG, units::turns_per_second_t kCruiseVelocity, units::turns_per_second_squared_t kAcceleration,
-    units::turns_per_second_cubed_t kJerk, units::meter_t kSprocketCircumference, double kGearRatio, bool kInverted, units::meter_t kUpperLimit);
-    ElevatorIOSparkMax(int busId, int id, rev::spark::SparkLowLevel::MotorType motorType, ElevatorConstants kConstants);
+    ElevatorIOSparkMax(int busId, int id,
+                       rev::spark::SparkLowLevel::MotorType motorType,
+                       double kS, double kV, double kA, double kP, double kI,
+                       double kD, double kG,
+                       units::turns_per_second_t kCruiseVelocity,
+                       units::turns_per_second_squared_t kAcceleration,
+                       units::turns_per_second_cubed_t kJerk,
+                       units::meter_t kSprocketCircumference, double kGearRatio,
+                       bool kInverted, units::meter_t kUpperLimit);
+    ElevatorIOSparkMax(int busId, int id,
+                       rev::spark::SparkLowLevel::MotorType motorType,
+                       ElevatorConstants kConstants);
     void SetTargetPosition(units::meter_t position) override;
     void SetSpeed(double speed, bool overrideLowerLimit) override;
     void SetLowerLimitEnable(bool enableLowerLimit) override;
@@ -201,6 +216,7 @@ class ElevatorIOSparkMax : public ElevatorIO
     units::turns_per_second_t GetVelocity() const override;
     units::ampere_t GetCurrent() const override;
     bool GetIsPresent() const override;
+
   private:
     std::shared_ptr<rev::spark::SparkMax> m_motor;
     units::turn_t m_position;
