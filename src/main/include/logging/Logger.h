@@ -28,6 +28,10 @@ concept IsCustomLoggable =
     !std::same_as<std::remove_cvref_t<T>, std::span<long>> &&
     !std::same_as<std::remove_cvref_t<T>, std::span<bool>> &&
     !std::same_as<std::remove_cvref_t<T>, std::span<std::string>>;
+template <typename T>
+concept HasPointerLogMethod = requires(T t, const LogContext& logContext) {
+    { t->Log(logContext) } -> std::same_as<void>;
+};
 class Logger;
 class LogContext
 {
@@ -104,6 +108,13 @@ void Log(const LogContext& logContext, const T& t)
     if constexpr (HasLogMethod<T>)
     {
         t.Log(logContext);
+    }
+    else if constexpr (HasPointerLogMethod<T>)
+    {
+        if (t)
+        {
+            t->Log(logContext);
+        }
     }
     else
     {
