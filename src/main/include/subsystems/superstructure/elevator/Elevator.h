@@ -11,11 +11,16 @@
 
 #include <ctre/phoenix6/SignalLogger.hpp>
 #include <ctre/phoenix6/TalonFX.hpp>
+#include <ctre/phoenix6/TalonFXS.hpp>
+#include <rev/SparkMax.h>
+#include <rev/config/SparkMaxConfig.h>
 #include <memory>
 #include <string>
 
 class ElevatorIO;
 class ElevatorIOTalonFX;
+class ElevatorIOTalonFXS;
+class ElevatorIOSparkMax;
 class ElevatorMoveToPositionCommand;
 class ElevatorHomingCommand;
 
@@ -138,6 +143,71 @@ class ElevatorIOTalonFX : public ElevatorIO
     ctre::phoenix6::controls::DutyCycleOut m_dutyCycleOut;
     ctre::phoenix6::controls::VoltageOut m_voltageOut;
     bool m_isPresent;
+    double kG;
+};
+
+class ElevatorIOTalonFXS : public ElevatorIO 
+{
+  public:
+    ElevatorIOTalonFXS(int id, double kS, double kV, double kA, double kP, double kI, double kD, double kG, units::turns_per_second_t kCruiseVelocity, units::turns_per_second_squared_t kAcceleration,
+    units::turns_per_second_cubed_t kJerk, units::meter_t kSprocketCircumference, double kGearRatio, bool kInverted, units::meter_t kUpperLimit);
+    ElevatorIOTalonFXS(int id, ElevatorConstants kConstants);
+    void SetTargetPosition(units::meter_t position) override;
+    void SetSpeed(double speed, bool overrideLowerLimit) override;
+    void SetLowerLimitEnable(bool enableLowerLimit) override;
+    void ResetPosition() override;
+    void Stop() override;
+    void SetVoltage(units::volt_t) override;
+    void Update() override;
+
+    units::turn_t GetPosition() const override;
+    units::celsius_t GetTemperature() const override;
+    units::volt_t GetVoltage() const override;
+    units::turns_per_second_t GetVelocity() const override;
+    units::turns_per_second_t GetRotorVelocity() const override;
+    units::ampere_t GetCurrent() const override;
+    bool GetIsPresent() const override;
+  private:
+    std::shared_ptr<ctre::phoenix6::hardware::TalonFXS> m_motor;
+    ctre::phoenix6::StatusSignal<units::turn_t> m_position;
+    ctre::phoenix6::StatusSignal<units::celsius_t> m_temperature;
+    ctre::phoenix6::StatusSignal<units::volt_t> m_voltage;
+    ctre::phoenix6::StatusSignal<units::turns_per_second_t> m_velocity;
+    ctre::phoenix6::StatusSignal<units::turns_per_second_t> m_rotorVelocity;
+    ctre::phoenix6::StatusSignal<units::ampere_t> m_current;
+    ctre::phoenix6::controls::MotionMagicExpoVoltage m_motionMagicVoltage;
+    ctre::phoenix6::controls::DutyCycleOut m_dutyCycleOut;
+    ctre::phoenix6::controls::VoltageOut m_voltageOut;
+    bool m_isPresent;
+    double kG;
+};
+
+class ElevatorIOSparkMax : public ElevatorIO
+{
+  public:
+    ElevatorIOSparkMax(int busId, int id, rev::spark::SparkLowLevel::MotorType motorType, double kS, double kV, double kA, double kP, double kI, double kD, double kG, units::turns_per_second_t kCruiseVelocity, units::turns_per_second_squared_t kAcceleration,
+    units::turns_per_second_cubed_t kJerk, units::meter_t kSprocketCircumference, double kGearRatio, bool kInverted, units::meter_t kUpperLimit);
+    ElevatorIOSparkMax(int busId, int id, rev::spark::SparkLowLevel::MotorType motorType, ElevatorConstants kConstants);
+    void SetTargetPosition(units::meter_t position) override;
+    void SetSpeed(double speed, bool overrideLowerLimit) override;
+    void SetLowerLimitEnable(bool enableLowerLimit) override;
+    void ResetPosition() override;
+    void Stop() override;
+    void SetVoltage(units::volt_t) override;
+
+    units::turn_t GetPosition() const override;
+    units::celsius_t GetTemperature() const override;
+    units::volt_t GetVoltage() const override;
+    units::turns_per_second_t GetVelocity() const override;
+    units::ampere_t GetCurrent() const override;
+    bool GetIsPresent() const override;
+  private:
+    std::shared_ptr<rev::spark::SparkMax> m_motor;
+    units::turn_t m_position;
+    units::celsius_t m_temperature;
+    units::volt_t m_voltage;
+    units::turns_per_second_t m_velocity;
+    units::ampere_t m_current;
     double kG;
 };
 
