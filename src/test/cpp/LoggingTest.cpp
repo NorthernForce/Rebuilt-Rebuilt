@@ -264,22 +264,20 @@ TEST_F(LoggingTest, LoggingTwist2dDirect)
 
 TEST_F(LoggingTest, LoggingTwist2dSharedPtr)
 {
-    auto twist =
-        std::make_shared<frc::Twist2d>(1.0_m, 2.0_m, 0.5_rad);
+    auto twist = std::make_shared<frc::Twist2d>(1.0_m, 2.0_m, 0.5_rad);
     EXPECT_NO_THROW({ nfr::logger["twist2d_shared"] << twist; });
 }
 
 TEST_F(LoggingTest, LoggingTwist3dDirect)
 {
-    frc::Twist3d twist{1.0_m,   2.0_m,   3.0_m,
-                       0.1_rad, 0.2_rad, 0.3_rad};
+    frc::Twist3d twist{1.0_m, 2.0_m, 3.0_m, 0.1_rad, 0.2_rad, 0.3_rad};
     EXPECT_NO_THROW({ nfr::logger["twist3d"] << twist; });
 }
 
 TEST_F(LoggingTest, LoggingTwist3dSharedPtr)
 {
-    auto twist = std::make_shared<frc::Twist3d>(
-        1.0_m, 2.0_m, 3.0_m, 0.1_rad, 0.2_rad, 0.3_rad);
+    auto twist = std::make_shared<frc::Twist3d>(1.0_m, 2.0_m, 3.0_m, 0.1_rad,
+                                                0.2_rad, 0.3_rad);
     EXPECT_NO_THROW({ nfr::logger["twist3d_shared"] << twist; });
 }
 
