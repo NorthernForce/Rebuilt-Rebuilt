@@ -90,8 +90,10 @@ void ElevatorIOTalonFX::SetLowerLimitEnable(bool enableLowerLimit)
 
 void ElevatorIOTalonFX::SetSpeed(double speed, bool overrideLowerLimit)
 {
+    SetLowerLimitEnable(!overrideLowerLimit);
     m_motor->SetControl(m_dutyCycleOut.WithOutput(
         speed + kG / frc::RobotController::GetInputVoltage()));
+    SetLowerLimitEnable(overrideLowerLimit);
 }
 
 void ElevatorIOTalonFX::ResetPosition()

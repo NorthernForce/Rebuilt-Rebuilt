@@ -4,8 +4,6 @@ using namespace std;
 using namespace units;
 using namespace frc2;
 
-frc2::sysid::SysIdRoutine GetSysIdRoutine();
-
 Elevator::Elevator(std::string name, std::shared_ptr<ElevatorIO> motor,
                    std::shared_ptr<ElevatorSensorIO> sensor,
                    meter_t errorTolerance)
