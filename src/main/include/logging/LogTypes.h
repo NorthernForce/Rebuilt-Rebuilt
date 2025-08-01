@@ -12,7 +12,6 @@
 #include <units/temperature.h>
 #include <units/voltage.h>
 
-
 namespace nfr
 {
 template <typename T>

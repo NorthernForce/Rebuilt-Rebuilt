@@ -16,15 +16,16 @@ template <typename T>
 concept HasLogMethod = requires(T t, const LogContext& logContext) {
     { t.Log(logContext) } -> std::same_as<void>;
 };
-template<typename T>
+template <typename T>
 concept ExistsLogMethodFor = requires(T t, const LogContext& logContext) {
     { Log(logContext, t) } -> std::same_as<void>;
 };
 
 template <typename T>
-concept ExistsPointerLogMethodFor = requires(T t, const LogContext& logContext) {
-    { Log(logContext, *t) } -> std::same_as<void>;
-};
+concept ExistsPointerLogMethodFor =
+    requires(T t, const LogContext& logContext) {
+        { Log(logContext, *t) } -> std::same_as<void>;
+    };
 template <typename T>
 concept HasPointerLogMethod = requires(T t, const LogContext& logContext) {
     { t->Log(logContext) } -> std::same_as<void>;
