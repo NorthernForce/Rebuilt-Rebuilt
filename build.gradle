@@ -8,6 +8,13 @@ plugins {
 // Configure the git-properties plugin to output to src/main/deploy
 gitProperties {
     gitPropertiesDir = file('src/main/deploy')
+    
+    // Optimize git properties generation
+    extProperty = 'gitProps'
+    keys = ['git.branch', 'git.commit.id.abbrev', 'git.commit.time', 'git.commit.id']
+    
+    // Skip git properties in some cases to improve performance
+    failOnNoGitDirectory = false
 }
 
 deploy {
@@ -34,6 +41,11 @@ def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 // Set this to true to enable desktop support.
 def includeDesktopSupport = true
 
+// Only build for RoboRIO when explicitly requested (for deployment)
+// This speeds up development builds significantly
+def buildForRoboRio = project.hasProperty('buildRoboRio') || 
+                      gradle.startParameter.taskNames.any { it.contains('deploy') || it.contains('roborio') || it.contains('athena') }
+
 // Set to true to run simulation in debug mode
 wpi.cpp.debugSimulation = false
 wpi.sim.addGui().defaultEnabled = true
@@ -41,6 +53,11 @@ wpi.sim.addDriverstation()
 
 tasks.withType(CppCompile).configureEach {
     dependsOn generateGitProperties
+    
+    // Optimize C++ compilation - use simple optimization flags
+    if (toolChain in Gcc || toolChain in Clang) {
+        compilerArgs.addAll(["-O2", "-pipe"])
+    }
 }
 
 nativeUtils.platformConfigs.named('windowsx86-64').configure {
@@ -75,7 +92,10 @@ nativeUtils.platformConfigs.named('linuxarm32').configure {
 model {
     components {
         frcUserProgram(NativeExecutableSpec) {
-            targetPlatform wpi.platforms.roborio
+            // Only add RoboRIO target when needed
+            if (buildForRoboRio) {
+                targetPlatform wpi.platforms.roborio
+            }
             if (includeDesktopSupport) {
                 targetPlatform wpi.platforms.desktop
             }
@@ -145,5 +165,19 @@ task format {
         }
         
         println 'Formatting complete!'
+    }
+}
+
+// Custom task to build for RoboRio deployment
+task buildForDeploy {
+    description = 'Build for RoboRio deployment (includes athena platform)'
+    group = 'build'
+    
+    doLast {
+        // Execute the build with the buildRoboRio property
+        exec {
+            workingDir project.projectDir
+            commandLine './gradlew', 'clean', 'build', '-PbuildRoboRio=true'
+        }
     }
 }
