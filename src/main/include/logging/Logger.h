@@ -63,7 +63,10 @@ class LogContext
         requires HasPointerLogMethod<T>
     const LogContext& operator<<(T&& value) const
     {
-        Log(*this, std::forward<T>(value));
+        if (value)
+        {
+            value->Log(*this);
+        }
         return *this;
     }
     template <typename T>
