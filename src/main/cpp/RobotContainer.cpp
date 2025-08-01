@@ -50,6 +50,10 @@ RobotContainer::RobotContainer()
 {
     drive.SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
+    dashboard = std::make_shared<nfr::Dashboard>(
+        std::filesystem::path(frc::filesystem::GetDeployDirectory()) /
+            DashboardConstants::kDistSubdirectory,
+        DashboardConstants::kPort);
 }
 
 std::function<double()> ProcessInput(std::function<double()> input)

@@ -8,7 +8,10 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
 
+#include <memory>
+
 #include "subsystems/SwerveDrive.h"
+#include "subsystems/dashboard/Dashboard.h"
 
 class RobotContainer
 {
@@ -24,4 +27,5 @@ class RobotContainer
     nfr::SwerveDrive drive;
     std::optional<frc2::CommandPtr> resetModulesCommand;
     frc2::CommandXboxController driverController{0};
+    std::shared_ptr<nfr::Dashboard> dashboard;
 };

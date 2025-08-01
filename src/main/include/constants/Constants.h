@@ -23,4 +23,11 @@ class DriveConstants
     static constexpr pathplanner::PIDConstants kRotationPID =
         pathplanner::PIDConstants(0.1, 0.0, 0.0);
 };
+class DashboardConstants
+{
+  public:
+    static constexpr int kPort = 5800;  // Port for the dashboard server
+    static constexpr std::string_view kDistSubdirectory =
+        "dist";  // Subdirectory for dashboard files
+};
 }  // namespace nfr
