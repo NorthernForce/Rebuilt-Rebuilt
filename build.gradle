@@ -97,6 +97,21 @@ model {
             wpi.sim.enable(it)
             wpi.cpp.vendor.cpp(it)
             wpi.cpp.deps.wpilib(it)
+            
+            // Configure build variants to limit targets
+            binaries.all {
+                if (targetPlatform.name.contains('athena')) {
+                    // For RoboRIO, only build release (for deployment)
+                    if (buildType.name != 'release') {
+                        buildable = false
+                    }
+                } else {
+                    // For desktop/local, only build debug (for development)
+                    if (buildType.name != 'debug') {
+                        buildable = false
+                    }
+                }
+            }
         }
     }
     testSuites {
@@ -114,6 +129,21 @@ model {
             wpi.cpp.vendor.cpp(it)
             wpi.cpp.deps.wpilib(it)
             wpi.cpp.deps.googleTest(it)
+            
+            // Configure test build variants to match main component
+            binaries.all {
+                if (targetPlatform.name.contains('athena')) {
+                    // For RoboRIO, only build release tests
+                    if (buildType.name != 'release') {
+                        buildable = false
+                    }
+                } else {
+                    // For desktop/local, only build debug tests
+                    if (buildType.name != 'debug') {
+                        buildable = false
+                    }
+                }
+            }
         }
     }
 }
