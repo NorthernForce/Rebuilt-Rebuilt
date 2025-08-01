@@ -67,6 +67,16 @@ class LogContext
         return *this;
     }
     template <typename T>
+        requires ExistsPointerLogMethodFor<T>
+    const LogContext& operator<<(const T* value) const
+    {
+        if (value)
+        {
+            Log(*this, *value);
+        }
+        return *this;
+    }
+    template <typename T>
         requires HasLogMethod<T>
     const LogContext& operator<<(const T& value) const
     {
