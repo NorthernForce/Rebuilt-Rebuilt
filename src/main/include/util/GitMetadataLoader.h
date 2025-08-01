@@ -27,8 +27,7 @@ struct GitMetadata
 
 #include <logging/Logger.h>
 
-template <>
-inline void nfr::Log(const nfr::LogContext& logContext,
+inline void Log(const nfr::LogContext& logContext,
                      const GitMetadata& metadata)
 {
     logContext["branch"] << metadata.branch;
