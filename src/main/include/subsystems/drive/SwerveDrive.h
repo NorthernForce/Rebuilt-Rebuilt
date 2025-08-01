@@ -12,6 +12,7 @@
 #include <concepts>
 #include <ctre/phoenix6/SignalLogger.hpp>
 #include <ctre/phoenix6/swerve/SwerveDrivetrain.hpp>
+#include <logging/Logger.h>
 
 namespace nfr
 {
@@ -193,5 +194,6 @@ class SwerveDrive
                                      std::function<double()> yAxis,
                                      std::function<double()> rotationAxis,
                                      bool fieldRelative = true);
+    void Log(const nfr::LogContext &log) const;
 };
 }  // namespace nfr

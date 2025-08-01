@@ -1,4 +1,4 @@
-#include "subsystems/SwerveDrive.h"
+#include "subsystems/drive/SwerveDrive.h"
 
 #include <frc/DriverStation.h>
 #include <frc/MathUtil.h>
@@ -214,4 +214,14 @@ CommandPtr SwerveDrive::DriveByJoystick(function<double()> xAxis,
                     .WithRotationalRate(rotationAxis() * maxRotationSpeed);
             });
     }
+}
+
+void SwerveDrive::Log(const nfr::LogContext &log) const
+{
+    log["pose"] << GetState().Pose;
+    log["speeds"] << GetState().Speeds;
+    auto vx = GetState().Speeds.vx;
+    auto vy = GetState().Speeds.vy;
+    auto speed = math::sqrt(vx * vx + vy * vy);
+    log["speed"] << speed.value();
 }
