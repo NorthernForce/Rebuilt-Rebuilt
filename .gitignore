@@ -185,3 +185,7 @@ compile_commands.json
 
 git.properties
 external
+
+**/node_modules
+**/build
+**/dist
