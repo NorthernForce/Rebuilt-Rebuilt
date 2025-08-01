@@ -224,5 +224,5 @@ void SwerveDrive::Log(const nfr::LogContext &log) const
     auto vx = GetState().Speeds.vx;
     auto vy = GetState().Speeds.vy;
     auto speed = math::sqrt(vx * vx + vy * vy);
-    log["speed"] << speed.value();
+    log["speed"] << speed;
 }
