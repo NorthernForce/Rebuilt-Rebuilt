@@ -40,14 +40,14 @@ void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
 
 RobotContainer::RobotContainer()
 {
-    drive = std::make_unique<SwerveDrive>(TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
-            DriveConstants::kOdometryStandardDeviation,
-            DriveConstants::kVisionStandardDeviation,
-            DriveConstants::kTranslationPID, DriveConstants::kRotationPID,
-            DriveConstants::kMaxTranslationSpeed,
-            DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
-            TunerConstants::FrontRight, TunerConstants::BackLeft,
-            TunerConstants::BackRight);
+    drive = std::make_unique<SwerveDrive>(
+        TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
+        DriveConstants::kOdometryStandardDeviation,
+        DriveConstants::kVisionStandardDeviation,
+        DriveConstants::kTranslationPID, DriveConstants::kRotationPID,
+        DriveConstants::kMaxTranslationSpeed, DriveConstants::kMaxRotationSpeed,
+        TunerConstants::FrontLeft, TunerConstants::FrontRight,
+        TunerConstants::BackLeft, TunerConstants::BackRight);
     drive->SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
 }
