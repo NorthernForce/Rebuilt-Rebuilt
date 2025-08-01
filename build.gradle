@@ -148,86 +148,102 @@ task format {
     }
 }
 
+// In your build.gradle
+// Ensure this block is defined after your plugins block
+// (especially after where 'edu.wpi.first.GradleVsCode' and 'edu.wpi.first.GradleRIO' are applied)
+
+// import edu.wpi.first.gradlerio.wpi.WPIArtifact
+// import edu.wpi.first.gradlerio.wpi.WPIArtifactType
+
 tasks.register('copyCompileCommands', Copy) {
-    def compileCommandsRoot = layout.buildDirectory.dir("TargetedCompileCommands").get().asFile
-    def sourceDir = null
+    // We'll calculate the source directory lazily, only when the task runs
+    // Use a Callable or a Closure for the 'from' property
+    def finalSourceDirProvider = project.provider {
+        def compileCommandsRoot = layout.buildDirectory.dir("TargetedCompileCommands").get().asFile // This .get() is fine here within the provider
 
-    // Determine the current OS for native compilation targets
-    def osName = System.getProperty("os.name").toLowerCase()
-    def archName = System.getProperty("os.arch").toLowerCase()
+        def sourceDirCandidate = null
 
-    def nativeTargetDir = null
-    if (osName.contains("mac")) {
-        // macOS can have different architectures (arm64, x86_64)
-        if (archName.contains("aarch64") || archName.contains("arm")) {
-            nativeTargetDir = "osxuniversalrelease" // Often 'osxuniversal' for debug builds, 'osxuniversalrelease' for release
-        } else {
-            nativeTargetDir = "osxuniversalrelease" // Default for Intel Macs too
+        def osName = System.getProperty("os.name").toLowerCase()
+        def archName = System.getProperty("os.arch").toLowerCase()
+
+        def nativeTargetDir = null
+        if (osName.contains("mac")) {
+            if (archName.contains("aarch64") || archName.contains("arm")) {
+                nativeTargetDir = "osxuniversalrelease"
+            } else {
+                nativeTargetDir = "osxuniversalrelease"
+            }
+        } else if (osName.contains("linux")) {
+            nativeTargetDir = "linuxx64release"
+        } else if (osName.contains("windows")) {
+            nativeTargetDir = "windowsx86-64release"
         }
-    } else if (osName.contains("linux")) {
-        nativeTargetDir = "linuxx64release" // Common for Linux 64-bit
-    } else if (osName.contains("windows")) {
-        nativeTargetDir = "windowsx86-64release" // Common for Windows 64-bit
-    }
 
-    // --- Prioritized Search for compile_commands.json ---
-
-    // 1. Prioritize the current OS's native *debug* build, as this is most common for IDE work
-    if (nativeTargetDir != null) {
-        def debugNativePath = "${nativeTargetDir.replace('release', 'debug')}" // e.g., osxuniversaldebug
-        def potentialNativeDebugDir = compileCommandsRoot.toPath().resolve(debugNativePath).toFile()
-        if (potentialNativeDebugDir.exists() && potentialNativeDebugDir.isDirectory() && new File(potentialNativeDebugDir, "compile_commands.json").exists()) {
-            sourceDir = potentialNativeDebugDir
-            println "Found compile_commands.json for native OS (debug): ${sourceDir}"
+        // --- Prioritized Search for compile_commands.json ---
+        // Prioritize native debug
+        if (nativeTargetDir != null) {
+            def debugNativePath = "${nativeTargetDir.replace('release', 'debug')}"
+            def potentialNativeDebugDir = compileCommandsRoot.toPath().resolve(debugNativePath).toFile()
+            if (potentialNativeDebugDir.exists() && potentialNativeDebugDir.isDirectory() && new File(potentialNativeDebugDir, "compile_commands.json").exists()) {
+                sourceDirCandidate = potentialNativeDebugDir
+                println "Found compile_commands.json for native OS (debug): ${sourceDirCandidate}"
+            }
         }
-    }
 
-    // 2. If no native debug, try the current OS's native *release* build
-    if (sourceDir == null && nativeTargetDir != null) {
-        def potentialNativeReleaseDir = compileCommandsRoot.toPath().resolve(nativeTargetDir).toFile()
-        if (potentialNativeReleaseDir.exists() && potentialNativeReleaseDir.isDirectory() && new File(potentialNativeReleaseDir, "compile_commands.json").exists()) {
-            sourceDir = potentialNativeReleaseDir
-            println "Found compile_commands.json for native OS (release): ${sourceDir}"
+        // If no native debug, try native release
+        if (sourceDirCandidate == null && nativeTargetDir != null) {
+            def potentialNativeReleaseDir = compileCommandsRoot.toPath().resolve(nativeTargetDir).toFile()
+            if (potentialNativeReleaseDir.exists() && potentialNativeReleaseDir.isDirectory() && new File(potentialNativeReleaseDir, "compile_commands.json").exists()) {
+                sourceDirCandidate = potentialNativeReleaseDir
+                println "Found compile_commands.json for native OS (release): ${sourceDirCandidate}"
+            }
         }
-    }
 
-    // 3. Fallback: RoboRIO debug (common for robot code)
-    if (sourceDir == null) {
-        def potentialRoboRIODebugDir = compileCommandsRoot.toPath().resolve("roboRIO/debug").toFile()
-        if (potentialRoboRIODebugDir.exists() && potentialRoboRIODebugDir.isDirectory() && new File(potentialRoboRIODebugDir, "compile_commands.json").exists()) {
-            sourceDir = potentialRoboRIODebugDir
-            println "Found compile_commands.json for roboRIO (debug) as fallback: ${sourceDir}"
+        // Fallback: RoboRIO debug
+        if (sourceDirCandidate == null) {
+            def potentialRoboRIODebugDir = compileCommandsRoot.toPath().resolve("roboRIO/debug").toFile()
+            if (potentialRoboRIODebugDir.exists() && potentialRoboRIODebugDir.isDirectory() && new File(potentialRoboRIODebugDir, "compile_commands.json").exists()) {
+                sourceDirCandidate = potentialRoboRIODebugDir
+                println "Found compile_commands.json for roboRIO (debug) as fallback: ${sourceDirCandidate}"
+            }
         }
-    }
 
-    // 4. Ultimate Fallback: Most recently modified directory in TargetedCompileCommands
-    if (sourceDir == null) {
-        def allPossibleDirs = []
-        compileCommandsRoot.eachDir { platformDir ->
-            platformDir.eachDir { buildTypeDir ->
-                if (new File(buildTypeDir, "compile_commands.json").exists()) {
-                    allPossibleDirs << buildTypeDir
+        // Ultimate Fallback: Most recently modified
+        if (sourceDirCandidate == null) {
+            def allPossibleDirs = []
+            // Ensure compileCommandsRoot actually exists before listing directories
+            if (compileCommandsRoot.exists() && compileCommandsRoot.isDirectory()) {
+                compileCommandsRoot.eachDir { platformDir ->
+                    platformDir.eachDir { buildTypeDir ->
+                        if (new File(buildTypeDir, "compile_commands.json").exists()) {
+                            allPossibleDirs << buildTypeDir
+                        }
+                    }
+                }
+                allPossibleDirs.sort { a, b -> b.lastModified() <=> a.lastModified() }
+
+                if (!allPossibleDirs.empty) {
+                    sourceDirCandidate = allPossibleDirs.first()
+                    println "Falling back to most recently modified compile_commands.json: ${sourceDirCandidate}"
                 }
             }
         }
-        allPossibleDirs.sort { a, b -> b.lastModified() <=> a.lastModified() } // Sort by last modified (descending)
 
-        if (!allPossibleDirs.empty) {
-            sourceDir = allPossibleDirs.first()
-            println "Falling back to most recently modified compile_commands.json: ${sourceDir}"
+        if (sourceDirCandidate != null) {
+            return sourceDirCandidate // Return the directory for 'from'
+        } else {
+            // If no source directory is found, return an empty file collection
+            // Gradle will then just skip the 'from' for this task without error
+            println "Warning: copyCompileCommands task will be empty because no suitable compile_commands.json source directory was found."
+            return files() // Return empty collection
         }
     }
 
-    if (sourceDir != null) {
-        from sourceDir
-        include 'compile_commands.json'
-        into layout.projectDirectory.asFile
-    } else {
-        enabled = false // Disable task if source dir not found
-        doLast {
-            logger.error("Skipping copyCompileCommands: No suitable compile_commands.json source directory found in ${compileCommandsRoot}.")
-        }
-    }
+    // Assign the lazily evaluated source directory
+    from finalSourceDirProvider
+
+    include 'compile_commands.json'
+    into layout.projectDirectory.asFile
 }
 
 // Ensure copyCompileCommands runs after generateCompileCommands
