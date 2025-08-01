@@ -147,3 +147,92 @@ task format {
         println 'Formatting complete!'
     }
 }
+
+tasks.register('copyCompileCommands', Copy) {
+    def compileCommandsRoot = layout.buildDirectory.dir("TargetedCompileCommands").get().asFile
+    def sourceDir = null
+
+    // Determine the current OS for native compilation targets
+    def osName = System.getProperty("os.name").toLowerCase()
+    def archName = System.getProperty("os.arch").toLowerCase()
+
+    def nativeTargetDir = null
+    if (osName.contains("mac")) {
+        // macOS can have different architectures (arm64, x86_64)
+        if (archName.contains("aarch64") || archName.contains("arm")) {
+            nativeTargetDir = "osxuniversalrelease" // Often 'osxuniversal' for debug builds, 'osxuniversalrelease' for release
+        } else {
+            nativeTargetDir = "osxuniversalrelease" // Default for Intel Macs too
+        }
+    } else if (osName.contains("linux")) {
+        nativeTargetDir = "linuxx64release" // Common for Linux 64-bit
+    } else if (osName.contains("windows")) {
+        nativeTargetDir = "windowsx86-64release" // Common for Windows 64-bit
+    }
+
+    // --- Prioritized Search for compile_commands.json ---
+
+    // 1. Prioritize the current OS's native *debug* build, as this is most common for IDE work
+    if (nativeTargetDir != null) {
+        def debugNativePath = "${nativeTargetDir.replace('release', 'debug')}" // e.g., osxuniversaldebug
+        def potentialNativeDebugDir = compileCommandsRoot.toPath().resolve(debugNativePath).toFile()
+        if (potentialNativeDebugDir.exists() && potentialNativeDebugDir.isDirectory() && new File(potentialNativeDebugDir, "compile_commands.json").exists()) {
+            sourceDir = potentialNativeDebugDir
+            println "Found compile_commands.json for native OS (debug): ${sourceDir}"
+        }
+    }
+
+    // 2. If no native debug, try the current OS's native *release* build
+    if (sourceDir == null && nativeTargetDir != null) {
+        def potentialNativeReleaseDir = compileCommandsRoot.toPath().resolve(nativeTargetDir).toFile()
+        if (potentialNativeReleaseDir.exists() && potentialNativeReleaseDir.isDirectory() && new File(potentialNativeReleaseDir, "compile_commands.json").exists()) {
+            sourceDir = potentialNativeReleaseDir
+            println "Found compile_commands.json for native OS (release): ${sourceDir}"
+        }
+    }
+
+    // 3. Fallback: RoboRIO debug (common for robot code)
+    if (sourceDir == null) {
+        def potentialRoboRIODebugDir = compileCommandsRoot.toPath().resolve("roboRIO/debug").toFile()
+        if (potentialRoboRIODebugDir.exists() && potentialRoboRIODebugDir.isDirectory() && new File(potentialRoboRIODebugDir, "compile_commands.json").exists()) {
+            sourceDir = potentialRoboRIODebugDir
+            println "Found compile_commands.json for roboRIO (debug) as fallback: ${sourceDir}"
+        }
+    }
+
+    // 4. Ultimate Fallback: Most recently modified directory in TargetedCompileCommands
+    if (sourceDir == null) {
+        def allPossibleDirs = []
+        compileCommandsRoot.eachDir { platformDir ->
+            platformDir.eachDir { buildTypeDir ->
+                if (new File(buildTypeDir, "compile_commands.json").exists()) {
+                    allPossibleDirs << buildTypeDir
+                }
+            }
+        }
+        allPossibleDirs.sort { a, b -> b.lastModified() <=> a.lastModified() } // Sort by last modified (descending)
+
+        if (!allPossibleDirs.empty) {
+            sourceDir = allPossibleDirs.first()
+            println "Falling back to most recently modified compile_commands.json: ${sourceDir}"
+        }
+    }
+
+    if (sourceDir != null) {
+        from sourceDir
+        include 'compile_commands.json'
+        into layout.projectDirectory.asFile
+    } else {
+        enabled = false // Disable task if source dir not found
+        doLast {
+            logger.error("Skipping copyCompileCommands: No suitable compile_commands.json source directory found in ${compileCommandsRoot}.")
+        }
+    }
+}
+
+// Ensure copyCompileCommands runs after generateCompileCommands
+tasks.whenTaskAdded { task ->
+    if (task.name == 'generateCompileCommands') {
+        task.finalizedBy(tasks.named('copyCompileCommands'))
+    }
+}
