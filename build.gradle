@@ -250,5 +250,8 @@ tasks.register('copyCompileCommands', Copy) {
 tasks.whenTaskAdded { task ->
     if (task.name == 'generateCompileCommands') {
         task.finalizedBy(tasks.named('copyCompileCommands'))
+        tasks.named('generateVsCodeConfig') {
+            dependsOn tasks.named('copyCompileCommands')
+        }
     }
 }
