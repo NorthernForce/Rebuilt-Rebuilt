@@ -9,6 +9,7 @@
 #include <logging/Logger.h>
 
 #include "subsystems/SwerveDrive.h"
+#include "subsystems/Localizer.h"
 
 class RobotContainer
 {
@@ -16,12 +17,18 @@ class RobotContainer
     RobotContainer();
 
     frc2::CommandPtr GetAutonomousCommand();
+    
+    /**
+     * Periodic function to update vision integration
+     */
+    void Periodic();
 
     void Log(const nfr::LogContext &log) const;
 
   private:
     void ConfigureBindings();
     nfr::SwerveDrive drive;
+    nfr::Localizer localizer;
     std::optional<frc2::CommandPtr> resetModulesCommand;
     frc2::CommandXboxController driverController{0};
 };
