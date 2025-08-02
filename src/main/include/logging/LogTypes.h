@@ -12,8 +12,6 @@
 #include <units/temperature.h>
 #include <units/voltage.h>
 
-#include <type_traits>
-
 namespace nfr
 {
 template <typename T>
@@ -36,13 +34,11 @@ inline void Log(const LogContext &logContext, const T &value)
     logContext << degrees.value();
 }
 
-template <>
 inline void Log(const LogContext &logContext, const frc::Rotation2d &value)
 {
     logContext << value.Degrees();
 }
 
-template <>
 inline void Log(const LogContext &logContext, const frc::Pose2d &pose)
 {
     logContext["x"] << pose.X();
@@ -50,7 +46,6 @@ inline void Log(const LogContext &logContext, const frc::Pose2d &pose)
     logContext["rotation"] << pose.Rotation().Degrees();
 }
 
-template <>
 inline void Log(const LogContext &logContext,
                 const frc::Translation2d &translation)
 {
@@ -58,7 +53,6 @@ inline void Log(const LogContext &logContext,
     logContext["y"] << translation.Y();
 }
 
-template <>
 inline void Log(const LogContext &logContext, const frc::Rotation3d &value)
 {
     logContext["roll"] << value.X();
@@ -66,7 +60,6 @@ inline void Log(const LogContext &logContext, const frc::Rotation3d &value)
     logContext["yaw"] << value.Z();
 }
 
-template <>
 inline void Log(const LogContext &logContext,
                 const frc::Translation3d &translation)
 {
@@ -75,7 +68,6 @@ inline void Log(const LogContext &logContext,
     logContext["z"] << translation.Z();
 }
 
-template <>
 inline void Log(const LogContext &logContext, const frc::Pose3d &pose)
 {
     logContext["x"] << pose.X();
@@ -105,7 +97,6 @@ inline void Log(const LogContext &logContext, const T &value)
     logContext << radiansPerSecond.value();
 }
 
-template <>
 inline void Log(const LogContext &logContext, const frc::ChassisSpeeds &speeds)
 {
     logContext["vx"] << speeds.vx;
@@ -113,7 +104,6 @@ inline void Log(const LogContext &logContext, const frc::ChassisSpeeds &speeds)
     logContext["omega"] << speeds.omega;
 }
 
-template <>
 inline void Log(const LogContext &logContext,
                 const frc::SwerveModuleState &state)
 {
@@ -121,7 +111,6 @@ inline void Log(const LogContext &logContext,
     logContext["speed"] << state.speed;
 }
 
-template <>
 inline void Log(const LogContext &logContext,
                 const frc::SwerveModulePosition &position)
 {
@@ -129,14 +118,12 @@ inline void Log(const LogContext &logContext,
     logContext["distance"] << position.distance;
 }
 
-template <>
 inline void Log(const LogContext &logContext, const frc::Transform2d &transform)
 {
     logContext["translation"] << transform.Translation();
     logContext["rotation"] << transform.Rotation();
 }
 
-template <>
 inline void Log(const LogContext &logContext, const frc::Twist2d &twist)
 {
     logContext["dx"] << twist.dx;
@@ -144,14 +131,12 @@ inline void Log(const LogContext &logContext, const frc::Twist2d &twist)
     logContext["dtheta"] << twist.dtheta;
 }
 
-template <>
 inline void Log(const LogContext &logContext, const frc::Transform3d &transform)
 {
     logContext["translation"] << transform.Translation();
     logContext["rotation"] << transform.Rotation();
 }
 
-template <>
 inline void Log(const LogContext &logContext, const frc::Twist3d &twist)
 {
     logContext["dx"] << twist.dx;
