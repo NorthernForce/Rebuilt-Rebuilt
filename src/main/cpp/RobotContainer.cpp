@@ -12,6 +12,7 @@
 
 #include "constants/Constants.h"
 #include "subsystems/apriltag/PhotonVisionCameraIO.h"
+#include "subsystems/apriltag/PhotonVisionCameraSimIO.h"
 #include "subsystems/apriltag/LimeLightCameraIO.h"
 #include "frc/MathUtil.h"
 #include "frc/Preferences.h"
@@ -69,22 +70,31 @@ std::vector<CameraConfig> CreateCameraConfigurations()
     }
     else
     {
-        // Simulation - for now just use PhotonVision cameras without full simulation
-        // This can be enhanced later with proper PhotonVision simulation
+        // Simulation - use PhotonVision simulation for all cameras including LimeLight
         configs.emplace_back(
             "FrontLeft-Sim",
             CameraConstants::kFrontLeftCameraName,
             CameraConstants::kFrontLeftCameraTransform,
-            []() { return std::make_unique<PhotonVisionCameraIO>(
+            []() { return std::make_unique<PhotonVisionCameraSimIO>(
                 CameraConstants::kFrontLeftCameraName,
                 CameraConstants::kFrontLeftCameraTransform); }
+        );
+        
+        // Use PhotonVision simulation for LimeLight cameras too
+        configs.emplace_back(
+            "LimeLight-Sim", 
+            CameraConstants::kFrontRightCameraName,
+            CameraConstants::kFrontRightCameraTransform,
+            []() { return std::make_unique<PhotonVisionCameraSimIO>(
+                CameraConstants::kFrontRightCameraName,
+                CameraConstants::kFrontRightCameraTransform); }
         );
         
         configs.emplace_back(
             "Center-Sim",
             CameraConstants::kCenterCameraName,
             CameraConstants::kCenterCameraTransform,
-            []() { return std::make_unique<PhotonVisionCameraIO>(
+            []() { return std::make_unique<PhotonVisionCameraSimIO>(
                 CameraConstants::kCenterCameraName,
                 CameraConstants::kCenterCameraTransform); }
         );

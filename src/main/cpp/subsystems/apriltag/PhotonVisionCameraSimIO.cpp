@@ -127,15 +127,7 @@ void PhotonVisionCameraSimIO::Log(const nfr::LogContext& log) const
     log["simulation"] << true;
     log["connected"] << m_connected;
     
-    // Log camera transform
-    const auto& translation = m_cameraTransform.Translation();
-    const auto& rotation = m_cameraTransform.Rotation();
-    log["transform/x"] << translation.X().value();
-    log["transform/y"] << translation.Y().value();
-    log["transform/z"] << translation.Z().value();
-    log["transform/roll"] << rotation.X().value();
-    log["transform/pitch"] << rotation.Y().value();
-    log["transform/yaw"] << rotation.Z().value();
+    // Transform information is not needed in regular logging
     
     // Log simulation-specific data
     log["sim/pose_count"] << static_cast<int>(m_robotPoses.size());

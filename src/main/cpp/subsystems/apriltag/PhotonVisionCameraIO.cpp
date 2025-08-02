@@ -28,6 +28,9 @@ void PhotonVisionCameraIO::UpdateInputs(AprilTagCameraInputs& inputs)
     
     // For PhotonVision, we can check if there are unread results to determine connection
     auto results = m_camera.GetAllUnreadResults();
+    // Check connection by seeing if we have recent results
+    // PhotonVision doesn't have a direct IsConnected() method, 
+    // so we check if we got any results from the camera
     inputs.connected = !results.empty();
     
     // Process all unread results
@@ -55,19 +58,10 @@ void PhotonVisionCameraIO::Log(const nfr::LogContext& log) const
 {
     log["camera_name"] << m_cameraName;
     
-    // For logging, we can't check connection status since GetAllUnreadResults is not const
-    // We'll just log that it's a PhotonVision camera
-    log["is_connected"] << true; // Assume connected for logging purposes
+    // Connection status cannot be checked in const method since GetAllUnreadResults is not const
+    // This is logged during UpdateInputs instead
     
-    // Log camera transform
-    const auto& translation = m_cameraTransform.Translation();
-    const auto& rotation = m_cameraTransform.Rotation();
-    log["transform/x"] << translation.X().value();
-    log["transform/y"] << translation.Y().value();
-    log["transform/z"] << translation.Z().value();
-    log["transform/roll"] << rotation.X().value();
-    log["transform/pitch"] << rotation.Y().value();
-    log["transform/yaw"] << rotation.Z().value();
+    // Transform information is not needed in regular logging
 }
 
 std::string PhotonVisionCameraIO::GetCameraName() const
