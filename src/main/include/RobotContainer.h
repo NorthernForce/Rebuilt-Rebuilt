@@ -8,8 +8,8 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
 
-#include "subsystems/SwerveDrive.h"
 #include "subsystems/Localizer.h"
+#include "subsystems/SwerveDrive.h"
 
 class RobotContainer
 {
@@ -17,7 +17,7 @@ class RobotContainer
     RobotContainer();
 
     frc2::CommandPtr GetAutonomousCommand();
-    
+
     /**
      * Periodic function to update vision integration
      */
