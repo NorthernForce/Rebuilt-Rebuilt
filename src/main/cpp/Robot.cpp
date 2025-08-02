@@ -7,6 +7,8 @@
 #include <frc/DriverStation.h>
 #include <frc2/command/CommandScheduler.h>
 
+#include <iostream>
+
 #include "logging/LogTypes.h"
 #include "logging/Logger.h"
 #include "logging/NTLogManager.h"
@@ -32,6 +34,7 @@ void Robot::RobotPeriodic()
 {
     frc2::CommandScheduler::GetInstance().Run();
     nfr::logger["robot"] << m_container;
+    nfr::logger.Flush();
 }
 
 void Robot::DisabledInit()

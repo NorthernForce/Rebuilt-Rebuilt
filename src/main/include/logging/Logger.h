@@ -4,6 +4,8 @@
 
 #include <memory>
 #include <span>
+#include <sstream>
+#include <streambuf>  // Include for std::streambuf
 #include <string>
 #include <vector>
 
@@ -95,10 +97,60 @@ class LogContext
     std::string key;
     Logger* logger;
 };
+
+// New custom streambuf to duplicate output
+class TeeStreamBuf : public std::streambuf
+{
+  public:
+    // Constructor takes the primary buffer (for original destination)
+    // and a secondary stringstream (for logging)
+    TeeStreamBuf(std::streambuf* primaryBuf,
+                 std::shared_ptr<std::stringstream> logStream)
+        : primary_buf_(primaryBuf), log_stream_(logStream)
+    {
+    }
+
+  protected:
+    int_type overflow(int_type c) override
+    {
+        if (c == traits_type::eof())
+        {
+            return traits_type::eof();
+        }
+
+        // Write to the primary buffer (original destination)
+        if (primary_buf_->sputc(c) == traits_type::eof())
+        {
+            return traits_type::eof();
+        }
+
+        // Write to the logging stringstream
+        log_stream_->put(c);
+
+        return c;
+    }
+
+    int sync() override
+    {
+        int ret = 0;
+        if (primary_buf_->pubsync() == -1)
+        {
+            ret = -1;
+        }
+        // No explicit sync needed for stringstream as it buffers internally.
+        return ret;
+    }
+
+  private:
+    std::streambuf*
+        primary_buf_;  // Original streambuf (e.g., std::cout's original buffer)
+    std::shared_ptr<std::stringstream> log_stream_;  // Stringstream for logger
+};
+
 class Logger
 {
   public:
-    Logger() = default;
+    Logger();
     // Delete copy constructor and assignment operator
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
@@ -115,9 +167,22 @@ class Logger
     {
         return LogContext{std::string(key), this};
     }
+    void Flush();
 
   private:
     std::vector<std::shared_ptr<ILogOutput>> outputs;
+
+    // Store original streambufs
+    std::streambuf* original_cout_buf_;
+    std::streambuf* original_cerr_buf_;
+
+    // Stringstreams to capture cout/cerr for logging
+    std::shared_ptr<std::stringstream> cout_log_stream_;
+    std::shared_ptr<std::stringstream> cerr_log_stream_;
+
+    // Our tee streambufs
+    TeeStreamBuf cout_tee_buf_;
+    TeeStreamBuf cerr_tee_buf_;
 };
 
 extern Logger logger;  // Global logger instance
