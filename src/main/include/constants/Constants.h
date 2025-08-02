@@ -28,6 +28,6 @@ class DashboardConstants
   public:
     static constexpr int kPort = 5800;  // Port for the dashboard server
     static constexpr std::string_view kDistSubdirectory =
-        "dist";  // Subdirectory for dashboard files
+        "npm-dash";  // Subdirectory for dashboard files
 };
 }  // namespace nfr
