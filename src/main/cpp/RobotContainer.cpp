@@ -4,8 +4,10 @@
 
 #include "RobotContainer.h"
 
+#include <frc/DriverStation.h>
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/CommandXboxController.h>
+#include <logging/LogTypes.h>
 
 #include "constants/Constants.h"
 #include "frc/MathUtil.h"
@@ -37,16 +39,16 @@ void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
 }
 
 RobotContainer::RobotContainer()
-    : drive(TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
-            DriveConstants::kOdometryStandardDeviation,
-            DriveConstants::kVisionStandardDeviation,
-            DriveConstants::kTranslationPID, DriveConstants::kRotationPID,
-            DriveConstants::kMaxTranslationSpeed,
-            DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
-            TunerConstants::FrontRight, TunerConstants::BackLeft,
-            TunerConstants::BackRight)
 {
-    drive.SetModuleOffsets(getModuleOffsets());
+    drive = std::make_unique<SwerveDrive>(
+        TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
+        DriveConstants::kOdometryStandardDeviation,
+        DriveConstants::kVisionStandardDeviation,
+        DriveConstants::kTranslationPID, DriveConstants::kRotationPID,
+        DriveConstants::kMaxTranslationSpeed, DriveConstants::kMaxRotationSpeed,
+        TunerConstants::FrontLeft, TunerConstants::FrontRight,
+        TunerConstants::BackLeft, TunerConstants::BackRight);
+    drive->SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
 }
 
@@ -63,19 +65,19 @@ std::function<double()> ProcessInput(std::function<double()> input)
 
 void RobotContainer::ConfigureBindings()
 {
-    drive.SetDefaultCommand(drive.DriveByJoystick(
+    drive->SetDefaultCommand(drive->DriveByJoystick(
         ProcessInput([&]() { return driverController.GetLeftX(); }),
         ProcessInput([&]() { return driverController.GetLeftY(); }),
         ProcessInput([&]() { return driverController.GetRightX(); }),
         true  // Field-centric driving
         ));
     driverController.Back().OnTrue(
-        drive.RunOnce([&]() { drive.SeedFieldCentric(); }));
-    resetModulesCommand = drive.RunOnce(
+        drive->RunOnce([&]() { drive->SeedFieldCentric(); }));
+    resetModulesCommand = drive->RunOnce(
         [&]()
         {
             auto offsets =
-                drive.ResetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
+                drive->ResetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
             SetModuleOffsets(offsets);
         });
     frc::SmartDashboard::PutData("Reset Swerve Modules",
@@ -85,4 +87,10 @@ void RobotContainer::ConfigureBindings()
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 {
     return frc2::cmd::Print("No autonomous command configured");
+}
+
+void RobotContainer::Log(const nfr::LogContext& log) const
+{
+    log["match_time"] << frc::DriverStation::GetMatchTime();
+    log["drive"] << drive;
 }

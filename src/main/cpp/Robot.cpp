@@ -4,15 +4,35 @@
 
 #include "Robot.h"
 
+#include <frc/DriverStation.h>
 #include <frc2/command/CommandScheduler.h>
+
+#include "logging/LogTypes.h"
+#include "logging/Logger.h"
+#include "logging/NTLogManager.h"
+#include "logging/WPILogManager.h"
+#include "util/GitMetadataLoader.h"
+
+bool isCompetition()
+{
+    return frc::DriverStation::IsFMSAttached();
+}
 
 Robot::Robot()
 {
+    nfr::logger.AddOutput(std::make_shared<nfr::WPILogManager>());
+    if (!isCompetition())
+    {
+        nfr::logger.AddOutput(std::make_shared<nfr::NTLogManager>());
+    }
+    nfr::logger["git"] << getGitMetadata();
 }
 
 void Robot::RobotPeriodic()
 {
     frc2::CommandScheduler::GetInstance().Run();
+    nfr::logger["robot"] << m_container;
+    nfr::logger.Flush();
 }
 
 void Robot::DisabledInit()
