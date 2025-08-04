@@ -5,11 +5,11 @@
 #include <frc/controller/PIDController.h>
 #include <frc2/command/SubsystemBase.h>
 #include <frc2/command/sysid/SysIdRoutine.h>
+#include <logging/Logger.h>
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 #include <units/time.h>
 
-#include <concepts>
 #include <ctre/phoenix6/SignalLogger.hpp>
 #include <ctre/phoenix6/swerve/SwerveDrivetrain.hpp>
 
@@ -197,5 +197,6 @@ namespace nfr
                                          std::function<double()> yAxis,
                                          std::function<double()> rotationAxis,
                                          bool fieldRelative = true);
+        void Log(const nfr::LogContext &log) const;
     };
 }  // namespace nfr
