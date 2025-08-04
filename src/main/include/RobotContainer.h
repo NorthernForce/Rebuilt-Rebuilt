@@ -9,11 +9,11 @@
 #include <logging/Logger.h>
 
 #include "subsystems/Localizer.h"
-#include "subsystems/SwerveDrive.h"
+#include "subsystems/drive/SwerveDrive.h"
 
 class RobotContainer
 {
-  public:
+public:
     RobotContainer();
 
     frc2::CommandPtr GetAutonomousCommand();
@@ -25,9 +25,9 @@ class RobotContainer
 
     void Log(const nfr::LogContext &log) const;
 
-  private:
+private:
     void ConfigureBindings();
-    nfr::SwerveDrive drive;
+    std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
     nfr::Localizer localizer;
     std::optional<frc2::CommandPtr> resetModulesCommand;
     frc2::CommandXboxController driverController{0};
