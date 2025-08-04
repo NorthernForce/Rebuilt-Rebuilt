@@ -160,6 +160,21 @@ task copyCompileCommands(type: Copy) {
     def sourcePath = file("${buildDir}/TargetedCompileCommands/linuxathenarelease/compile_commands.json")
     def destinationDir = project.rootDir
 
+    // Disable state tracking
+    outputs.upToDateWhen { false }
+    doNotTrackState("File access issues with compile_commands.json")
+ 
+    doFirst {
+        // Clean up existing file if present
+        def destFile = new File(destinationDir, "compile_commands.json")
+        if (destFile.exists()) {
+            destFile.delete()
+        }
+       
+        // Ensure directories exist
+        destinationDir.mkdirs()
+    }
+
     from sourcePath
     into destinationDir
 
@@ -170,9 +185,9 @@ task copyCompileCommands(type: Copy) {
         }
     }
 
-    // Optional: Make this task depend on the task that generates compile_commands.json
-    // For example, if a task named 'generateCompileCommands' creates the file:
-    // dependsOn generateCompileCommands
+    onlyIf() {
+        sourcePath.exists()
+    }
 }
 
 // Ensure copyCompileCommands runs after generateCompileCommands
