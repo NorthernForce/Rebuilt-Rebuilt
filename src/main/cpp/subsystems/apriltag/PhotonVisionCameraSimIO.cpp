@@ -11,14 +11,11 @@ namespace nfr
 PhotonVisionCameraSimIO::PhotonVisionCameraSimIO(
     const std::string& cameraName, const frc::Transform3d& cameraTransform,
     std::shared_ptr<photon::VisionSystemSim> visionSim)
-    : m_cameraName(cameraName), m_cameraTransform(cameraTransform)
+    : m_cameraName(cameraName), m_cameraTransform(cameraTransform), 
+      m_camera(cameraName), m_visionSim(visionSim)
 {
     // Create or use provided vision system simulation
-    if (visionSim)
-    {
-        m_visionSim = visionSim;
-    }
-    else
+    if (!m_visionSim)
     {
         m_visionSim = std::make_shared<photon::VisionSystemSim>("VisionSim");
         m_visionSim->AddAprilTags(frc::AprilTagFieldLayout::LoadField(
@@ -36,7 +33,7 @@ PhotonVisionCameraSimIO::PhotonVisionCameraSimIO(
     // Use new constructor approach
     m_cameraSim =
         std::shared_ptr<photon::PhotonCameraSim>(new photon::PhotonCameraSim(
-            m_cameraName, cameraProperties, m_cameraTransform));
+            &m_camera, cameraProperties));
 
     // Add camera to vision system
     m_visionSim->AddCamera(m_cameraSim.get(), m_cameraTransform);

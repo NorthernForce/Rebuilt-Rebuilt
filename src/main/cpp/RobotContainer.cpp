@@ -32,42 +32,42 @@ std::vector<CameraConfig> CreateCameraConfigurations()
 
         // PhotonVision cameras
         configs.emplace_back(
-            "FrontLeft", CameraConstants::kFrontLeftCameraName,
+            "FrontLeft", std::string(CameraConstants::kFrontLeftCameraName),
             CameraConstants::kFrontLeftCameraTransform,
             []()
             {
                 return std::make_unique<PhotonVisionCameraIO>(
-                    CameraConstants::kFrontLeftCameraName,
+                    std::string(CameraConstants::kFrontLeftCameraName),
                     CameraConstants::kFrontLeftCameraTransform);
             });
 
-        configs.emplace_back("Center", CameraConstants::kCenterCameraName,
+        configs.emplace_back("Center", std::string(CameraConstants::kCenterCameraName),
                              CameraConstants::kCenterCameraTransform,
                              []()
                              {
                                  return std::make_unique<PhotonVisionCameraIO>(
-                                     CameraConstants::kCenterCameraName,
+                                     std::string(CameraConstants::kCenterCameraName),
                                      CameraConstants::kCenterCameraTransform);
                              });
 
         // LimeLight cameras
         configs.emplace_back(
-            "FrontRight", CameraConstants::kFrontRightCameraName,
+            "FrontRight", std::string(CameraConstants::kFrontRightCameraName),
             CameraConstants::kFrontRightCameraTransform,
             []()
             {
                 return std::make_unique<LimeLightCameraIO>(
-                    CameraConstants::kFrontRightCameraName,
+                    std::string(CameraConstants::kFrontRightCameraName),
                     CameraConstants::kFrontRightCameraTransform);
             });
 
         configs.emplace_back(
-            "CenterBack", CameraConstants::kCenterBackCameraName,
+            "CenterBack", std::string(CameraConstants::kCenterBackCameraName),
             CameraConstants::kCenterBackCameraTransform,
             []()
             {
                 return std::make_unique<LimeLightCameraIO>(
-                    CameraConstants::kCenterBackCameraName,
+                    std::string(CameraConstants::kCenterBackCameraName),
                     CameraConstants::kCenterBackCameraTransform);
             });
     }
@@ -76,33 +76,33 @@ std::vector<CameraConfig> CreateCameraConfigurations()
         // Simulation - use PhotonVision simulation for all cameras including
         // LimeLight
         configs.emplace_back(
-            "FrontLeft-Sim", CameraConstants::kFrontLeftCameraName,
+            "FrontLeft-Sim", std::string(CameraConstants::kFrontLeftCameraName),
             CameraConstants::kFrontLeftCameraTransform,
             []()
             {
                 return std::make_unique<PhotonVisionCameraSimIO>(
-                    CameraConstants::kFrontLeftCameraName,
+                    std::string(CameraConstants::kFrontLeftCameraName),
                     CameraConstants::kFrontLeftCameraTransform);
             });
 
         // Use PhotonVision simulation for LimeLight cameras too
         configs.emplace_back(
-            "LimeLight-Sim", CameraConstants::kFrontRightCameraName,
+            "LimeLight-Sim", std::string(CameraConstants::kFrontRightCameraName),
             CameraConstants::kFrontRightCameraTransform,
             []()
             {
                 return std::make_unique<PhotonVisionCameraSimIO>(
-                    CameraConstants::kFrontRightCameraName,
+                    std::string(CameraConstants::kFrontRightCameraName),
                     CameraConstants::kFrontRightCameraTransform);
             });
 
         configs.emplace_back(
-            "Center-Sim", CameraConstants::kCenterCameraName,
+            "Center-Sim", std::string(CameraConstants::kCenterCameraName),
             CameraConstants::kCenterCameraTransform,
             []()
             {
                 return std::make_unique<PhotonVisionCameraSimIO>(
-                    CameraConstants::kCenterCameraName,
+                    std::string(CameraConstants::kCenterCameraName),
                     CameraConstants::kCenterCameraTransform);
             });
     }

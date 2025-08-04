@@ -1,6 +1,7 @@
 #pragma once
 
 #include <frc/apriltag/AprilTagFieldLayout.h>
+#include <photon/PhotonCamera.h>
 #include <photon/simulation/PhotonCameraSim.h>
 #include <photon/simulation/VisionSystemSim.h>
 
@@ -20,6 +21,7 @@ class PhotonVisionCameraSimIO : public AprilTagCameraIO
   private:
     std::string m_cameraName;
     frc::Transform3d m_cameraTransform;
+    photon::PhotonCamera m_camera;
     std::shared_ptr<photon::PhotonCameraSim> m_cameraSim;
     std::shared_ptr<photon::VisionSystemSim> m_visionSim;
 
