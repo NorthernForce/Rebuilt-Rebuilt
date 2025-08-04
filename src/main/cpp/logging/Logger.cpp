@@ -127,5 +127,5 @@ void Logger::AddOutput(shared_ptr<ILogOutput> output)
 
 namespace nfr
 {
-Logger logger;
+    Logger logger;
 }
