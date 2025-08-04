@@ -27,4 +27,4 @@ void TuningManager::Clear()
     updateFunctions_.clear();
 }
 
-} // namespace nfr
+}  // namespace nfr

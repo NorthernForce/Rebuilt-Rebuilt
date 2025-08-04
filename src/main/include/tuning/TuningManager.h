@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vector>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <vector>
 
 namespace nfr
 {
@@ -12,7 +12,7 @@ namespace nfr
  */
 class TuningManager
 {
-public:
+  public:
     /**
      * @brief Get the singleton instance
      */
@@ -33,7 +33,7 @@ public:
      */
     void Clear();
 
-private:
+  private:
     TuningManager() = default;
     ~TuningManager() = default;
     TuningManager(const TuningManager&) = delete;
@@ -42,4 +42,4 @@ private:
     std::vector<std::function<void()>> updateFunctions_;
 };
 
-} // namespace nfr
+}  // namespace nfr

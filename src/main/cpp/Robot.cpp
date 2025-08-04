@@ -32,11 +32,11 @@ Robot::Robot()
 void Robot::RobotPeriodic()
 {
     frc2::CommandScheduler::GetInstance().Run();
-    
+
     // Update tunable constants from NetworkTables
     nfr::TunableDriveConstants::UpdateFromNetworkTables();
     nfr::TunableExampleConstants::UpdateFromNetworkTables();
-    
+
     nfr::logger["robot"] << m_container;
     nfr::logger.Flush();
 }
