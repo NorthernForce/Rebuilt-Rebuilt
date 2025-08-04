@@ -197,6 +197,7 @@ namespace nfr
                                          std::function<double()> yAxis,
                                          std::function<double()> rotationAxis,
                                          bool fieldRelative = true);
+        frc2::CommandPtr PathToPose(frc::Pose2d targetPose);
         void Log(const nfr::LogContext &log) const;
     };
 }  // namespace nfr

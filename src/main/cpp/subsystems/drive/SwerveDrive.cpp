@@ -218,6 +218,19 @@ CommandPtr SwerveDrive::DriveByJoystick(function<double()> xAxis,
     }
 }
 
+CommandPtr SwerveDrive::PathToPose(Pose2d targetPose)
+{
+    return AutoBuilder::pathfindToPose(
+        targetPose,
+        pathplanner::PathConstraints{
+            maxTranslationSpeed,
+            3.0_mps_sq,  // Max acceleration
+            maxRotationSpeed,
+            12.0_rad_per_s_sq  // Max angular acceleration
+        }
+    );
+}
+
 void SwerveDrive::Log(const nfr::LogContext &log) const
 {
     log["pose"] << GetState().Pose;
