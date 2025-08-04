@@ -22,7 +22,7 @@ enum class ManipulatorState
 
 class Manipulator : public frc2::Subsystem
 {
-  public:
+public:
     Manipulator();
     void set(double speed);
     void stop();
@@ -36,7 +36,7 @@ class Manipulator : public frc2::Subsystem
     ManipulatorState getState();
     void setState(ManipulatorState state);
 
-  private:
+private:
     ctre::phoenix6::hardware::TalonFXS m_motor;
     frc::DigitalInput m_sensor;
     ctre::phoenix6::configs::TalonFXSConfiguration config;

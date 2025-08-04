@@ -7,12 +7,12 @@
 
 class Intake : public frc2::CommandHelper<frc2::Command, Intake>
 {
-  public:
+public:
     explicit Intake(Manipulator* manipulator);
     void Initialize() override;
     void Execute() override;
     bool IsFinished() override;
 
-  private:
+private:
     Manipulator* m_manipulator;
 };

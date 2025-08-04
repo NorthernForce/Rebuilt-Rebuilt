@@ -7,12 +7,12 @@
 
 class Outtake : public frc2::CommandHelper<frc2::Command, Outtake>
 {
-  public:
+public:
     explicit Outtake(Manipulator* manipulator);
     void Initialize() override;
     void Execute() override;
     bool IsFinished() override;
 
-  private:
+private:
     Manipulator* m_manipulator;
 };
