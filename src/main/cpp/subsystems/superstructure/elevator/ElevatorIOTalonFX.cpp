@@ -152,3 +152,13 @@ bool ElevatorIOTalonFX::GetIsPresent() const
 {
     return m_motor->IsConnected();
 }
+
+// SIM CODE
+
+ElevatorIOTalonFXSim::ElevatorIOTalonFXSim(int id, ElevatorConstants constants, frc::DCMotor motorType)
+    : m_elevatorSim(frc::sim::ElevatorSim(motorType, constants.kGearRatio, constants.kMass, constants.kSprocketCircumference / 2.0 / units::constants::pi, 0_m, constants.kUpperLimit, true, 0_m)),
+    m_simState(ctre::phoenix6::sim::TalonFXSimState(ctre::phoenix6::hardware::core::CoreTalonFX(id, string("canbus")))),
+    ElevatorIOTalonFX(id, constants)
+{
+    
+}

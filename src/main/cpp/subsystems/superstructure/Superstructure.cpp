@@ -118,5 +118,5 @@ CommandPtr Superstructure::GetManualControlCommand(
 void Superstructure::SuperstructureState::Log(const nfr::LogContext& log) const
 {
     log["innerElevatorPosition"] << this->innerElevatorPosition.value();
-    log["outerELevatorPosition"] << this->outerElevatorPosition.value();
+    log["outerElevatorPosition"] << this->outerElevatorPosition.value();
 }

@@ -16,9 +16,9 @@ ElevatorIOSparkMax::ElevatorIOSparkMax(
 
       m_position(GetPosition()),
       m_temperature(GetTemperature()),
-      m_current(GetCurrent()),
+      m_voltage(GetVoltage()),
       m_velocity(GetVelocity()),
-      m_voltage(GetVoltage())
+      m_current(GetCurrent())
 {
     SparkMaxConfig sparkMaxConfigs;
 
@@ -26,10 +26,7 @@ ElevatorIOSparkMax::ElevatorIOSparkMax(
     slot0Configs.Pid(kP, kI, kD, ClosedLoopSlot::kSlot0);
     this->kG = kG;
 
-    sparkMaxConfigs.Inverted(
-        kInverted ? ctre::phoenix6::signals::InvertedValue::Clockwise_Positive
-                  : ctre::phoenix6::signals::InvertedValue::
-                        CounterClockwise_Positive);
+    sparkMaxConfigs.Inverted(kInverted);
     sparkMaxConfigs.SetIdleMode(SparkBaseConfig::IdleMode::kBrake);
 
     sparkMaxConfigs.encoder.PositionConversionFactor(
@@ -75,9 +72,11 @@ void ElevatorIOSparkMax::SetLowerLimitEnable(bool enableLowerLimit)
 
 void ElevatorIOSparkMax::SetSpeed(double speed, bool overrideLowerLimit)
 {
+    SetLowerLimitEnable(!overrideLowerLimit);
     m_motor->GetClosedLoopController().SetReference(
         speed + kG / frc::RobotController::GetInputVoltage(),
         SparkLowLevel::ControlType::kDutyCycle);
+    SetLowerLimitEnable(overrideLowerLimit);
 }
 
 void ElevatorIOSparkMax::ResetPosition()

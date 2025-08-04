@@ -1,6 +1,7 @@
 #pragma once
 
 #include <frc/RobotController.h>
+#include <frc/simulation/ElevatorSim.h>
 #include <frc2/command/Command.h>
 #include <frc2/command/CommandHelper.h>
 #include <frc2/command/SubsystemBase.h>
@@ -10,6 +11,7 @@
 #include <rev/config/SparkMaxConfig.h>
 #include <subsystems/superstructure/elevator/ElevatorSensor.h>
 #include <units/math.h>
+#include <units/constants.h>
 
 #include <ctre/phoenix6/SignalLogger.hpp>
 #include <ctre/phoenix6/TalonFX.hpp>
@@ -21,6 +23,9 @@ class ElevatorIO;
 class ElevatorIOTalonFX;
 class ElevatorIOTalonFXS;
 class ElevatorIOSparkMax;
+class ElevatorIOTalonFXSim;
+class ElevatorIOTalonFXSSim;
+class ElevatorIOSparkMaxSim;
 class ElevatorMoveToPositionCommand;
 class ElevatorHomingCommand;
 
@@ -144,6 +149,16 @@ class ElevatorIOTalonFX : public ElevatorIO
     ctre::phoenix6::controls::VoltageOut m_voltageOut;
     bool m_isPresent;
     double kG;
+};
+
+class ElevatorIOTalonFXSim : public ElevatorIOTalonFX
+{
+  public:
+    ElevatorIOTalonFXSim(int id, ElevatorConstants constants, frc::DCMotor motorType);
+    void Update() override;
+  private:
+    frc::sim::ElevatorSim m_elevatorSim;
+    ctre::phoenix6::sim::TalonFXSimState m_simState;
 };
 
 class ElevatorIOTalonFXS : public ElevatorIO
