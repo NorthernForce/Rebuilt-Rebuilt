@@ -21,7 +21,7 @@ namespace nfr
                             ctre::phoenix6::hardware::TalonFX,
                             ctre::phoenix6::hardware::CANcoder>
     {
-      private:
+    private:
         static constexpr units::second_t kSimLoopPeriod = 5_ms;
         std::unique_ptr<frc::Notifier> simNotifier;
         units::second_t lastSimTime;
@@ -116,7 +116,7 @@ namespace nfr
         units::meters_per_second_t maxTranslationSpeed;
         units::radians_per_second_t maxRotationSpeed;
 
-      public:
+    public:
         using SwerveModuleConstants =
             ctre::phoenix6::swerve::SwerveModuleConstants<
                 ctre::phoenix6::configs::TalonFXConfiguration,

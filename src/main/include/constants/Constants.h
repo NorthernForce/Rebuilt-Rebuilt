@@ -7,7 +7,7 @@ namespace nfr
 {
     class DriveConstants
     {
-      public:
+    public:
         static constexpr units::hertz_t kUpdateRate =
             200_Hz;  // Update rate for the swerve drive
         static constexpr units::meters_per_second_t kMaxTranslationSpeed =

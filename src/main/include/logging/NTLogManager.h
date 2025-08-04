@@ -26,7 +26,7 @@ namespace nfr
      */
     class NTLogManager : public ILogOutput
     {
-      public:
+    public:
         NTLogManager(const std::string &tableName = "logs");
         /**
          * @brief Logs a double value to a file.
@@ -85,7 +85,7 @@ namespace nfr
         void Log(const std::string &key,
                  std::span<std::string> values) override;
 
-      private:
+    private:
         std::shared_ptr<nt::NetworkTable> table;
         std::unordered_map<
             std::string,

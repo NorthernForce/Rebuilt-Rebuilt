@@ -10,7 +10,7 @@ namespace nfr
 {
     class WPILogManager : public ILogOutput
     {
-      public:
+    public:
         WPILogManager();
         void Log(const std::string& key, double value) override;
         void Log(const std::string& key, long value) override;
@@ -22,7 +22,7 @@ namespace nfr
         void Log(const std::string& key,
                  std::span<std::string> values) override;
 
-      private:
+    private:
         wpi::log::DataLog& logRef;
         std::unordered_map<
             std::string,

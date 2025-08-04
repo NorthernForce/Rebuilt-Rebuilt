@@ -7,7 +7,7 @@ namespace nfr
 {
     class ILogOutput
     {
-      public:
+    public:
         virtual void Log(const std::string& key, double value) = 0;
         virtual void Log(const std::string& key, long value) = 0;
         virtual void Log(const std::string& key, bool value) = 0;

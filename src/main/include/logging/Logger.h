@@ -35,7 +35,7 @@ namespace nfr
     class Logger;
     class LogContext
     {
-      public:
+    public:
         LogContext(const std::string& key, Logger* logger);
         LogContext(const LogContext&) = delete;
         LogContext& operator=(const LogContext&) = delete;
@@ -93,7 +93,7 @@ namespace nfr
             return LogContext{key + "/" + std::string(newKey), logger};
         }
 
-      private:
+    private:
         std::string key;
         Logger* logger;
     };
@@ -101,7 +101,7 @@ namespace nfr
     // New custom streambuf to duplicate output
     class TeeStreamBuf : public std::streambuf
     {
-      public:
+    public:
         // Constructor takes the primary buffer (for original destination)
         // and a secondary stringstream (for logging)
         TeeStreamBuf(std::streambuf* primaryBuf,
@@ -110,7 +110,7 @@ namespace nfr
         {
         }
 
-      protected:
+    protected:
         int_type overflow(int_type c) override
         {
             if (c == traits_type::eof())
@@ -142,7 +142,7 @@ namespace nfr
             return ret;
         }
 
-      private:
+    private:
         std::streambuf* primary_buf_;  // Original streambuf (e.g., std::cout's
                                        // original buffer)
         std::shared_ptr<std::stringstream>
@@ -151,7 +151,7 @@ namespace nfr
 
     class Logger
     {
-      public:
+    public:
         Logger();
         // Delete copy constructor and assignment operator
         Logger(const Logger&) = delete;
@@ -171,7 +171,7 @@ namespace nfr
         }
         void Flush();
 
-      private:
+    private:
         std::vector<std::shared_ptr<ILogOutput>> outputs;
 
         // Store original streambufs
