@@ -7,6 +7,7 @@
 #include <frc/DriverStation.h>
 #include <frc2/command/CommandScheduler.h>
 
+#include "constants/TunableConstants.h"
 #include "logging/LogTypes.h"
 #include "logging/Logger.h"
 #include "logging/NTLogManager.h"
@@ -31,6 +32,11 @@ Robot::Robot()
 void Robot::RobotPeriodic()
 {
     frc2::CommandScheduler::GetInstance().Run();
+    
+    // Update tunable constants from NetworkTables
+    nfr::TunableDriveConstants::UpdateFromNetworkTables();
+    nfr::TunableExampleConstants::UpdateFromNetworkTables();
+    
     nfr::logger["robot"] << m_container;
     nfr::logger.Flush();
 }
