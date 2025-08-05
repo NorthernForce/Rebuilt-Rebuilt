@@ -1,4 +1,5 @@
 #include <subsystems/superstructure/elevator/Elevator.h>
+
 #include "frc/RobotController.h"
 
 using namespace std;
@@ -152,10 +153,16 @@ bool ElevatorIOTalonFXS::GetIsPresent() const
     return m_motor->IsConnected();
 }
 
-ElevatorIOTalonFXSSim::ElevatorIOTalonFXSSim(int id, ElevatorConstants constants, frc::DCMotor dcMotorType)
+ElevatorIOTalonFXSSim::ElevatorIOTalonFXSSim(int id,
+                                             ElevatorConstants constants,
+                                             frc::DCMotor dcMotorType)
     : ElevatorIOTalonFXS(id, constants),
-    m_elevatorSim(frc::sim::ElevatorSim(dcMotorType, constants.kGearRatio, constants.kMass, constants.kSprocketCircumference / 2.0 / units::constants::pi, 0_m, constants.kUpperLimit, true, 0_m)),
-    m_simState(ctre::phoenix6::sim::TalonFXSSimState(ctre::phoenix6::hardware::core::CoreTalonFXS(id, string("canbus"))))
+      m_elevatorSim(frc::sim::ElevatorSim(
+          dcMotorType, constants.kGearRatio, constants.kMass,
+          constants.kSprocketCircumference / 2.0 / units::constants::pi, 0_m,
+          constants.kUpperLimit, true, 0_m)),
+      m_simState(ctre::phoenix6::sim::TalonFXSSimState(
+          ctre::phoenix6::hardware::core::CoreTalonFXS(id, string("canbus"))))
 {
     m_constants = constants;
 }
@@ -163,12 +170,18 @@ ElevatorIOTalonFXSSim::ElevatorIOTalonFXSSim(int id, ElevatorConstants constants
 void ElevatorIOTalonFXSSim::UpdateSim()
 {
     Refresh();
-    m_simState.SetSupplyVoltage((volt_t)frc::RobotController::GetInputVoltage());
-    m_elevatorSim.SetInputVoltage((volt_t)frc::RobotController::GetInputVoltage());
+    m_simState.SetSupplyVoltage(
+        (volt_t)frc::RobotController::GetInputVoltage());
+    m_elevatorSim.SetInputVoltage(
+        (volt_t)frc::RobotController::GetInputVoltage());
     m_elevatorSim.Update(0.02_s);
-    double sprocketRotations = m_elevatorSim.GetVelocity().value() / m_constants.kSprocketCircumference.value();
+    double sprocketRotations = m_elevatorSim.GetVelocity().value() /
+                               m_constants.kSprocketCircumference.value();
     double rotationsPerSecond = sprocketRotations * m_constants.kGearRatio;
     double dRot = rotationsPerSecond * 0.02;
-    m_simState.AddRotorPosition(m_constants.kInverted ? (turn_t)-dRot : (turn_t)dRot);
-    m_simState.SetRotorVelocity(m_constants.kInverted ? (turns_per_second_t)-rotationsPerSecond : (turns_per_second_t) rotationsPerSecond);
+    m_simState.AddRotorPosition(m_constants.kInverted ? (turn_t)-dRot
+                                                      : (turn_t)dRot);
+    m_simState.SetRotorVelocity(m_constants.kInverted
+                                    ? (turns_per_second_t)-rotationsPerSecond
+                                    : (turns_per_second_t)rotationsPerSecond);
 }

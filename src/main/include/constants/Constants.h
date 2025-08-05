@@ -1,11 +1,11 @@
 #pragma once
 
+#include <constants/ElevatorConstants.h>
 #include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 #include <units/frequency.h>
 #include <units/math.h>
 
 #include <ctre/phoenix6/TalonFX.hpp>
-#include <constants/ElevatorConstants.h>
 
 namespace nfr
 {
@@ -42,7 +42,7 @@ namespace UniversalElevatorConstants
         CORAL_STATION,
         START
     };
-}  // namespace ElevatorConstants
+}  // namespace UniversalElevatorConstants
 
 namespace InnerElevatorConstants
 {
@@ -70,11 +70,10 @@ namespace InnerElevatorConstants
     constexpr units::meter_t kUpperLimit = 0.63_m;
     constexpr units::kilogram_t kElevatorMass = 2.72_kg;
 
-    constexpr ElevatorConstants kConstants =
-        ElevatorConstants(
-            kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity, kAcceleration, kJerk,
-            kSprocketCircumference, kGearBoxRatio, true, kLowerLimit,
-            kUpperLimit, kElevatorMass);
+    constexpr ElevatorConstants kConstants = ElevatorConstants(
+        kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity, kAcceleration, kJerk,
+        kSprocketCircumference, kGearBoxRatio, true, kLowerLimit, kUpperLimit,
+        kElevatorMass);
 }  // namespace InnerElevatorConstants
 
 namespace OuterElevatorConstants
@@ -103,9 +102,8 @@ namespace OuterElevatorConstants
     constexpr units::meter_t kUpperLimit = 0.68_m;
     constexpr units::kilogram_t kElevatorMass = 2.72_kg;
 
-    constexpr ElevatorConstants kConstants =
-        ElevatorConstants(
-            kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity, kAcceleration, kJerk,
-            kSprocketCircumference, kGearBoxRatio, true, kLowerLimit,
-            kUpperLimit, kElevatorMass);
+    constexpr ElevatorConstants kConstants = ElevatorConstants(
+        kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity, kAcceleration, kJerk,
+        kSprocketCircumference, kGearBoxRatio, true, kLowerLimit, kUpperLimit,
+        kElevatorMass);
 }  // namespace OuterElevatorConstants

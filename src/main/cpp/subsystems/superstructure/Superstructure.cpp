@@ -8,7 +8,8 @@ Superstructure::Superstructure(shared_ptr<Elevator> innerElevator,
                                shared_ptr<Elevator> outerElevator)
     : m_innerElevator(innerElevator), m_outerElevator(outerElevator)
 {
-    m_target = GetPresetState(UniversalElevatorConstants::SuperstructurePresets::START);
+    m_target = GetPresetState(
+        UniversalElevatorConstants::SuperstructurePresets::START);
 }
 
 void Superstructure::Stop()

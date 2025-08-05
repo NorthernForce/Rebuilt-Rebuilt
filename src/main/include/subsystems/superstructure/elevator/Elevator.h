@@ -1,5 +1,6 @@
 #pragma once
 
+#include <constants/ElevatorConstants.h>
 #include <frc/RobotController.h>
 #include <frc/simulation/ElevatorSim.h>
 #include <frc2/command/Command.h>
@@ -13,7 +14,6 @@
 #include <subsystems/superstructure/elevator/ElevatorSensor.h>
 #include <units/constants.h>
 #include <units/math.h>
-#include <constants/ElevatorConstants.h>
 
 #include <ctre/phoenix6/SignalLogger.hpp>
 #include <ctre/phoenix6/TalonFX.hpp>
@@ -210,17 +210,16 @@ private:
 
 class ElevatorIOTalonFXSSim : public ElevatorIOTalonFXS
 {
-  public:
+public:
     ElevatorIOTalonFXSSim(int id, ElevatorConstants constants,
-                         frc::DCMotor dcMotorType);
+                          frc::DCMotor dcMotorType);
     void UpdateSim();
 
-  private:
+private:
     frc::sim::ElevatorSim m_elevatorSim;
     ctre::phoenix6::sim::TalonFXSSimState m_simState;
     ElevatorConstants m_constants;
 };
-
 
 class ElevatorIOSparkMax : public ElevatorIO
 {
@@ -243,7 +242,7 @@ public:
     void ResetPosition() override;
     void Stop() override;
     void SetVoltage(units::volt_t) override;
-    rev::spark::SparkMax* GetSparkMax();
+    rev::spark::SparkMax *GetSparkMax();
 
     units::turn_t GetPosition() const override;
     units::celsius_t GetTemperature() const override;
@@ -262,11 +261,16 @@ private:
     double kG;
 };
 
-class ElevatorIOSparkMaxSim : public ElevatorIOSparkMax {
-  public:
-    ElevatorIOSparkMaxSim(int busId, int id, rev::spark::SparkLowLevel::MotorType motorType, ElevatorConstants constants, frc::DCMotor dcMotorType);
+class ElevatorIOSparkMaxSim : public ElevatorIOSparkMax
+{
+public:
+    ElevatorIOSparkMaxSim(int busId, int id,
+                          rev::spark::SparkLowLevel::MotorType motorType,
+                          ElevatorConstants constants,
+                          frc::DCMotor dcMotorType);
     void UpdateSim();
-  private:
+
+private:
     frc::sim::ElevatorSim m_elevatorSim;
     rev::spark::SparkMaxSim m_sparkSim;
     ElevatorConstants m_constants;
