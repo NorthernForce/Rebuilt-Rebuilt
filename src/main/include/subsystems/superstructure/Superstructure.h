@@ -16,10 +16,10 @@
 
 class Superstructure : public frc2::SubsystemBase
 {
-  public:
+public:
     struct SuperstructureState
     {
-      public:
+    public:
         units::meter_t innerElevatorPosition;
         units::meter_t outerElevatorPosition;
         void Log(const nfr::LogContext& log) const;
@@ -45,7 +45,7 @@ class Superstructure : public frc2::SubsystemBase
         std::function<double()> innerElevatorSpeed,
         std::function<double()> outerElevatorSpeed);
 
-  private:
+private:
     std::shared_ptr<Elevator> m_innerElevator;
     std::shared_ptr<Elevator> m_outerElevator;
     SuperstructureState m_target;
@@ -55,14 +55,14 @@ class SuperstructureGoToPositionCommand
     : public frc2::CommandHelper<frc2::Command,
                                  SuperstructureGoToPositionCommand>
 {
-  public:
+public:
     SuperstructureGoToPositionCommand(
         Superstructure* superstructure,
         Superstructure::SuperstructureState position);
     void Initialize();
     bool IsFinished();
 
-  private:
+private:
     Superstructure* m_superstructure;
     Superstructure::SuperstructureState m_position;
 };
@@ -71,14 +71,14 @@ class SuperstructureHoldAtPositionCommand
     : public frc2::CommandHelper<frc2::Command,
                                  SuperstructureHoldAtPositionCommand>
 {
-  public:
+public:
     SuperstructureHoldAtPositionCommand(
         Superstructure* superstructure,
         Superstructure::SuperstructureState position);
     void Initialize();
     bool IsFinished();
 
-  private:
+private:
     Superstructure* m_superstructure;
     Superstructure::SuperstructureState m_position;
 };
@@ -87,12 +87,12 @@ class SuperstructureHomingCommand
     : public frc2::CommandHelper<frc2::ParallelCommandGroup,
                                  SuperstructureHomingCommand>
 {
-  public:
+public:
     SuperstructureHomingCommand(Superstructure* superstructure,
                                 double innerElevatorSpeed,
                                 double outerElevatorSpeed);
 
-  private:
+private:
     Superstructure* m_superstructure;
 };
 
@@ -100,12 +100,12 @@ class SuperstructureManualControlCommand
     : public frc2::CommandHelper<frc2::ParallelCommandGroup,
                                  SuperstructureManualControlCommand>
 {
-  public:
+public:
     SuperstructureManualControlCommand(
         Superstructure* superstructure,
         std::function<double()> innerElevatorSpeed,
         std::function<double()> outerElevatorSpeed);
 
-  private:
+private:
     Superstructure* m_superstructure;
 };
