@@ -157,5 +157,5 @@ void Logger::Flush()
 
 namespace nfr
 {
-Logger logger;
+    Logger logger;
 }

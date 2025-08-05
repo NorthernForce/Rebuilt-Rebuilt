@@ -13,14 +13,14 @@
 
 class RobotContainer
 {
-  public:
+public:
     RobotContainer();
 
     frc2::CommandPtr GetAutonomousCommand();
 
     void Log(const nfr::LogContext &log) const;
 
-  private:
+private:
     void ConfigureBindings();
     Superstructure m_superstructure;
     std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
