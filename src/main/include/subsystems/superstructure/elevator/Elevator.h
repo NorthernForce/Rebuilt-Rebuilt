@@ -33,7 +33,7 @@ class ElevatorHomingCommand;
 
 class Elevator : public frc2::SubsystemBase
 {
-  public:
+public:
     Elevator(std::string name, std::shared_ptr<ElevatorIO> motor,
              std::shared_ptr<ElevatorSensorIO> sensor,
              units::meter_t errorTolerance);
@@ -60,7 +60,7 @@ class Elevator : public frc2::SubsystemBase
     frc2::CommandPtr GetSysIdDynamicForward();
     frc2::CommandPtr GetSysIdDynamicReverse();
 
-  private:
+private:
     std::string m_name;
     std::shared_ptr<ElevatorIO> m_motor;
     std::shared_ptr<ElevatorSensorIO> m_sensor;
@@ -72,7 +72,7 @@ class Elevator : public frc2::SubsystemBase
 
 class ElevatorIO
 {
-  public:
+public:
     ElevatorIO() = default;
     virtual ~ElevatorIO() = default;
     virtual void SetTargetPosition(units::meter_t position) = 0;
@@ -94,7 +94,7 @@ class ElevatorIO
 
 class ElevatorIOTalonFX : public ElevatorIO
 {
-  public:
+public:
     ElevatorIOTalonFX(int id, double kS, double kV, double kA, double kP,
                       double kI, double kD, double kG,
                       units::turns_per_second_t kCruiseVelocity,
@@ -119,7 +119,7 @@ class ElevatorIOTalonFX : public ElevatorIO
     units::ampere_t GetCurrent() const override;
     bool GetIsPresent() const override;
 
-  private:
+private:
     std::shared_ptr<ctre::phoenix6::hardware::TalonFX> m_motor;
     ctre::phoenix6::StatusSignal<units::turn_t> m_position;
     ctre::phoenix6::StatusSignal<units::celsius_t> m_temperature;
@@ -136,12 +136,12 @@ class ElevatorIOTalonFX : public ElevatorIO
 
 class ElevatorIOTalonFXSim : public ElevatorIOTalonFX
 {
-  public:
+public:
     ElevatorIOTalonFXSim(int id, ElevatorConstants constants,
                          frc::DCMotor dcMotorType);
     void UpdateSim();
 
-  private:
+private:
     frc::sim::ElevatorSim m_elevatorSim;
     ctre::phoenix6::sim::TalonFXSimState m_simState;
     ElevatorConstants m_constants;
@@ -149,7 +149,7 @@ class ElevatorIOTalonFXSim : public ElevatorIOTalonFX
 
 class ElevatorIOTalonFXS : public ElevatorIO
 {
-  public:
+public:
     ElevatorIOTalonFXS(int id, double kS, double kV, double kA, double kP,
                        double kI, double kD, double kG,
                        units::turns_per_second_t kCruiseVelocity,
@@ -174,7 +174,7 @@ class ElevatorIOTalonFXS : public ElevatorIO
     units::ampere_t GetCurrent() const override;
     bool GetIsPresent() const override;
 
-  private:
+private:
     std::shared_ptr<ctre::phoenix6::hardware::TalonFXS> m_motor;
     ctre::phoenix6::StatusSignal<units::turn_t> m_position;
     ctre::phoenix6::StatusSignal<units::celsius_t> m_temperature;
@@ -205,7 +205,7 @@ class ElevatorIOTalonFXSSim : public ElevatorIOTalonFXS
 
 class ElevatorIOSparkMax : public ElevatorIO
 {
-  public:
+public:
     ElevatorIOSparkMax(int busId, int id,
                        rev::spark::SparkLowLevel::MotorType motorType,
                        double kS, double kV, double kA, double kP, double kI,
@@ -233,7 +233,7 @@ class ElevatorIOSparkMax : public ElevatorIO
     units::ampere_t GetCurrent() const override;
     bool GetIsPresent() const override;
 
-  private:
+private:
     std::shared_ptr<rev::spark::SparkMax> m_motor;
     units::turn_t m_position;
     units::celsius_t m_temperature;
@@ -256,13 +256,13 @@ class ElevatorIOSparkMaxSim : public ElevatorIOSparkMax {
 class ElevatorMoveToPositionCommand
     : public frc2::CommandHelper<frc2::Command, ElevatorMoveToPositionCommand>
 {
-  public:
+public:
     ElevatorMoveToPositionCommand(Elevator *elevator, units::meter_t position);
     void Initialize() override;
     bool IsFinished() override;
     void End(bool interrupted) override;
 
-  private:
+private:
     Elevator *m_elevator;
     units::meter_t m_position;
 };
@@ -270,14 +270,14 @@ class ElevatorMoveToPositionCommand
 class ElevatorHomingCommand
     : public frc2::CommandHelper<frc2::Command, ElevatorHomingCommand>
 {
-  public:
+public:
     ElevatorHomingCommand(Elevator *elevator, double speed);
     void Initialize() override;
     void Execute() override;
     bool IsFinished() override;
     void End(bool interrupted) override;
 
-  private:
+private:
     Elevator *m_elevator;
     double m_speed;
 };
@@ -285,13 +285,13 @@ class ElevatorHomingCommand
 class ElevatorHoldAtPositionCommand
     : public frc2::CommandHelper<frc2::Command, ElevatorHoldAtPositionCommand>
 {
-  public:
+public:
     ElevatorHoldAtPositionCommand(Elevator *elevator, units::meter_t position);
     void Initialize() override;
     bool IsFinished() override;
     void End(bool interrupted) override;
 
-  private:
+private:
     Elevator *m_elevator;
     units::meter_t m_position;
 };
@@ -299,12 +299,12 @@ class ElevatorHoldAtPositionCommand
 class ElevatorManualControlCommand
     : public frc2::CommandHelper<frc2::Command, ElevatorManualControlCommand>
 {
-  public:
+public:
     ElevatorManualControlCommand(Elevator *elevator,
                                  std::function<double()> speed);
     void Execute() override;
 
-  private:
+private:
     Elevator *m_elevator;
     std::function<double()> m_speed;
 };
