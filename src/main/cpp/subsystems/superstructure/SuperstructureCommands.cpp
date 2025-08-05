@@ -8,7 +8,7 @@ SuperstructureGoToPositionCommand::SuperstructureGoToPositionCommand(
     Superstructure *superstructure,
     Superstructure::SuperstructureState position)
 {
-    AddRequirements({superstructure});
+    AddRequirements(superstructure);
     m_superstructure = superstructure;
     m_position = position;
 }
@@ -31,7 +31,7 @@ SuperstructureHoldAtPositionCommand::SuperstructureHoldAtPositionCommand(
     Superstructure *superstructure,
     Superstructure::SuperstructureState position)
 {
-    AddRequirements({superstructure});
+    AddRequirements(superstructure);
     m_superstructure = superstructure;
     m_position = position;
 }
@@ -54,7 +54,7 @@ SuperstructureHomingCommand::SuperstructureHomingCommand(
     Superstructure *superstructure, double innerElevatorSpeed,
     double outerElevatorSpeed)
 {
-    AddRequirements({superstructure});
+    AddRequirements(superstructure);
     m_superstructure = superstructure;
     AddCommands(ElevatorHomingCommand(m_superstructure->GetInnerElevator(),
                                       innerElevatorSpeed),
@@ -66,7 +66,7 @@ SuperstructureManualControlCommand::SuperstructureManualControlCommand(
     Superstructure *superstructure, function<double()> innerElevatorSpeed,
     function<double()> outerElevatorSpeed)
 {
-    AddRequirements({superstructure});
+    AddRequirements(superstructure);
     m_superstructure = superstructure;
     AddCommands(ElevatorManualControlCommand(
                     m_superstructure->GetInnerElevator(), innerElevatorSpeed),

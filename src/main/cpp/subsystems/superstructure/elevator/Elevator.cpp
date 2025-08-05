@@ -51,7 +51,7 @@ CommandPtr Elevator::GetStopCommand()
 
 void Elevator::Periodic()
 {
-    m_motor->Update();
+    m_motor->Refresh();
     if (m_sensor->IsAtLimit() && !m_hasResetPosition)
     {
         m_motor->ResetPosition();

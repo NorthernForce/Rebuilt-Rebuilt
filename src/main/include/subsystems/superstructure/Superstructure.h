@@ -31,7 +31,7 @@ class Superstructure : public frc2::SubsystemBase
     SuperstructureState GetState() const;
     SuperstructureState GetTargetState() const;
     SuperstructureState GetPresetState(
-        ElevatorConstants::SuperstructurePresets preset) const;
+        UniversalElevatorConstants::SuperstructurePresets preset) const;
     bool IsAtTarget() const;
     bool IsAtPosition(SuperstructureState position) const;
     Elevator* GetInnerElevator();

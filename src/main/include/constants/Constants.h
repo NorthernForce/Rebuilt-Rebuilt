@@ -1,15 +1,11 @@
 #pragma once
 
 #include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
-#include <subsystems/superstructure/Superstructure.h>
-#include <subsystems/superstructure/elevator/Elevator.h>
-#include <subsystems/superstructure/elevator/ElevatorSensor.h>
 #include <units/frequency.h>
 #include <units/math.h>
 
 #include <ctre/phoenix6/TalonFX.hpp>
-#include <memory>
-#include <string>
+#include <constants/ElevatorConstants.h>
 
 namespace nfr
 {
@@ -32,7 +28,7 @@ class DriveConstants
         pathplanner::PIDConstants(0.1, 0.0, 0.0);
 };
 }  // namespace nfr
-namespace ElevatorConstants
+namespace UniversalElevatorConstants
 {
 constexpr double kHomingSpeed = 0.25;
 constexpr units::meter_t kTolerance = 0.006_m;
@@ -74,8 +70,8 @@ constexpr units::meter_t kLowerLimit = 0_m;
 constexpr units::meter_t kUpperLimit = 0.63_m;
 constexpr units::kilogram_t kElevatorMass = 2.72_kg;
 
-constexpr ElevatorIO::ElevatorConstants kConstants =
-    ElevatorIO::ElevatorConstants(kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity,
+constexpr ElevatorConstants kConstants =
+    ElevatorConstants(kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity,
                                   kAcceleration, kJerk, kSprocketCircumference,
                                   kGearBoxRatio, true, kLowerLimit, kUpperLimit,
                                   kElevatorMass);
@@ -107,8 +103,8 @@ constexpr units::meter_t kLowerLimit = 0_m;
 constexpr units::meter_t kUpperLimit = 0.68_m;
 constexpr units::kilogram_t kElevatorMass = 2.72_kg;
 
-constexpr ElevatorIO::ElevatorConstants kConstants =
-    ElevatorIO::ElevatorConstants(kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity,
+constexpr ElevatorConstants kConstants =
+    ElevatorConstants(kS, kV, kA, kP, kI, kD, kG, kCruiseVelocity,
                                   kAcceleration, kJerk, kSprocketCircumference,
                                   kGearBoxRatio, true, kLowerLimit, kUpperLimit,
                                   kElevatorMass);

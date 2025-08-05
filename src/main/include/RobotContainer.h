@@ -8,7 +8,10 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
 
-#include "subsystems/drive/SwerveDrive.h"
+#include <subsystems/drive/SwerveDrive.h>
+#ifdef PI
+#undef PI
+#endif
 #include "subsystems/superstructure/Superstructure.h"
 
 class RobotContainer

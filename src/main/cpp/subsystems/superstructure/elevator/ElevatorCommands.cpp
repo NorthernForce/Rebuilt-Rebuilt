@@ -7,7 +7,7 @@ using namespace frc2;
 ElevatorHoldAtPositionCommand::ElevatorHoldAtPositionCommand(Elevator *elevator,
                                                              meter_t position)
 {
-    AddRequirements({elevator});
+    AddRequirements(elevator);
     m_elevator = elevator;
     m_position = position;
 }
@@ -29,7 +29,7 @@ void ElevatorHoldAtPositionCommand::End(bool interrupted)
 
 ElevatorHomingCommand::ElevatorHomingCommand(Elevator *elevator, double speed)
 {
-    AddRequirements({elevator});
+    AddRequirements(elevator);
     m_elevator = elevator;
     m_speed = speed;
 }
@@ -59,7 +59,7 @@ void ElevatorHomingCommand::End(bool interrupted)
 ElevatorMoveToPositionCommand::ElevatorMoveToPositionCommand(Elevator *elevator,
                                                              meter_t position)
 {
-    AddRequirements({elevator});
+    AddRequirements(elevator);
     m_elevator = elevator;
     m_position = position;
 }
@@ -82,7 +82,7 @@ void ElevatorMoveToPositionCommand::End(bool interrupted)
 ElevatorManualControlCommand::ElevatorManualControlCommand(
     Elevator *elevator, function<double()> speed)
 {
-    AddRequirements({elevator});
+    AddRequirements(elevator);
     m_elevator = elevator;
     m_speed = speed;
 }

@@ -46,14 +46,14 @@ RobotContainer::RobotContainer()
                                     InnerElevatorConstants::kConstants),
                                 make_shared<ElevatorSensorIOLimitSwitch>(
                                     InnerElevatorConstants::kSensorId),
-                                ElevatorConstants::kTolerance),
+                                UniversalElevatorConstants::kTolerance),
           make_shared<Elevator>(string("Outer Elevator"),
                                 make_shared<ElevatorIOTalonFX>(
                                     OuterElevatorConstants::kId,
                                     OuterElevatorConstants::kConstants),
                                 make_shared<ElevatorSensorIOLimitSwitch>(
                                     OuterElevatorConstants::kSensorId),
-                                ElevatorConstants::kTolerance))
+                                UniversalElevatorConstants::kTolerance))
 {
     drive = std::make_unique<SwerveDrive>(
         TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,

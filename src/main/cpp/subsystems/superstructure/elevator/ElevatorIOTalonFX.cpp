@@ -16,14 +16,14 @@ ElevatorIOTalonFX::ElevatorIOTalonFX(int id, double kS, double kV, double kA,
 
       m_position(m_motor->GetPosition()),
       m_temperature(m_motor->GetDeviceTemp()),
-      m_current(m_motor->GetTorqueCurrent()),
+      m_voltage(m_motor->GetMotorVoltage()),
       m_velocity(m_motor->GetVelocity()),
       m_rotorVelocity(m_motor->GetRotorVelocity()),
-      m_voltage(m_motor->GetMotorVoltage()),
-      m_isPresent(m_motor->IsConnected()),
+      m_current(m_motor->GetTorqueCurrent()),
       m_motionMagicVoltage(0_tr),
       m_dutyCycleOut(0),
-      m_voltageOut(0_V)
+      m_voltageOut(0_V),
+      m_isPresent(m_motor->IsConnected())
 {
     ctre::phoenix6::configs::TalonFXConfiguration talonFXConfigs;
 
@@ -111,7 +111,7 @@ void ElevatorIOTalonFX::SetVoltage(volt_t voltage)
     m_motor->SetControl(m_voltageOut.WithOutput(voltage));
 }
 
-void ElevatorIOTalonFX::Update()
+void ElevatorIOTalonFX::Refresh()
 {
     ctre::phoenix6::BaseStatusSignal::RefreshAll(m_temperature, m_position,
                                                  m_current, m_velocity,
@@ -155,14 +155,22 @@ bool ElevatorIOTalonFX::GetIsPresent() const
 
 // SIM CODE
 
-ElevatorIOTalonFXSim::ElevatorIOTalonFXSim(int id, ElevatorConstants constants,
-                                           frc::DCMotor motorType)
-    : m_elevatorSim(frc::sim::ElevatorSim(
-          motorType, constants.kGearRatio, constants.kMass,
-          constants.kSprocketCircumference / 2.0 / units::constants::pi, 0_m,
-          constants.kUpperLimit, true, 0_m)),
-      m_simState(ctre::phoenix6::sim::TalonFXSimState(
-          ctre::phoenix6::hardware::core::CoreTalonFX(id, string("canbus")))),
-      ElevatorIOTalonFX(id, constants)
+ElevatorIOTalonFXSim::ElevatorIOTalonFXSim(int id, ElevatorConstants constants, frc::DCMotor dcMotorType)
+    : ElevatorIOTalonFX(id, constants),
+    m_elevatorSim(frc::sim::ElevatorSim(dcMotorType, constants.kGearRatio, constants.kMass, constants.kSprocketCircumference / 2.0 / units::constants::pi, 0_m, constants.kUpperLimit, true, 0_m)),
+    m_simState(ctre::phoenix6::sim::TalonFXSimState(ctre::phoenix6::hardware::core::CoreTalonFX(id, string("canbus"))))
 {
+}
+
+void ElevatorIOTalonFXSim::UpdateSim()
+{
+    Refresh();
+    m_simState.SetSupplyVoltage((volt_t)frc::RobotController::GetInputVoltage());
+    m_elevatorSim.SetInputVoltage((volt_t)frc::RobotController::GetInputVoltage());
+    m_elevatorSim.Update(0.02_s);
+    double sprocketRotations = m_elevatorSim.GetVelocity().value() / m_constants.kSprocketCircumference.value();
+    double rotationsPerSecond = sprocketRotations * m_constants.kGearRatio;
+    double dRot = rotationsPerSecond * 0.02;
+    m_simState.AddRotorPosition(m_constants.kInverted ? (turn_t)-dRot : (turn_t)dRot);
+    m_simState.SetRotorVelocity(m_constants.kInverted ? (turns_per_second_t)-rotationsPerSecond : (turns_per_second_t) rotationsPerSecond);
 }

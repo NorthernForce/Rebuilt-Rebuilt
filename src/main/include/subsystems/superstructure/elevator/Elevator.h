@@ -9,9 +9,11 @@
 #include <logging/Logger.h>
 #include <rev/SparkMax.h>
 #include <rev/config/SparkMaxConfig.h>
+#include <rev/sim/SparkMaxSim.h>
 #include <subsystems/superstructure/elevator/ElevatorSensor.h>
 #include <units/constants.h>
 #include <units/math.h>
+#include <constants/ElevatorConstants.h>
 
 #include <ctre/phoenix6/SignalLogger.hpp>
 #include <ctre/phoenix6/TalonFX.hpp>
@@ -71,25 +73,6 @@ class Elevator : public frc2::SubsystemBase
 class ElevatorIO
 {
   public:
-    struct ElevatorConstants
-    {
-        double kS;
-        double kV;
-        double kA;
-        double kP;
-        double kI;
-        double kD;
-        double kG;
-        units::turns_per_second_t kCruiseVelocity;
-        units::turns_per_second_squared_t kAcceleration;
-        units::turns_per_second_cubed_t kJerk;
-        units::meter_t kSprocketCircumference;
-        double kGearRatio;
-        bool kInverted;
-        units::meter_t kLowerLimit;
-        units::meter_t kUpperLimit;
-        units::kilogram_t kMass;
-    };
     ElevatorIO() = default;
     virtual ~ElevatorIO() = default;
     virtual void SetTargetPosition(units::meter_t position) = 0;
@@ -98,7 +81,7 @@ class ElevatorIO
     virtual void ResetPosition() = 0;
     virtual void Stop() = 0;
     virtual void SetVoltage(units::volt_t) = 0;
-    virtual void Update() = 0;
+    virtual void Refresh() = 0;
 
     virtual units::turn_t GetPosition() const = 0;
     virtual units::celsius_t GetTemperature() const = 0;
@@ -126,7 +109,7 @@ class ElevatorIOTalonFX : public ElevatorIO
     void ResetPosition() override;
     void Stop() override;
     void SetVoltage(units::volt_t) override;
-    void Update() override;
+    void Refresh() override;
 
     units::turn_t GetPosition() const override;
     units::celsius_t GetTemperature() const override;
@@ -155,12 +138,13 @@ class ElevatorIOTalonFXSim : public ElevatorIOTalonFX
 {
   public:
     ElevatorIOTalonFXSim(int id, ElevatorConstants constants,
-                         frc::DCMotor motorType);
-    void Update() override;
+                         frc::DCMotor dcMotorType);
+    void UpdateSim();
 
   private:
     frc::sim::ElevatorSim m_elevatorSim;
     ctre::phoenix6::sim::TalonFXSimState m_simState;
+    ElevatorConstants m_constants;
 };
 
 class ElevatorIOTalonFXS : public ElevatorIO
@@ -180,7 +164,7 @@ class ElevatorIOTalonFXS : public ElevatorIO
     void ResetPosition() override;
     void Stop() override;
     void SetVoltage(units::volt_t) override;
-    void Update() override;
+    void Refresh() override;
 
     units::turn_t GetPosition() const override;
     units::celsius_t GetTemperature() const override;
@@ -205,6 +189,20 @@ class ElevatorIOTalonFXS : public ElevatorIO
     double kG;
 };
 
+class ElevatorIOTalonFXSSim : public ElevatorIOTalonFXS
+{
+  public:
+    ElevatorIOTalonFXSSim(int id, ElevatorConstants constants,
+                         frc::DCMotor dcMotorType);
+    void UpdateSim();
+
+  private:
+    frc::sim::ElevatorSim m_elevatorSim;
+    ctre::phoenix6::sim::TalonFXSSimState m_simState;
+    ElevatorConstants m_constants;
+};
+
+
 class ElevatorIOSparkMax : public ElevatorIO
 {
   public:
@@ -226,6 +224,7 @@ class ElevatorIOSparkMax : public ElevatorIO
     void ResetPosition() override;
     void Stop() override;
     void SetVoltage(units::volt_t) override;
+    rev::spark::SparkMax* GetSparkMax();
 
     units::turn_t GetPosition() const override;
     units::celsius_t GetTemperature() const override;
@@ -242,6 +241,16 @@ class ElevatorIOSparkMax : public ElevatorIO
     units::turns_per_second_t m_velocity;
     units::ampere_t m_current;
     double kG;
+};
+
+class ElevatorIOSparkMaxSim : public ElevatorIOSparkMax {
+  public:
+    ElevatorIOSparkMaxSim(int busId, int id, rev::spark::SparkLowLevel::MotorType motorType, ElevatorConstants constants, frc::DCMotor dcMotorType);
+    void UpdateSim();
+  private:
+    frc::sim::ElevatorSim m_elevatorSim;
+    rev::spark::SparkMaxSim m_sparkSim;
+    ElevatorConstants m_constants;
 };
 
 class ElevatorMoveToPositionCommand

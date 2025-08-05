@@ -8,7 +8,7 @@ Superstructure::Superstructure(shared_ptr<Elevator> innerElevator,
                                shared_ptr<Elevator> outerElevator)
     : m_innerElevator(innerElevator), m_outerElevator(outerElevator)
 {
-    m_target = GetPresetState(ElevatorConstants::SuperstructurePresets::START);
+    m_target = GetPresetState(UniversalElevatorConstants::SuperstructurePresets::START);
 }
 
 void Superstructure::Stop()
@@ -43,22 +43,22 @@ void Superstructure::Log(const nfr::LogContext& log) const
 }
 
 Superstructure::SuperstructureState Superstructure::GetPresetState(
-    ElevatorConstants::SuperstructurePresets preset) const
+    UniversalElevatorConstants::SuperstructurePresets preset) const
 {
     // TODO fix values
     switch (preset)
     {
-        case ElevatorConstants::L1:
+        case UniversalElevatorConstants::L1:
             return Superstructure::SuperstructureState(0_m, 0_m);
-        case ElevatorConstants::L2:
+        case UniversalElevatorConstants::L2:
             return Superstructure::SuperstructureState(0_m, 0_m);
-        case ElevatorConstants::L3:
+        case UniversalElevatorConstants::L3:
             return Superstructure::SuperstructureState(0_m, 0_m);
-        case ElevatorConstants::L4:
+        case UniversalElevatorConstants::L4:
             return Superstructure::SuperstructureState(0_m, 0_m);
-        case ElevatorConstants::CORAL_STATION:
+        case UniversalElevatorConstants::CORAL_STATION:
             return Superstructure::SuperstructureState(0_m, 0_m);
-        case ElevatorConstants::START:
+        case UniversalElevatorConstants::START:
             return Superstructure::SuperstructureState(0_m, 0_m);
         default:
             return Superstructure::SuperstructureState(0_m, 0_m);
