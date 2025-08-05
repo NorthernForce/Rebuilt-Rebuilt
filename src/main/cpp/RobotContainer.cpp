@@ -103,30 +103,43 @@ void RobotContainer::LogRobotState(const nfr::LogContext& log) const
 {
     // Get current robot pose for the base robot component
     frc::Pose3d robotPose = frc::Pose3d(drive->GetState().Pose);
+    
+    // Main robot pose for AdvantageScope 3D visualization
     log["Robot"] << robotPose;
     
     // Component 0: Swerve drive modules - base robot frame
-    // Uses the main robot pose as reference
+    // This represents the main chassis/drivetrain
     log["component_0"] << robotPose;
     
     // Component 1: Manipulator/Arm - positioned at front of robot
-    // This would normally get position from manipulator subsystem
-    // Using dummy values for now since manipulator isn't implemented
+    // This would normally get actual position from manipulator subsystem
+    // Using dummy values as manipulator subsystem doesn't exist yet
+    // Position based on config.json zeroedPosition for component 1
     frc::Pose3d manipulatorPose = robotPose + frc::Transform3d(
         frc::Translation3d(0.27_m, 0.05_m, 0.53_m),
         frc::Rotation3d(0_deg, 0_deg, 270_deg)
     );
     log["component_1"] << manipulatorPose;
     
-    // Component 2: Robot base frame - matches main robot position  
-    log["component_2"] << robotPose;
+    // Component 2: Robot base frame - secondary base component
+    // Position based on config.json zeroedPosition for component 2
+    frc::Pose3d basePose = robotPose + frc::Transform3d(
+        frc::Translation3d(-1.52_m, -0.4_m, -0.02_m),
+        frc::Rotation3d(0_deg, 0_deg, 90_deg)
+    );
+    log["component_2"] << basePose;
     
     // Component 3: Elevator - positioned above robot center
     // Using dummy values as elevator is not implemented yet
+    // Position based on config.json zeroedPosition for component 3  
     double elevatorHeight = 0.30; // Dummy elevator height in meters
     frc::Pose3d elevatorPose = robotPose + frc::Transform3d(
         frc::Translation3d(0.31_m, -0.07_m, units::meter_t(elevatorHeight)),
         frc::Rotation3d(0_deg, 285_deg, 270_deg)
     );
     log["component_3"] << elevatorPose;
+    
+    // Additional robot state information for debugging
+    log["chassis_speeds"] << drive->GetState().Speeds;
+    log["field_relative_heading"] << drive->GetState().Pose.Rotation().Degrees();
 }
