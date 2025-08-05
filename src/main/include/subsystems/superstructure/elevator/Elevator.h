@@ -10,8 +10,8 @@
 #include <rev/SparkMax.h>
 #include <rev/config/SparkMaxConfig.h>
 #include <subsystems/superstructure/elevator/ElevatorSensor.h>
-#include <units/math.h>
 #include <units/constants.h>
+#include <units/math.h>
 
 #include <ctre/phoenix6/SignalLogger.hpp>
 #include <ctre/phoenix6/TalonFX.hpp>
@@ -154,8 +154,10 @@ class ElevatorIOTalonFX : public ElevatorIO
 class ElevatorIOTalonFXSim : public ElevatorIOTalonFX
 {
   public:
-    ElevatorIOTalonFXSim(int id, ElevatorConstants constants, frc::DCMotor motorType);
+    ElevatorIOTalonFXSim(int id, ElevatorConstants constants,
+                         frc::DCMotor motorType);
     void Update() override;
+
   private:
     frc::sim::ElevatorSim m_elevatorSim;
     ctre::phoenix6::sim::TalonFXSimState m_simState;
