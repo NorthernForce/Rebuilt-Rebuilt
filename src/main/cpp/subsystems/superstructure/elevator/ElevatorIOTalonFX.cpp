@@ -155,22 +155,33 @@ bool ElevatorIOTalonFX::GetIsPresent() const
 
 // SIM CODE
 
-ElevatorIOTalonFXSim::ElevatorIOTalonFXSim(int id, ElevatorConstants constants, frc::DCMotor dcMotorType)
+ElevatorIOTalonFXSim::ElevatorIOTalonFXSim(int id, ElevatorConstants constants,
+                                           frc::DCMotor dcMotorType)
     : ElevatorIOTalonFX(id, constants),
-    m_elevatorSim(frc::sim::ElevatorSim(dcMotorType, constants.kGearRatio, constants.kMass, constants.kSprocketCircumference / 2.0 / units::constants::pi, 0_m, constants.kUpperLimit, true, 0_m)),
-    m_simState(ctre::phoenix6::sim::TalonFXSimState(ctre::phoenix6::hardware::core::CoreTalonFX(id, string("canbus"))))
+      m_elevatorSim(frc::sim::ElevatorSim(
+          dcMotorType, constants.kGearRatio, constants.kMass,
+          constants.kSprocketCircumference / 2.0 / units::constants::pi, 0_m,
+          constants.kUpperLimit, true, 0_m)),
+      m_simState(ctre::phoenix6::sim::TalonFXSimState(
+          ctre::phoenix6::hardware::core::CoreTalonFX(id, string("canbus"))))
 {
 }
 
 void ElevatorIOTalonFXSim::UpdateSim()
 {
     Refresh();
-    m_simState.SetSupplyVoltage((volt_t)frc::RobotController::GetInputVoltage());
-    m_elevatorSim.SetInputVoltage((volt_t)frc::RobotController::GetInputVoltage());
+    m_simState.SetSupplyVoltage(
+        (volt_t)frc::RobotController::GetInputVoltage());
+    m_elevatorSim.SetInputVoltage(
+        (volt_t)frc::RobotController::GetInputVoltage());
     m_elevatorSim.Update(0.02_s);
-    double sprocketRotations = m_elevatorSim.GetVelocity().value() / m_constants.kSprocketCircumference.value();
+    double sprocketRotations = m_elevatorSim.GetVelocity().value() /
+                               m_constants.kSprocketCircumference.value();
     double rotationsPerSecond = sprocketRotations * m_constants.kGearRatio;
     double dRot = rotationsPerSecond * 0.02;
-    m_simState.AddRotorPosition(m_constants.kInverted ? (turn_t)-dRot : (turn_t)dRot);
-    m_simState.SetRotorVelocity(m_constants.kInverted ? (turns_per_second_t)-rotationsPerSecond : (turns_per_second_t) rotationsPerSecond);
+    m_simState.AddRotorPosition(m_constants.kInverted ? (turn_t)-dRot
+                                                      : (turn_t)dRot);
+    m_simState.SetRotorVelocity(m_constants.kInverted
+                                    ? (turns_per_second_t)-rotationsPerSecond
+                                    : (turns_per_second_t)rotationsPerSecond);
 }

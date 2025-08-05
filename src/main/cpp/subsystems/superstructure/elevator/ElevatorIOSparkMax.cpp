@@ -1,4 +1,5 @@
 #include <subsystems/superstructure/elevator/Elevator.h>
+
 #include "frc/system/plant/DCMotor.h"
 
 using namespace std;
@@ -23,7 +24,7 @@ ElevatorIOSparkMax::ElevatorIOSparkMax(
 {
     SparkMaxConfig sparkMaxConfigs;
 
-    auto &slot0Configs = sparkMaxConfigs.closedLoop;
+    auto& slot0Configs = sparkMaxConfigs.closedLoop;
     slot0Configs.Pid(kP, kI, kD, ClosedLoopSlot::kSlot0);
     this->kG = kG;
 
@@ -133,22 +134,30 @@ SparkMax* ElevatorIOSparkMax::GetSparkMax()
 
 // SIM CODE
 
-ElevatorIOSparkMaxSim::ElevatorIOSparkMaxSim(int busId, int id, SparkLowLevel::MotorType motorType, ElevatorConstants constants, frc::DCMotor dcMotorType)
-:
-    ElevatorIOSparkMax(busId, id, motorType, constants),
-    m_elevatorSim(frc::sim::ElevatorSim(dcMotorType, constants.kGearRatio, constants.kMass, constants.kSprocketCircumference / 2.0 / units::constants::pi, 0_m, constants.kUpperLimit, true, 0_m)),
-    m_sparkSim(GetSparkMax(), make_shared<frc::DCMotor>(dcMotorType).get())
+ElevatorIOSparkMaxSim::ElevatorIOSparkMaxSim(int busId, int id,
+                                             SparkLowLevel::MotorType motorType,
+                                             ElevatorConstants constants,
+                                             frc::DCMotor dcMotorType)
+    : ElevatorIOSparkMax(busId, id, motorType, constants),
+      m_elevatorSim(frc::sim::ElevatorSim(
+          dcMotorType, constants.kGearRatio, constants.kMass,
+          constants.kSprocketCircumference / 2.0 / units::constants::pi, 0_m,
+          constants.kUpperLimit, true, 0_m)),
+      m_sparkSim(GetSparkMax(), make_shared<frc::DCMotor>(dcMotorType).get())
 {
 }
 
 void ElevatorIOSparkMaxSim::UpdateSim()
 {
     m_sparkSim.SetBusVoltage(frc::RobotController::GetInputVoltage());
-    m_elevatorSim.SetInputVoltage((volt_t)frc::RobotController::GetInputVoltage());
+    m_elevatorSim.SetInputVoltage(
+        (volt_t)frc::RobotController::GetInputVoltage());
     m_elevatorSim.Update(0.02_s);
-    double sprocketRotations = m_elevatorSim.GetVelocity().value() / m_constants.kSprocketCircumference.value();
+    double sprocketRotations = m_elevatorSim.GetVelocity().value() /
+                               m_constants.kSprocketCircumference.value();
     double rotationsPerSecond = sprocketRotations * m_constants.kGearRatio;
     double dRot = rotationsPerSecond * 0.02;
     m_sparkSim.SetPosition(m_constants.kInverted ? -dRot : dRot);
-    m_sparkSim.SetVelocity(m_constants.kInverted ? -rotationsPerSecond : rotationsPerSecond);
+    m_sparkSim.SetVelocity(m_constants.kInverted ? -rotationsPerSecond
+                                                 : rotationsPerSecond);
 }
