@@ -93,4 +93,40 @@ void RobotContainer::Log(const nfr::LogContext& log) const
 {
     log["match_time"] << frc::DriverStation::GetMatchTime();
     log["drive"] << drive;
+    
+    // AdvantageScope 3D robot visualization
+    // Based on config.json components in advantageScopeAssets/Robot_Ralph/
+    LogRobotState(log["Robot3d"]);
+}
+
+void RobotContainer::LogRobotState(const nfr::LogContext& log) const
+{
+    // Get current robot pose for the base robot component
+    frc::Pose3d robotPose = frc::Pose3d(drive->GetState().Pose);
+    log["Robot"] << robotPose;
+    
+    // Component 0: Swerve drive modules - base robot frame
+    // Uses the main robot pose as reference
+    log["component_0"] << robotPose;
+    
+    // Component 1: Manipulator/Arm - positioned at front of robot
+    // This would normally get position from manipulator subsystem
+    // Using dummy values for now since manipulator isn't implemented
+    frc::Pose3d manipulatorPose = robotPose + frc::Transform3d(
+        frc::Translation3d(0.27_m, 0.05_m, 0.53_m),
+        frc::Rotation3d(0_deg, 0_deg, 270_deg)
+    );
+    log["component_1"] << manipulatorPose;
+    
+    // Component 2: Robot base frame - matches main robot position  
+    log["component_2"] << robotPose;
+    
+    // Component 3: Elevator - positioned above robot center
+    // Using dummy values as elevator is not implemented yet
+    double elevatorHeight = 0.30; // Dummy elevator height in meters
+    frc::Pose3d elevatorPose = robotPose + frc::Transform3d(
+        frc::Translation3d(0.31_m, -0.07_m, units::meter_t(elevatorHeight)),
+        frc::Rotation3d(0_deg, 285_deg, 270_deg)
+    );
+    log["component_3"] << elevatorPose;
 }

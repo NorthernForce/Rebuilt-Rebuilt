@@ -20,6 +20,7 @@ public:
     void Log(const nfr::LogContext &log) const;
 
 private:
+    void LogRobotState(const nfr::LogContext &log) const;
     void ConfigureBindings();
     std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
     std::optional<frc2::CommandPtr> resetModulesCommand;
