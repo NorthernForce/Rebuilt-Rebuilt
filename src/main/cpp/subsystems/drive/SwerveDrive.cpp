@@ -240,39 +240,7 @@ CommandPtr SwerveDrive::PathToPose(
         pathplanner::PathConstraints{maxTranslationSpeed, translationAccel,
                                      maxRotationSpeed, angularAccel});
 
-    // Add logging for path following using PathPlanner API
-    return std::move(pathfindCommand)
-        .BeforeStarting(
-            [targetPose, translationAccel, angularAccel]()
-            {
-                fmt::print(
-                    "PathToPose: Starting pathfinding to pose ({:.2f}, {:.2f}, "
-                    "{:.2f}°) with constraints: "
-                    "max_trans_accel={:.2f}, max_angular_accel={:.2f}\n",
-                    targetPose.X().value(), targetPose.Y().value(),
-                    targetPose.Rotation().Degrees().value(),
-                    translationAccel.value(), angularAccel.value());
-            })
-        .FinallyDo(
-            [targetPose](bool interrupted)
-            {
-                if (interrupted)
-                {
-                    fmt::print(
-                        "PathToPose: Command was interrupted before reaching "
-                        "target pose ({:.2f}, {:.2f}, {:.2f}°)\n",
-                        targetPose.X().value(), targetPose.Y().value(),
-                        targetPose.Rotation().Degrees().value());
-                }
-                else
-                {
-                    fmt::print(
-                        "PathToPose: Successfully reached target pose ({:.2f}, "
-                        "{:.2f}, {:.2f}°)\n",
-                        targetPose.X().value(), targetPose.Y().value(),
-                        targetPose.Rotation().Degrees().value());
-                }
-            });
+    return pathfindCommand;
 }
 
 void SwerveDrive::Log(const nfr::LogContext &log) const
