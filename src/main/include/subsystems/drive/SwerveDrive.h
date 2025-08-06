@@ -9,10 +9,10 @@
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 #include <units/time.h>
-#include <optional>
 
 #include <ctre/phoenix6/SignalLogger.hpp>
 #include <ctre/phoenix6/swerve/SwerveDrivetrain.hpp>
+#include <optional>
 
 namespace nfr
 {
@@ -24,8 +24,10 @@ namespace nfr
     {
     private:
         static constexpr units::second_t kSimLoopPeriod = 5_ms;
-        static constexpr units::meters_per_second_squared_t kDefaultMaxTranslationAcceleration = 3.0_mps_sq;
-        static constexpr units::radians_per_second_squared_t kDefaultMaxAngularAcceleration = 12.0_rad_per_s_sq;
+        static constexpr units::meters_per_second_squared_t
+            kDefaultMaxTranslationAcceleration = 3.0_mps_sq;
+        static constexpr units::radians_per_second_squared_t
+            kDefaultMaxAngularAcceleration = 12.0_rad_per_s_sq;
         std::unique_ptr<frc::Notifier> simNotifier;
         units::second_t lastSimTime;
         static constexpr frc::Rotation2d kBlueAlliancePerspectiveRotation{
@@ -127,21 +129,24 @@ namespace nfr
                 ctre::phoenix6::configs::TalonFXConfiguration,
                 ctre::phoenix6::configs::TalonFXConfiguration,
                 ctre::phoenix6::configs::CANcoderConfiguration>;
-        SwerveDrive(const ctre::phoenix6::swerve::SwerveDrivetrainConstants
-                        &drivetrainConstants,
-                    units::hertz_t updateRate,
-                    std::array<double, 3> const &odometryStandardDeviation,
-                    std::array<double, 3> const &visionStandardDeviation,
-                    pathplanner::PIDConstants translationPID,
-                    pathplanner::PIDConstants rotationPID,
-                    units::meters_per_second_t maxTranslationSpeed,
-                    units::radians_per_second_t maxRotationSpeed,
-                    const SwerveModuleConstants &frontLeftConstants,
-                    const SwerveModuleConstants &frontRightConstants,
-                    const SwerveModuleConstants &backLeftConstants,
-                    const SwerveModuleConstants &backRightConstants,
-                    units::meters_per_second_squared_t maxTranslationAcceleration = kDefaultMaxTranslationAcceleration,
-                    units::radians_per_second_squared_t maxAngularAcceleration = kDefaultMaxAngularAcceleration);
+        SwerveDrive(
+            const ctre::phoenix6::swerve::SwerveDrivetrainConstants
+                &drivetrainConstants,
+            units::hertz_t updateRate,
+            std::array<double, 3> const &odometryStandardDeviation,
+            std::array<double, 3> const &visionStandardDeviation,
+            pathplanner::PIDConstants translationPID,
+            pathplanner::PIDConstants rotationPID,
+            units::meters_per_second_t maxTranslationSpeed,
+            units::radians_per_second_t maxRotationSpeed,
+            const SwerveModuleConstants &frontLeftConstants,
+            const SwerveModuleConstants &frontRightConstants,
+            const SwerveModuleConstants &backLeftConstants,
+            const SwerveModuleConstants &backRightConstants,
+            units::meters_per_second_squared_t maxTranslationAcceleration =
+                kDefaultMaxTranslationAcceleration,
+            units::radians_per_second_squared_t maxAngularAcceleration =
+                kDefaultMaxAngularAcceleration);
         frc2::sysid::SysIdRoutine &GetSysIdTranslation()
         {
             return sysIdRoutineTranslation;
@@ -204,9 +209,12 @@ namespace nfr
                                          std::function<double()> yAxis,
                                          std::function<double()> rotationAxis,
                                          bool fieldRelative = true);
-        frc2::CommandPtr PathToPose(frc::Pose2d targetPose,
-                                     std::optional<units::meters_per_second_squared_t> overrideTranslationAcceleration = std::nullopt,
-                                     std::optional<units::radians_per_second_squared_t> overrideAngularAcceleration = std::nullopt);
+        frc2::CommandPtr PathToPose(
+            frc::Pose2d targetPose,
+            std::optional<units::meters_per_second_squared_t>
+                overrideTranslationAcceleration = std::nullopt,
+            std::optional<units::radians_per_second_squared_t>
+                overrideAngularAcceleration = std::nullopt);
         void Log(const nfr::LogContext &log) const;
     };
 }  // namespace nfr
