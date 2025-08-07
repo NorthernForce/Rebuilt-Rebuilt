@@ -9,15 +9,17 @@ function MotorDisplay({ motorId }: MotorDisplayProps) {
     switch (type) {
     case 'TalonFX':
         return (
-            <TalonFXDisplay motorId={motorId} />
+            <h1>TODO: Implement TalonFX Display</h1>
         );
     case 'TalonFXS':
         return (
-            <TalonFXSDisplay motorId={motorId} />
+            <h1>TODO: Implement TalonFXS Display</h1>
         );
     case 'SparkMax':
         return (
-            <SparkMaxDisplay motorId={motorId} />
+            <h1>TODO: Implement SparkMax Display</h1>
         );
     }
 }
+
+export default MotorDisplay;
