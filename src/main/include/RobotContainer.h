@@ -10,22 +10,22 @@
 
 #include <memory>
 
-#include "subsystems/SwerveDrive.h"
 #include "subsystems/dashboard/Dashboard.h"
+#include "subsystems/drive/SwerveDrive.h"
 
 class RobotContainer
 {
-  public:
+public:
     RobotContainer();
 
     frc2::CommandPtr GetAutonomousCommand();
 
     void Log(const nfr::LogContext &log) const;
 
-  private:
+private:
     void ConfigureBindings();
-    nfr::SwerveDrive drive;
+    std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
     std::optional<frc2::CommandPtr> resetModulesCommand;
     frc2::CommandXboxController driverController{0};
-    std::shared_ptr<nfr::Dashboard> dashboard;
+    std::unique_ptr<nfr::Dashboard> dashboard;
 };

@@ -79,7 +79,7 @@ class TunerConstants
 
     static constexpr std::string_view kCANBusName = "canivore";
 
-  public:
+public:
     // CAN bus that the devices are located on;
     // All swerve devices must share the same CAN bus
     static inline const CANBus kCANBus{kCANBusName, "./logs/example.hoot"};
@@ -88,7 +88,7 @@ class TunerConstants
     // This needs to be tuned to your individual robot
     static constexpr units::meters_per_second_t kSpeedAt12Volts = 4.54_mps;
 
-  private:
+private:
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor
     // turns; This may need to be tuned to your individual robot
     static constexpr units::scalar_t kCoupleRatio = 3.8181818181818183;
@@ -111,14 +111,14 @@ class TunerConstants
     static constexpr units::volt_t kSteerFrictionVoltage = 0.2_V;
     static constexpr units::volt_t kDriveFrictionVoltage = 0.2_V;
 
-  public:
+public:
     static constexpr swerve::SwerveDrivetrainConstants DrivetrainConstants =
         swerve::SwerveDrivetrainConstants{}
             .WithCANBusName(kCANBusName)
             .WithPigeon2Id(kPigeonId)
             .WithPigeon2Configs(pigeonConfigs);
 
-  private:
+private:
     static constexpr swerve::SwerveModuleConstantsFactory ConstantCreator =
         swerve::SwerveModuleConstantsFactory<configs::TalonFXConfiguration,
                                              configs::TalonFXConfiguration,
@@ -188,7 +188,7 @@ class TunerConstants
     static constexpr units::inch_t kBackRightXPos = -10_in;
     static constexpr units::inch_t kBackRightYPos = -10_in;
 
-  public:
+public:
     static constexpr swerve::SwerveModuleConstants FrontLeft =
         ConstantCreator.CreateModuleConstants(
             kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId,

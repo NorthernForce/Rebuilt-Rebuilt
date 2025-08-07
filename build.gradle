@@ -34,6 +34,9 @@ def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 // Set this to true to enable desktop support.
 def includeDesktopSupport = true
 
+def buildForRoboRio = project.hasProperty('buildRoboRio') || 
+    gradle.startParameter.taskNames.any { it.contains('deploy') || it.contains('roborio') || it.contains('athena') }
+
 // Set to true to run simulation in debug mode
 wpi.cpp.debugSimulation = false
 wpi.sim.addGui().defaultEnabled = true
@@ -41,6 +44,10 @@ wpi.sim.addDriverstation()
 
 tasks.withType(CppCompile).configureEach {
     dependsOn generateGitProperties
+
+    if (toolChain in Gcc || toolChain in Clang) {
+        compilerArgs.addAll(["-O2", "-pipe"])
+    }
 }
 
 nativeUtils.platformConfigs.named('windowsx86-64').configure {
@@ -75,7 +82,9 @@ nativeUtils.platformConfigs.named('linuxarm32').configure {
 model {
     components {
         frcUserProgram(NativeExecutableSpec) {
-            targetPlatform wpi.platforms.roborio
+            if (buildForRoboRio) {
+                targetPlatform wpi.platforms.roborio
+            }
             if (includeDesktopSupport) {
                 targetPlatform wpi.platforms.desktop
             }
@@ -97,6 +106,20 @@ model {
             wpi.sim.enable(it)
             wpi.cpp.vendor.cpp(it)
             wpi.cpp.deps.wpilib(it)
+
+            binaries.all {
+                if (targetPlatform.name.contains('athena')) {
+                    // For RoboRIO, only build release (for deployment)
+                    if (buildType.name != 'release') {
+                        buildable = false
+                    }
+                } else {
+                    // For desktop/local, only build debug (for development)
+                    if (buildType.name != 'debug') {
+                        buildable = false
+                    }
+                }
+            }
         }
     }
     testSuites {
@@ -114,6 +137,20 @@ model {
             wpi.cpp.vendor.cpp(it)
             wpi.cpp.deps.wpilib(it)
             wpi.cpp.deps.googleTest(it)
+
+            binaries.all {
+                if (targetPlatform.name.contains('athena')) {
+                    // For RoboRIO, only build release tests
+                    if (buildType.name != 'release') {
+                        buildable = false
+                    }
+                } else {
+                    // For desktop/local, only build debug tests
+                    if (buildType.name != 'debug') {
+                        buildable = false
+                    }
+                }
+            }
         }
     }
 }
@@ -155,95 +192,39 @@ task format {
 // import edu.wpi.first.gradlerio.wpi.WPIArtifact
 // import edu.wpi.first.gradlerio.wpi.WPIArtifactType
 
-tasks.register('copyCompileCommands', Copy) {
-    // We'll calculate the source directory lazily, only when the task runs
-    // Use a Callable or a Closure for the 'from' property
-    def finalSourceDirProvider = project.provider {
-        def compileCommandsRoot = layout.buildDirectory.dir("TargetedCompileCommands").get().asFile // This .get() is fine here within the provider
+task copyCompileCommands(type: Copy) {
+    def buildDir = layout.buildDirectory.get().asFile
+    def sourcePath = file("${buildDir}/TargetedCompileCommands/linuxathenarelease/compile_commands.json")
+    def destinationDir = project.rootDir
 
-        def sourceDirCandidate = null
-
-        def osName = System.getProperty("os.name").toLowerCase()
-        def archName = System.getProperty("os.arch").toLowerCase()
-
-        def nativeTargetDir = null
-        if (osName.contains("mac")) {
-            if (archName.contains("aarch64") || archName.contains("arm")) {
-                nativeTargetDir = "osxuniversalrelease"
-            } else {
-                nativeTargetDir = "osxuniversalrelease"
-            }
-        } else if (osName.contains("linux")) {
-            nativeTargetDir = "linuxx64release"
-        } else if (osName.contains("windows")) {
-            nativeTargetDir = "windowsx86-64release"
+    // Disable state tracking
+    outputs.upToDateWhen { false }
+    doNotTrackState("File access issues with compile_commands.json")
+ 
+    doFirst {
+        // Clean up existing file if present
+        def destFile = new File(destinationDir, "compile_commands.json")
+        if (destFile.exists()) {
+            destFile.delete()
         }
+       
+        // Ensure directories exist
+        destinationDir.mkdirs()
+    }
 
-        // --- Prioritized Search for compile_commands.json ---
-        // Prioritize native debug
-        if (nativeTargetDir != null) {
-            def debugNativePath = "${nativeTargetDir.replace('release', 'debug')}"
-            def potentialNativeDebugDir = compileCommandsRoot.toPath().resolve(debugNativePath).toFile()
-            if (potentialNativeDebugDir.exists() && potentialNativeDebugDir.isDirectory() && new File(potentialNativeDebugDir, "compile_commands.json").exists()) {
-                sourceDirCandidate = potentialNativeDebugDir
-                println "Found compile_commands.json for native OS (debug): ${sourceDirCandidate}"
-            }
-        }
+    from sourcePath
+    into destinationDir
 
-        // If no native debug, try native release
-        if (sourceDirCandidate == null && nativeTargetDir != null) {
-            def potentialNativeReleaseDir = compileCommandsRoot.toPath().resolve(nativeTargetDir).toFile()
-            if (potentialNativeReleaseDir.exists() && potentialNativeReleaseDir.isDirectory() && new File(potentialNativeReleaseDir, "compile_commands.json").exists()) {
-                sourceDirCandidate = potentialNativeReleaseDir
-                println "Found compile_commands.json for native OS (release): ${sourceDirCandidate}"
-            }
-        }
-
-        // Fallback: RoboRIO debug
-        if (sourceDirCandidate == null) {
-            def potentialRoboRIODebugDir = compileCommandsRoot.toPath().resolve("roboRIO/debug").toFile()
-            if (potentialRoboRIODebugDir.exists() && potentialRoboRIODebugDir.isDirectory() && new File(potentialRoboRIODebugDir, "compile_commands.json").exists()) {
-                sourceDirCandidate = potentialRoboRIODebugDir
-                println "Found compile_commands.json for roboRIO (debug) as fallback: ${sourceDirCandidate}"
-            }
-        }
-
-        // Ultimate Fallback: Most recently modified
-        if (sourceDirCandidate == null) {
-            def allPossibleDirs = []
-            // Ensure compileCommandsRoot actually exists before listing directories
-            if (compileCommandsRoot.exists() && compileCommandsRoot.isDirectory()) {
-                compileCommandsRoot.eachDir { platformDir ->
-                    platformDir.eachDir { buildTypeDir ->
-                        if (new File(buildTypeDir, "compile_commands.json").exists()) {
-                            allPossibleDirs << buildTypeDir
-                        }
-                    }
-                }
-                allPossibleDirs.sort { a, b -> b.lastModified() <=> a.lastModified() }
-
-                if (!allPossibleDirs.empty) {
-                    sourceDirCandidate = allPossibleDirs.first()
-                    println "Falling back to most recently modified compile_commands.json: ${sourceDirCandidate}"
-                }
-            }
-        }
-
-        if (sourceDirCandidate != null) {
-            return sourceDirCandidate // Return the directory for 'from'
-        } else {
-            // If no source directory is found, return an empty file collection
-            // Gradle will then just skip the 'from' for this task without error
-            println "Warning: copyCompileCommands task will be empty because no suitable compile_commands.json source directory was found."
-            return files() // Return empty collection
+    // Optional: Only copy if the file exists
+    eachFile {
+        if (!sourcePath.exists()) {
+            throw new StopActionException("compile_commands.json not found at ${sourcePath}")
         }
     }
 
-    // Assign the lazily evaluated source directory
-    from finalSourceDirProvider
-
-    include 'compile_commands.json'
-    into layout.projectDirectory.asFile
+    onlyIf() {
+        sourcePath.exists()
+    }
 }
 
 // Ensure copyCompileCommands runs after generateCompileCommands
@@ -252,6 +233,19 @@ tasks.whenTaskAdded { task ->
         task.finalizedBy(tasks.named('copyCompileCommands'))
         tasks.named('generateVsCodeConfig') {
             dependsOn tasks.named('copyCompileCommands')
+        }
+    }
+}
+
+task buildForDeploy {
+    description = 'Build for RoboRio deployment (includes athena platform)'
+    group = 'build'
+
+    doLast {
+        // Execute the build with the buildRoboRio property
+        exec {
+            workingDir project.projectDir
+            commandLine './gradlew', 'clean', 'build', '-PbuildRoboRio=true'
         }
     }
 }
