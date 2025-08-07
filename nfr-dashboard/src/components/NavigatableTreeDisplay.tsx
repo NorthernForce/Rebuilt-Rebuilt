@@ -2,18 +2,18 @@ import { Box } from "@mui/material";
 import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import { createContext, useState } from "react";
 
-interface NaivgatableTreeItem {
+interface NavigatableTreeItem {
     id: string; // Unique identifier for the tree item
     label: string; // Display label for the tree item
-    children?: NaivgatableTreeItem[]; // Optional children for nested items
+    children?: NavigatableTreeItem[]; // Optional children for nested items
     display?: React.ReactNode; // Optional custom display component for the item
 }
 
 interface NavigatableTreeDisplayProps {
-    items: NaivgatableTreeItem[];
+    items: NavigatableTreeItem[];
 }
 
-function getTreeItem(item: NaivgatableTreeItem, prefix: string | undefined = undefined): React.ReactNode {
+function getTreeItem(item: NavigatableTreeItem, prefix: string | undefined = undefined): React.ReactNode {
     const path = prefix ? `${prefix}/${item.id}` : item.id;
     return (
         <TreeItem itemId={path} label={item.label}>
@@ -22,7 +22,7 @@ function getTreeItem(item: NaivgatableTreeItem, prefix: string | undefined = und
     );
 }
 
-function getTreeItemByPath(items: NaivgatableTreeItem[], path: string): NaivgatableTreeItem | null {
+function getTreeItemByPath(items: NavigatableTreeItem[], path: string): NavigatableTreeItem | null {
     const firstElement = path.split('/')[0];
     for (const item of items) {
         if (item.id === firstElement) {
