@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-#include "RobotContainer.h"
+#include "RalphContainer.h"
 
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/CommandXboxController.h>
@@ -36,8 +36,8 @@ void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
                                 offsets[3].Degrees().value());
 }
 
-RobotContainer::RobotContainer()
-    : drive(TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
+RalphContainer::RalphContainer()
+    : m_drive(TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
             DriveConstants::kOdometryStandardDeviation,
             DriveConstants::kVisionStandardDeviation,
             DriveConstants::kTranslationPID, DriveConstants::kRotationPID,
@@ -46,7 +46,7 @@ RobotContainer::RobotContainer()
             TunerConstants::FrontRight, TunerConstants::BackLeft,
             TunerConstants::BackRight)
 {
-    drive.SetModuleOffsets(getModuleOffsets());
+    m_drive.SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
 }
 
@@ -61,28 +61,42 @@ std::function<double()> ProcessInput(std::function<double()> input)
     };
 }
 
-void RobotContainer::ConfigureBindings()
+void RalphContainer::ConfigureBindings()
 {
-    drive.SetDefaultCommand(drive.DriveByJoystick(
-        ProcessInput([&]() { return driverController.GetLeftX(); }),
-        ProcessInput([&]() { return driverController.GetLeftY(); }),
-        ProcessInput([&]() { return driverController.GetRightX(); }),
+    m_drive.SetDefaultCommand(m_drive.DriveByJoystick(
+        ProcessInput([&]() { return m_driverController.GetLeftX(); }),
+        ProcessInput([&]() { return m_driverController.GetLeftY(); }),
+        ProcessInput([&]() { return m_driverController.GetRightX(); }),
         true  // Field-centric driving
         ));
-    driverController.Back().OnTrue(
-        drive.RunOnce([&]() { drive.SeedFieldCentric(); }));
-    resetModulesCommand = drive.RunOnce(
+    m_driverController.Back().OnTrue(
+        m_drive.RunOnce([&]() { m_drive.SeedFieldCentric(); }));
+    m_resetModulesCommand = m_drive.RunOnce(
         [&]()
         {
             auto offsets =
-                drive.ResetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
+                m_drive.ResetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
             SetModuleOffsets(offsets);
         });
     frc::SmartDashboard::PutData("Reset Swerve Modules",
-                                 resetModulesCommand.value().get());
+                                 m_resetModulesCommand.value().get());
 }
 
-frc2::CommandPtr RobotContainer::GetAutonomousCommand()
+frc2::CommandPtr RalphContainer::GetAutonomousCommand()
 {
     return frc2::cmd::Print("No autonomous command configured");
 }
+
+void RalphContainer::RobotPeriodic() {}
+void RalphContainer::DisabledInit() {}
+void RalphContainer::DisabledPeriodic() {}
+void RalphContainer::DisabledExit() {}
+void RalphContainer::AutonomousInit() {}
+void RalphContainer::AutonomousPeriodic() {}
+void RalphContainer::AutonomousExit() {}
+void RalphContainer::TeleopInit() {}
+void RalphContainer::TeleopPeriodic() {}
+void RalphContainer::TeleopExit() {}
+void RalphContainer::TestInit() {}
+void RalphContainer::TestPeriodic() {}
+void RalphContainer::TestExit() {}

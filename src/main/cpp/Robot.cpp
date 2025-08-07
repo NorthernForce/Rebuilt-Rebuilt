@@ -4,32 +4,44 @@
 
 #include "Robot.h"
 
-#include <frc2/command/CommandScheduler.h>
+using namespace std;
 
 Robot::Robot()
 {
 }
 
+void Robot::RobotInit()
+{
+    map<string, shared_ptr<NFRRobotContainer>> robots = { {"023C3578", make_shared<RalphContainer>()} };
+    NFRRobotChooser chooser = NFRRobotChooser(make_shared<RalphContainer>(), robots);
+    m_container = chooser.GetNFRRobotContainer();
+}
+
 void Robot::RobotPeriodic()
 {
     frc2::CommandScheduler::GetInstance().Run();
+    m_container->RobotPeriodic();
 }
 
 void Robot::DisabledInit()
 {
+    m_container->DisabledInit();
 }
 
 void Robot::DisabledPeriodic()
 {
+    m_container->DisabledPeriodic();
 }
 
 void Robot::DisabledExit()
 {
+    m_container->DisabledExit();
 }
 
 void Robot::AutonomousInit()
 {
-    m_autonomousCommand = m_container.GetAutonomousCommand();
+    m_container->AutonomousInit();
+    m_autonomousCommand = m_container->GetAutonomousCommand();
 
     if (m_autonomousCommand)
     {
@@ -39,14 +51,17 @@ void Robot::AutonomousInit()
 
 void Robot::AutonomousPeriodic()
 {
+    m_container->AutonomousPeriodic();
 }
 
 void Robot::AutonomousExit()
 {
+    m_container->AutonomousExit();
 }
 
 void Robot::TeleopInit()
 {
+    m_container->TeleopInit();
     if (m_autonomousCommand)
     {
         m_autonomousCommand->Cancel();
@@ -55,23 +70,28 @@ void Robot::TeleopInit()
 
 void Robot::TeleopPeriodic()
 {
+    m_container->TeleopPeriodic();
 }
 
 void Robot::TeleopExit()
 {
+    m_container->TeleopExit();
 }
 
 void Robot::TestInit()
 {
+    m_container->TestInit();
     frc2::CommandScheduler::GetInstance().CancelAll();
 }
 
 void Robot::TestPeriodic()
 {
+    m_container->TestPeriodic();
 }
 
 void Robot::TestExit()
 {
+    m_container->TestExit();
 }
 
 #ifndef RUNNING_FRC_TESTS

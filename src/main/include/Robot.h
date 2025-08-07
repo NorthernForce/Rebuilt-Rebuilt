@@ -6,15 +6,20 @@
 
 #include <frc/TimedRobot.h>
 #include <frc2/command/CommandPtr.h>
+#include <frc2/command/CommandScheduler.h>
 
 #include <optional>
 
-#include "RobotContainer.h"
+#include "utils/NFRRobotContainer.h"
+#include "utils/NFRRobotChooser.h"
+#include "RalphContainer.h"
 
 class Robot : public frc::TimedRobot
 {
   public:
     Robot();
+
+    void RobotInit() override;
     void RobotPeriodic() override;
     void DisabledInit() override;
     void DisabledPeriodic() override;
@@ -32,5 +37,5 @@ class Robot : public frc::TimedRobot
   private:
     std::optional<frc2::CommandPtr> m_autonomousCommand;
 
-    RobotContainer m_container;
+    std::shared_ptr<NFRRobotContainer> m_container;
 };
