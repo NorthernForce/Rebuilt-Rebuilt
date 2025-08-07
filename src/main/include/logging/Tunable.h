@@ -4,9 +4,10 @@
 #include <memory>
 #include <string_view>
 #include <vector>
+
+#include "networktables/DoubleTopic.h"
 #include "networktables/NetworkTable.h"
 #include "networktables/StructTopic.h"
-#include "networktables/DoubleTopic.h"
 #include "wpi/struct/Struct.h"
 namespace nfr
 {
@@ -35,6 +36,7 @@ namespace nfr
         {
             return table;
         }
+
     private:
         std::shared_ptr<nt::NetworkTable> table;
         std::vector<std::function<void()>> updateCallbacks;
@@ -43,12 +45,13 @@ namespace nfr
         {
             if (!table)
             {
-                throw std::runtime_error("Failed to create NetworkTable for tunables.");
+                throw std::runtime_error(
+                    "Failed to create NetworkTable for tunables.");
             }
         }
         ~TunableManager() = default;
     };
-    template<typename T>
+    template <typename T>
         requires wpi::StructSerializable<T>
     class tunable : public std::enable_shared_from_this<tunable<T>>
     {
@@ -56,8 +59,14 @@ namespace nfr
         tunable(const std::string& key, const T& defaultValue)
             : key(key), value(defaultValue), previousValue(defaultValue)
         {
-            subscriber = TunableManager::GetInstance().GetTable()->GetStructTopic<T>(key).Subscribe(defaultValue);
-            publisher = TunableManager::GetInstance().GetTable()->GetStructTopic<T>(key).Publish();
+            subscriber = TunableManager::GetInstance()
+                             .GetTable()
+                             ->GetStructTopic<T>(key)
+                             .Subscribe(defaultValue);
+            publisher = TunableManager::GetInstance()
+                            .GetTable()
+                            ->GetStructTopic<T>(key)
+                            .Publish();
             auto sharedThis = this->shared_from_this();
             TunableManager::GetInstance().RegisterUpdateCallback(
                 [sharedThis]() { sharedThis->Update(); });
@@ -65,8 +74,14 @@ namespace nfr
         tunable(const std::string& key, T&& defaultValue)
             : key(key), value(std::move(defaultValue)), previousValue(value)
         {
-            subscriber = TunableManager::GetInstance().GetTable()->GetStructTopic<T>(key).Subscribe(value);
-            publisher = TunableManager::GetInstance().GetTable()->GetStructTopic<T>(key).Publish();
+            subscriber = TunableManager::GetInstance()
+                             .GetTable()
+                             ->GetStructTopic<T>(key)
+                             .Subscribe(value);
+            publisher = TunableManager::GetInstance()
+                            .GetTable()
+                            ->GetStructTopic<T>(key)
+                            .Publish();
             auto sharedThis = this->shared_from_this();
             TunableManager::GetInstance().RegisterUpdateCallback(
                 [sharedThis]() { sharedThis->Update(); });
@@ -124,6 +139,7 @@ namespace nfr
         {
             updateCallback = std::move(callback);
         }
+
     private:
         std::string key;
         T value;
@@ -136,15 +152,21 @@ namespace nfr
         tunable(tunable&&) = default;
         tunable& operator=(tunable&&) = default;
     };
-    template<>
+    template <>
     class tunable<double> : public std::enable_shared_from_this<tunable<double>>
     {
     public:
         tunable(const std::string& key, double defaultValue)
             : key(key), value(defaultValue), previousValue(defaultValue)
         {
-            subscriber = TunableManager::GetInstance().GetTable()->GetDoubleTopic(key).Subscribe(defaultValue);
-            publisher = TunableManager::GetInstance().GetTable()->GetDoubleTopic(key).Publish();
+            subscriber = TunableManager::GetInstance()
+                             .GetTable()
+                             ->GetDoubleTopic(key)
+                             .Subscribe(defaultValue);
+            publisher = TunableManager::GetInstance()
+                            .GetTable()
+                            ->GetDoubleTopic(key)
+                            .Publish();
             auto sharedThis = this->shared_from_this();
             TunableManager::GetInstance().RegisterUpdateCallback(
                 [sharedThis]() { sharedThis->Update(); });
@@ -192,6 +214,7 @@ namespace nfr
         {
             updateCallback = std::move(callback);
         }
+
     private:
         std::string key;
         double value;
@@ -204,4 +227,4 @@ namespace nfr
         tunable(tunable&&) = default;
         tunable& operator=(tunable&&) = default;
     };
-}
+}  // namespace nfr
