@@ -5,6 +5,7 @@
 #include "RobotContainer.h"
 
 #include <frc/DriverStation.h>
+#include <frc/RobotBase.h>
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/LogTypes.h>
@@ -14,9 +15,100 @@
 #include "frc/Preferences.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 #include "generated/TunerConstants.h"
+#include "subsystems/apriltag/LimeLightCameraIO.h"
+#include "subsystems/apriltag/PhotonVisionCameraIO.h"
+#include "subsystems/apriltag/PhotonVisionCameraSimIO.h"
 
 using namespace std;
 using namespace nfr;
+
+std::vector<CameraConfig> CreateCameraConfigurations()
+{
+    std::vector<CameraConfig> configs;
+
+    if (frc::RobotBase::IsReal())
+    {
+        // Real robot - create PhotonVision and LimeLight cameras
+
+        // PhotonVision cameras
+        configs.emplace_back(
+            "FrontLeft", std::string(CameraConstants::kFrontLeftCameraName),
+            CameraConstants::kFrontLeftCameraTransform,
+            []()
+            {
+                return std::make_unique<PhotonVisionCameraIO>(
+                    std::string(CameraConstants::kFrontLeftCameraName),
+                    CameraConstants::kFrontLeftCameraTransform);
+            });
+
+        configs.emplace_back("Center", std::string(CameraConstants::kCenterCameraName),
+                             CameraConstants::kCenterCameraTransform,
+                             []()
+                             {
+                                 return std::make_unique<PhotonVisionCameraIO>(
+                                     std::string(CameraConstants::kCenterCameraName),
+                                     CameraConstants::kCenterCameraTransform);
+                             });
+
+        // LimeLight cameras
+        configs.emplace_back(
+            "FrontRight", std::string(CameraConstants::kFrontRightCameraName),
+            CameraConstants::kFrontRightCameraTransform,
+            []()
+            {
+                return std::make_unique<LimeLightCameraIO>(
+                    std::string(CameraConstants::kFrontRightCameraName),
+                    CameraConstants::kFrontRightCameraTransform);
+            });
+
+        configs.emplace_back(
+            "CenterBack", std::string(CameraConstants::kCenterBackCameraName),
+            CameraConstants::kCenterBackCameraTransform,
+            []()
+            {
+                return std::make_unique<LimeLightCameraIO>(
+                    std::string(CameraConstants::kCenterBackCameraName),
+                    CameraConstants::kCenterBackCameraTransform);
+            });
+    }
+    else
+    {
+        // Simulation - use PhotonVision simulation for all cameras including
+        // LimeLight
+        configs.emplace_back(
+            "FrontLeft-Sim", std::string(CameraConstants::kFrontLeftCameraName),
+            CameraConstants::kFrontLeftCameraTransform,
+            []()
+            {
+                return std::make_unique<PhotonVisionCameraSimIO>(
+                    std::string(CameraConstants::kFrontLeftCameraName),
+                    CameraConstants::kFrontLeftCameraTransform);
+            });
+
+        // Use PhotonVision simulation for LimeLight cameras too
+        configs.emplace_back(
+            "LimeLight-Sim", std::string(CameraConstants::kFrontRightCameraName),
+            CameraConstants::kFrontRightCameraTransform,
+            []()
+            {
+                return std::make_unique<PhotonVisionCameraSimIO>(
+                    std::string(CameraConstants::kFrontRightCameraName),
+                    CameraConstants::kFrontRightCameraTransform);
+            });
+
+        configs.emplace_back(
+            "Center-Sim", std::string(CameraConstants::kCenterCameraName),
+            CameraConstants::kCenterCameraTransform,
+            []()
+            {
+                return std::make_unique<PhotonVisionCameraSimIO>(
+                    std::string(CameraConstants::kCenterCameraName),
+                    CameraConstants::kCenterCameraTransform);
+            });
+    }
+
+    return configs;
+}
 
 std::array<frc::Rotation2d, 4> getModuleOffsets()
 {
@@ -39,6 +131,7 @@ void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
 }
 
 RobotContainer::RobotContainer()
+    : localizer(CreateCameraConfigurations(), VisionConstants::kEstimateTimeout)
 {
     drive = std::make_unique<SwerveDrive>(
         TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
@@ -89,8 +182,31 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand()
     return frc2::cmd::Print("No autonomous command configured");
 }
 
+void RobotContainer::Periodic()
+{
+    // Update localizer with current robot pose for reference
+    localizer.UpdateWithReferencePose(drive->GetState().Pose);
+
+    // Add vision measurements to drivetrain pose estimator
+    const auto& estimatedPoses = localizer.GetEstimatedPoses();
+    for (const auto& estimatedPose : estimatedPoses)
+    {
+        // Only use recent estimates to avoid stale data
+        // Check that the estimate is from this periodic cycle (very recent)
+        units::second_t currentTime = frc::Timer::GetFPGATimestamp();
+        units::second_t estimateAge = currentTime - estimatedPose.timestamp;
+
+        if (estimateAge < VisionConstants::kMaxEstimateAge)
+        {
+            drive->AddVisionMeasurement(estimatedPose.pose,
+                                       estimatedPose.timestamp);
+        }
+    }
+}
+
 void RobotContainer::Log(const nfr::LogContext& log) const
 {
     log["match_time"] << frc::DriverStation::GetMatchTime();
     log["drive"] << drive;
+    log["localizer"] << localizer;
 }

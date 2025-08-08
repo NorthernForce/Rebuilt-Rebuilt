@@ -31,6 +31,7 @@ Robot::Robot()
 void Robot::RobotPeriodic()
 {
     frc2::CommandScheduler::GetInstance().Run();
+    m_container.Periodic();
     nfr::logger["robot"] << m_container;
     nfr::logger.Flush();
 }

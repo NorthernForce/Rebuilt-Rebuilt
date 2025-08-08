@@ -8,6 +8,7 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
 
+#include "subsystems/Localizer.h"
 #include "subsystems/drive/SwerveDrive.h"
 
 class RobotContainer
@@ -17,11 +18,17 @@ public:
 
     frc2::CommandPtr GetAutonomousCommand();
 
+    /**
+     * Periodic function to update vision integration
+     */
+    void Periodic();
+
     void Log(const nfr::LogContext &log) const;
 
 private:
     void ConfigureBindings();
     std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
+    nfr::Localizer localizer;
     std::optional<frc2::CommandPtr> resetModulesCommand;
     frc2::CommandXboxController driverController{0};
 };
