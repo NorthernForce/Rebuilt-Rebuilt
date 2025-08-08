@@ -39,6 +39,21 @@ void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
 }
 
 RobotContainer::RobotContainer()
+    : m_superstructure(
+          make_shared<Elevator>(string("Inner Elevator"),
+                                make_shared<ElevatorIOTalonFX>(
+                                    InnerElevatorConstants::kId,
+                                    InnerElevatorConstants::kConstants),
+                                make_shared<ElevatorSensorIOLimitSwitch>(
+                                    InnerElevatorConstants::kSensorId),
+                                UniversalElevatorConstants::kTolerance),
+          make_shared<Elevator>(string("Outer Elevator"),
+                                make_shared<ElevatorIOTalonFX>(
+                                    OuterElevatorConstants::kId,
+                                    OuterElevatorConstants::kConstants),
+                                make_shared<ElevatorSensorIOLimitSwitch>(
+                                    OuterElevatorConstants::kSensorId),
+                                UniversalElevatorConstants::kTolerance))
 {
     drive = std::make_unique<SwerveDrive>(
         TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
@@ -92,5 +107,6 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 void RobotContainer::Log(const nfr::LogContext& log) const
 {
     log["match_time"] << frc::DriverStation::GetMatchTime();
+    log["superstructure"] << m_superstructure;
     log["drive"] << drive;
 }

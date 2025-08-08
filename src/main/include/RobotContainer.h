@@ -7,8 +7,11 @@
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
-
-#include "subsystems/drive/SwerveDrive.h"
+#include <subsystems/drive/SwerveDrive.h>
+#ifdef PI
+#undef PI
+#endif
+#include "subsystems/superstructure/Superstructure.h"
 
 class RobotContainer
 {
@@ -21,6 +24,7 @@ public:
 
 private:
     void ConfigureBindings();
+    Superstructure m_superstructure;
     std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
     std::optional<frc2::CommandPtr> resetModulesCommand;
     frc2::CommandXboxController driverController{0};
