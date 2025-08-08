@@ -1,5 +1,6 @@
 #include "subsystems/drive/SwerveDrive.h"
 
+#include <fmt/core.h>
 #include <frc/DriverStation.h>
 #include <frc/MathUtil.h>
 #include <frc/RobotController.h>
@@ -18,23 +19,27 @@ using namespace std;
 using namespace pathplanner;
 using namespace choreo;
 
-SwerveDrive::SwerveDrive(const SwerveDrivetrainConstants &driveConstants,
-                         hertz_t updateRate,
-                         std::array<double, 3> const &odometryStandardDeviation,
-                         std::array<double, 3> const &visionStandardDeviation,
-                         PIDConstants translationPID, PIDConstants rotationPID,
-                         units::meters_per_second_t maxTranslationSpeed,
-                         units::radians_per_second_t maxRotationSpeed,
-                         const SwerveModuleConstants &frontLeftConstants,
-                         const SwerveModuleConstants &frontRightConstants,
-                         const SwerveModuleConstants &rearLeftConstants,
-                         const SwerveModuleConstants &rearRightConstants)
+SwerveDrive::SwerveDrive(
+    const SwerveDrivetrainConstants &driveConstants, hertz_t updateRate,
+    std::array<double, 3> const &odometryStandardDeviation,
+    std::array<double, 3> const &visionStandardDeviation,
+    PIDConstants translationPID, PIDConstants rotationPID,
+    units::meters_per_second_t maxTranslationSpeed,
+    units::radians_per_second_t maxRotationSpeed,
+    const SwerveModuleConstants &frontLeftConstants,
+    const SwerveModuleConstants &frontRightConstants,
+    const SwerveModuleConstants &rearLeftConstants,
+    const SwerveModuleConstants &rearRightConstants,
+    units::meters_per_second_squared_t maxTranslationAcceleration,
+    units::radians_per_second_squared_t maxAngularAcceleration)
     : SwerveDrivetrain(driveConstants, updateRate, odometryStandardDeviation,
                        visionStandardDeviation, frontLeftConstants,
                        frontRightConstants, rearLeftConstants,
                        rearRightConstants),
       maxTranslationSpeed(maxTranslationSpeed),
-      maxRotationSpeed(maxRotationSpeed)
+      maxRotationSpeed(maxRotationSpeed),
+      maxTranslationAcceleration(maxTranslationAcceleration),
+      maxAngularAcceleration(maxAngularAcceleration)
 {
     ConfigurePathplanner(translationPID, rotationPID);
     ConfigureChoreo(translationPID, rotationPID);
@@ -216,6 +221,26 @@ CommandPtr SwerveDrive::DriveByJoystick(function<double()> xAxis,
                     .WithRotationalRate(rotationAxis() * maxRotationSpeed);
             });
     }
+}
+
+CommandPtr SwerveDrive::PathToPose(
+    Pose2d targetPose,
+    std::optional<units::meters_per_second_squared_t>
+        overrideTranslationAcceleration,
+    std::optional<units::radians_per_second_squared_t>
+        overrideAngularAcceleration)
+{
+    auto translationAccel =
+        overrideTranslationAcceleration.value_or(maxTranslationAcceleration);
+    auto angularAccel =
+        overrideAngularAcceleration.value_or(maxAngularAcceleration);
+
+    auto pathfindCommand = AutoBuilder::pathfindToPose(
+        targetPose,
+        pathplanner::PathConstraints{maxTranslationSpeed, translationAccel,
+                                     maxRotationSpeed, angularAccel});
+
+    return pathfindCommand;
 }
 
 void SwerveDrive::Log(const nfr::LogContext &log) const
