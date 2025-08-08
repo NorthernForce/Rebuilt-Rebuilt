@@ -7,10 +7,9 @@
 #include <frc/DriverStation.h>
 #include <frc2/command/CommandScheduler.h>
 
-#include "logging/LogTypes.h"
+#include <iostream>
+
 #include "logging/Logger.h"
-#include "logging/NTLogManager.h"
-#include "logging/WPILogManager.h"
 #include "util/GitMetadataLoader.h"
 
 bool isCompetition()
@@ -20,10 +19,17 @@ bool isCompetition()
 
 Robot::Robot()
 {
-    nfr::logger.AddOutput(std::make_shared<nfr::WPILogManager>());
+    nfr::logger.EnableWPILogging();
     if (!isCompetition())
     {
-        nfr::logger.AddOutput(std::make_shared<nfr::NTLogManager>());
+        nfr::logger.EnableNTLogging();
+        std::cout << "Running in non-competition mode. Enabling NT logging."
+                  << std::endl;
+    }
+    else
+    {
+        std::cout << "Running in competition mode. No NT logging enabled."
+                  << std::endl;
     }
     nfr::logger["git"] << getGitMetadata();
 }
