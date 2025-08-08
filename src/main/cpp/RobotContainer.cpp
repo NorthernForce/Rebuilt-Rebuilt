@@ -9,6 +9,8 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/LogTypes.h>
 
+#include <memory>
+
 #include "constants/Constants.h"
 #include "frc/MathUtil.h"
 #include "frc/Preferences.h"
@@ -50,6 +52,10 @@ RobotContainer::RobotContainer()
         TunerConstants::BackLeft, TunerConstants::BackRight);
     drive->SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
+    dashboard = std::make_unique<nfr::Dashboard>(
+        std::filesystem::path(frc::filesystem::GetDeployDirectory()) /
+            DashboardConstants::kDistSubdirectory,
+        DashboardConstants::kPort);
 }
 
 std::function<double()> ProcessInput(std::function<double()> input)
