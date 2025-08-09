@@ -3,6 +3,24 @@
 
 #include "util/GitMetadataLoader.h"
 
+/**
+ * @brief Loads git metadata from a Java-style properties file
+ * 
+ * The build system generates a git.properties file with format:
+ * key=value
+ * 
+ * This function parses that file and populates a GitMetadata structure.
+ * If any expected keys are missing, those fields are left with default values.
+ * 
+ * ## Error Handling:
+ * - Throws exception if file can't be opened
+ * - Skips malformed lines (no '=' character)
+ * - Handles numeric conversion errors gracefully
+ * 
+ * @param filePath Path to the git.properties file
+ * @return Populated GitMetadata structure
+ * @throws std::runtime_error if file cannot be opened
+ */
 GitMetadata loadGitMetadata(const std::string& filePath)
 {
     GitMetadata metadata;
@@ -17,13 +35,17 @@ GitMetadata loadGitMetadata(const std::string& filePath)
     std::string line;
     while (std::getline(file, line))
     {
+        // Find the '=' delimiter that separates key from value
         size_t delimiterPos = line.find('=');
         if (delimiterPos == std::string::npos)
-            continue;  // Skip lines without '='
+            continue;  // Skip lines without '=' (comments, empty lines, etc.)
 
+        // Split line into key and value parts
         std::string key = line.substr(0, delimiterPos);
         std::string value = line.substr(delimiterPos + 1);
 
+        // Parse each known git property
+        // Using if-else chain because switch statements don't work with strings
         if (key == "git.branch")
         {
             metadata.branch = value;
@@ -86,6 +108,7 @@ GitMetadata loadGitMetadata(const std::string& filePath)
         }
         else if (key == "git.dirty")
         {
+            // Convert string to boolean - "true" means uncommitted changes existed
             metadata.dirty = (value == "true");
         }
         else if (key == "git.remote.origin.url")
@@ -98,22 +121,25 @@ GitMetadata loadGitMetadata(const std::string& filePath)
         }
         else if (key == "git.total.commit.count")
         {
+            // Convert string to integer with error handling
             try
             {
                 metadata.total_commit_count = std::stoi(value);
             }
             catch (const std::invalid_argument&)
             {
-                metadata.total_commit_count =
-                    0;  // Default to 0 if conversion fails
+                // Value wasn't a valid number - use default (0)
+                metadata.total_commit_count = 0;
             }
             catch (const std::out_of_range&)
             {
-                metadata.total_commit_count =
-                    0;  // Default to 0 if value is out of range
+                // Number was too large for int - use default (0)
+                metadata.total_commit_count = 0;
             }
         }
+        // Unknown keys are ignored - this allows for future extensions
     }
+    
     file.close();
     return metadata;
 }
