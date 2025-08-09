@@ -20,12 +20,14 @@ using namespace nfr;
 
 /**
  * @brief Loads swerve module steering offsets from robot preferences
- * 
- * Swerve modules need to know their absolute angular position to steer correctly.
- * These offsets compensate for mechanical differences and are determined through
- * calibration. They're stored in robot preferences so they persist between reboots.
- * 
- * @return Array of 4 rotation offsets [FrontLeft, FrontRight, BackLeft, BackRight]
+ *
+ * Swerve modules need to know their absolute angular position to steer
+ * correctly. These offsets compensate for mechanical differences and are
+ * determined through calibration. They're stored in robot preferences so they
+ * persist between reboots.
+ *
+ * @return Array of 4 rotation offsets [FrontLeft, FrontRight, BackLeft,
+ * BackRight]
  */
 std::array<frc::Rotation2d, 4> getModuleOffsets()
 {
@@ -38,10 +40,10 @@ std::array<frc::Rotation2d, 4> getModuleOffsets()
 
 /**
  * @brief Saves swerve module steering offsets to robot preferences
- * 
+ *
  * After calibrating the swerve modules, we save the offsets so they persist
  * between robot reboots. This avoids having to recalibrate every time.
- * 
+ *
  * @param offsets Array of 4 rotation offsets to save
  */
 void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
@@ -72,24 +74,25 @@ RobotContainer::RobotContainer()
         DriveConstants::kMaxTranslationSpeed, DriveConstants::kMaxRotationSpeed,
         TunerConstants::FrontLeft, TunerConstants::FrontRight,
         TunerConstants::BackLeft, TunerConstants::BackRight);
-    
+
     // Load saved swerve module offsets from previous calibration
     drive->SetModuleOffsets(getModuleOffsets());
-    
+
     // Set up controller bindings and default commands
     ConfigureBindings();
 }
 
 /**
  * @brief Processes joystick input to improve driving feel
- * 
+ *
  * Raw joystick values can be noisy and sensitive. This function:
  * 1. Applies deadband - ignores small inputs near zero (reduces drift)
- * 2. Squares the input - gives finer control at low speeds, more aggressive at high speeds
- * 
+ * 2. Squares the input - gives finer control at low speeds, more aggressive at
+ * high speeds
+ *
  * The squaring technique is common in FRC - it makes precise movements easier
  * while still allowing full speed when needed.
- * 
+ *
  * @param input Function that returns current joystick value (-1.0 to 1.0)
  * @return Processed function that returns cleaned-up joystick value
  */
@@ -106,28 +109,39 @@ std::function<double()> ProcessInput(std::function<double()> input)
 
 void RobotContainer::ConfigureBindings()
 {
-    // Set up the default driving command that runs whenever no other command is using the drivetrain
-    // This command reads joystick inputs and translates them to robot movement
+    // Set up the default driving command that runs whenever no other command is
+    // using the drivetrain This command reads joystick inputs and translates
+    // them to robot movement
     drive->SetDefaultCommand(drive->DriveByJoystick(
-        ProcessInput([&]() { return driverController.GetLeftX(); }),    // Side-to-side movement (strafe)
-        ProcessInput([&]() { return driverController.GetLeftY(); }),    // Forward/backward movement
-        ProcessInput([&]() { return driverController.GetRightX(); }),   // Rotation
+        ProcessInput(
+            [&]() {
+                return driverController.GetLeftX();
+            }),  // Side-to-side movement (strafe)
+        ProcessInput(
+            [&]() {
+                return driverController.GetLeftY();
+            }),  // Forward/backward movement
+        ProcessInput([&]()
+                     { return driverController.GetRightX(); }),  // Rotation
         true  // Field-centric driving (explained below)
         ));
-    
+
     // Field-centric vs Robot-centric driving:
-    // - Field-centric: "Forward" always means away from our alliance wall, regardless of robot orientation
-    // - Robot-centric: "Forward" means the direction the robot is currently facing
-    // Field-centric is much easier for drivers to control!
-    
+    // - Field-centric: "Forward" always means away from our alliance wall,
+    // regardless of robot orientation
+    // - Robot-centric: "Forward" means the direction the robot is currently
+    // facing Field-centric is much easier for drivers to control!
+
     // Bind controller buttons to specific actions
     // Back button: Reset the field-centric heading to current robot direction
-    // This is useful if the gyroscope drifts or we need to re-orient our reference frame
+    // This is useful if the gyroscope drifts or we need to re-orient our
+    // reference frame
     driverController.Back().OnTrue(
         drive->RunOnce([&]() { drive->SeedFieldCentric(); }));
-    
-    // Create a command to reset swerve module offsets and put it on SmartDashboard
-    // This allows drivers/programmers to recalibrate swerve modules from the dashboard
+
+    // Create a command to reset swerve module offsets and put it on
+    // SmartDashboard This allows drivers/programmers to recalibrate swerve
+    // modules from the dashboard
     resetModulesCommand = drive->RunOnce(
         [&]()
         {
@@ -136,7 +150,8 @@ void RobotContainer::ConfigureBindings()
                 drive->ResetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
             SetModuleOffsets(offsets);
         });
-    // Put this command on SmartDashboard so it can be triggered from the driver station
+    // Put this command on SmartDashboard so it can be triggered from the driver
+    // station
     frc::SmartDashboard::PutData("Reset Swerve Modules",
                                  resetModulesCommand.value().get());
 }
@@ -158,7 +173,7 @@ void RobotContainer::Log(const nfr::LogContext& log) const
     // Log important robot data for debugging and analysis
     // Match time helps correlate log data with what happened during the match
     log["match_time"] << frc::DriverStation::GetMatchTime();
-    
+
     // Log drivetrain state (position, velocity, motor currents, etc.)
     // The drivetrain Log method will record detailed state information
     log["drive"] << drive;

@@ -1,27 +1,28 @@
 /**
  * @file Logger.h
  * @brief Custom logging system for FRC robot debugging and analysis
- * 
+ *
  * This logging system helps us debug robot problems and analyze performance
  * by recording data during robot operation. The data can be viewed in real-time
  * or saved for later analysis.
- * 
+ *
  * ## Why Custom Logging?
  * While WPILib has basic logging, this system provides:
  * - Structured data organization (nested keys like "drive/frontLeft/position")
  * - Multiple output targets (files, NetworkTables, etc.)
  * - Type-safe logging with automatic conversions
  * - Performance optimization for real-time operation
- * 
+ *
  * ## Basic Usage:
  * ```cpp
  * nfr::logger["subsystem"] << value;           // Log a single value
  * nfr::logger["robot"]["position"] << pose;    // Nested logging
  * ```
- * 
+ *
  * ## For Students:
  * Think of this like a super-powered `std::cout` that can organize data,
- * send it to multiple places, and handle complex robotics data types automatically.
+ * send it to multiple places, and handle complex robotics data types
+ * automatically.
  */
 
 #pragma once
@@ -38,29 +39,29 @@
 namespace nfr
 {
     class LogContext;
-    
+
     // === TEMPLATE CONCEPTS FOR TYPE SAFETY ===
     // These concepts determine which types can be logged and how
-    
+
     /**
      * @brief Concept for objects with a Log() method
-     * 
+     *
      * Many robot subsystems have a Log() method that records their state.
      * This concept identifies such objects so they can be logged automatically.
-     * 
-     * Example: `drivetrain.Log(logContext)` 
+     *
+     * Example: `drivetrain.Log(logContext)`
      */
     template <typename T>
     concept HasLogMethod = requires(T t, const LogContext& logContext) {
         { t.Log(logContext) } -> std::same_as<void>;
     };
-    
+
     /**
      * @brief Concept for types that have a standalone Log() function
-     * 
-     * Some types (like Pose2d) are logged via free functions rather than methods.
-     * This concept identifies such types.
-     * 
+     *
+     * Some types (like Pose2d) are logged via free functions rather than
+     * methods. This concept identifies such types.
+     *
      * Example: `Log(logContext, robotPose)`
      */
     template <typename T>
@@ -76,7 +77,7 @@ namespace nfr
         requires(T t, const LogContext& logContext) {
             { Log(logContext, *t) } -> std::same_as<void>;
         };
-        
+
     /**
      * @brief Concept for smart pointers with Log() methods
      */
@@ -84,25 +85,26 @@ namespace nfr
     concept HasPointerLogMethod = requires(T t, const LogContext& logContext) {
         { t->Log(logContext) } -> std::same_as<void>;
     };
-    
+
     class Logger;
     /**
      * @brief Context for logging data with hierarchical keys
-     * 
-     * LogContext represents a "location" in the log data structure where you can
-     * write values. It manages the hierarchical key structure that organizes logged data.
-     * 
+     *
+     * LogContext represents a "location" in the log data structure where you
+     * can write values. It manages the hierarchical key structure that
+     * organizes logged data.
+     *
      * ## Key Structure:
      * Keys are like file paths: "robot/drivetrain/frontLeft/speed"
      * This creates a nested structure that's easy to navigate in log viewers.
-     * 
+     *
      * ## Example Usage:
      * ```cpp
      * LogContext robotLog = logger["robot"];
      * robotLog["battery_voltage"] << 12.3;
      * robotLog["drivetrain"]["speed"] << 2.5;
      * ```
-     * 
+     *
      * ## Design Notes:
      * - Move-only type (can't be copied) for performance
      * - Supports many data types via operator<< overloads
@@ -113,15 +115,16 @@ namespace nfr
     public:
         /**
          * @brief Constructor - creates a log context for a specific key path
-         * @param key The hierarchical key (like "robot/drivetrain/speed")  
-         * @param logger Pointer to the logger that will handle the actual output
+         * @param key The hierarchical key (like "robot/drivetrain/speed")
+         * @param logger Pointer to the logger that will handle the actual
+         * output
          */
         LogContext(const std::string& key, Logger* logger);
-        
+
         // Prevent copying (for performance - LogContext objects can be large)
         LogContext(const LogContext&) = delete;
         LogContext& operator=(const LogContext&) = delete;
-        
+
         // Allow moving (efficient transfer of ownership)
         LogContext(LogContext&&) = default;
         LogContext& operator=(LogContext&&) = default;
@@ -129,13 +132,13 @@ namespace nfr
 
         // === BASIC DATA TYPE LOGGING ===
         // These operators handle built-in types like numbers, strings, etc.
-        
+
         /** @brief Log a decimal number */
         const LogContext& operator<<(double value) const;
-        
+
         /** @brief Log an integer number */
         const LogContext& operator<<(long value) const;
-        
+
         /** @brief Log an integer (converts to long internally) */
         const LogContext& operator<<(int value) const
         {
@@ -143,32 +146,33 @@ namespace nfr
         }
         /** @brief Log a boolean value (true/false) */
         const LogContext& operator<<(bool value) const;
-        
+
         /** @brief Log a string value */
         const LogContext& operator<<(const std::string& value) const;
-        
+
         // === ARRAY LOGGING ===
         // These handle arrays/lists of values efficiently
-        
+
         /** @brief Log an array of decimal numbers */
         const LogContext& operator<<(std::span<double> values) const;
-        
+
         /** @brief Log an array of integers */
         const LogContext& operator<<(std::span<long> values) const;
-        
+
         /** @brief Log an array of boolean values */
         const LogContext& operator<<(std::span<bool> values) const;
-        
+
         /** @brief Log an array of strings */
         const LogContext& operator<<(std::span<std::string> values) const;
 
         // === TEMPLATE OPERATORS FOR CUSTOM TYPES ===
         // These use C++ concepts to determine how to log different object types
-        
+
         /**
          * @brief Log objects that have a standalone Log() function
-         * 
-         * For types like Pose2d where we define: `void Log(LogContext&, const Pose2d&)`
+         *
+         * For types like Pose2d where we define: `void Log(LogContext&, const
+         * Pose2d&)`
          */
         template <typename T>
             requires ExistsLogMethodFor<T>
@@ -177,12 +181,12 @@ namespace nfr
             Log(*this, value);  // Call the standalone Log() function
             return *this;
         }
-        
+
         /**
          * @brief Log smart pointers that have Log() methods
-         * 
-         * For smart pointers like std::unique_ptr<Subsystem> where the pointed-to
-         * object has a Log() method. Safely handles null pointers.
+         *
+         * For smart pointers like std::unique_ptr<Subsystem> where the
+         * pointed-to object has a Log() method. Safely handles null pointers.
          */
         template <typename T>
             requires HasPointerLogMethod<T>
@@ -194,10 +198,10 @@ namespace nfr
             }
             return *this;
         }
-        
+
         /**
          * @brief Log raw pointers to objects with standalone Log() functions
-         * 
+         *
          * Safely handles null pointers.
          */
         template <typename T>
@@ -210,11 +214,12 @@ namespace nfr
             }
             return *this;
         }
-        
+
         /**
          * @brief Log objects that have their own Log() method
-         * 
-         * For objects like subsystems that implement: `void Log(const LogContext&) const`
+         *
+         * For objects like subsystems that implement: `void Log(const
+         * LogContext&) const`
          */
         template <typename T>
             requires HasLogMethod<T>
@@ -226,11 +231,11 @@ namespace nfr
 
         /**
          * @brief Create a nested log context with a sub-key
-         * 
-         * This operator creates hierarchical log structures. If the current context
-         * has key "robot", then `context["drivetrain"]` creates a new context with
-         * key "robot/drivetrain".
-         * 
+         *
+         * This operator creates hierarchical log structures. If the current
+         * context has key "robot", then `context["drivetrain"]` creates a new
+         * context with key "robot/drivetrain".
+         *
          * @param newKey The sub-key to append
          * @return New LogContext for the nested key
          */

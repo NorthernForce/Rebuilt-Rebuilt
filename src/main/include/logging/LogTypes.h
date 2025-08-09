@@ -1,15 +1,15 @@
 /**
  * @file LogTypes.h
  * @brief Template specializations for logging common FRC data types
- * 
+ *
  * This file contains Log() function specializations that teach our logging
  * system how to record common FRC data types like poses, speeds, units, etc.
- * 
+ *
  * ## How This Works:
  * When you write `log["pose"] << robotPose`, the logging system needs to know
  * how to convert a Pose2d object into loggable data. These functions provide
  * that conversion for many common types.
- * 
+ *
  * ## For Students:
  * You don't usually need to modify this file - it's already set up to handle
  * most data types you'll encounter in FRC programming.
@@ -33,10 +33,10 @@ namespace nfr
 {
     // === UNITS SYSTEM LOGGING ===
     // These concepts and functions handle WPILib's type-safe units system
-    
+
     /**
      * @brief Concept that identifies length units (meters, inches, feet, etc.)
-     * 
+     *
      * C++20 concepts are like "type requirements" - this one ensures we only
      * accept types that represent length measurements.
      */
@@ -45,7 +45,7 @@ namespace nfr
 
     /**
      * @brief Logs any length unit by converting to meters
-     * 
+     *
      * This function handles logging of distances - whether they're in meters,
      * inches, feet, etc., they all get logged as meter values for consistency.
      */
@@ -57,14 +57,15 @@ namespace nfr
     }
 
     /**
-     * @brief Concept that identifies angle units (degrees, radians, rotations, etc.)
+     * @brief Concept that identifies angle units (degrees, radians, rotations,
+     * etc.)
      */
     template <typename T>
     concept IsConvertableToDegree = units::traits::is_angle_unit_v<T>;
 
     /**
      * @brief Logs any angle unit by converting to degrees
-     * 
+     *
      * Angles get logged as degrees since they're more intuitive for humans
      * to read than radians (90° vs 1.57 rad).
      */
@@ -77,7 +78,7 @@ namespace nfr
 
     // === GEOMETRY TYPES ===
     // Functions for logging robot positions, orientations, and movements
-    
+
     /** @brief Logs a 2D rotation as degrees */
     inline void Log(const LogContext &logContext, const frc::Rotation2d &value)
     {
@@ -87,9 +88,10 @@ namespace nfr
     /** @brief Logs a 2D pose (position + orientation) with named fields */
     inline void Log(const LogContext &logContext, const frc::Pose2d &pose)
     {
-        logContext["x"] << pose.X();          // X position on field
-        logContext["y"] << pose.Y();          // Y position on field  
-        logContext["rotation"] << pose.Rotation().Degrees(); // Which way robot is facing
+        logContext["x"] << pose.X();  // X position on field
+        logContext["y"] << pose.Y();  // Y position on field
+        logContext["rotation"]
+            << pose.Rotation().Degrees();  // Which way robot is facing
     }
 
     inline void Log(const LogContext &logContext,

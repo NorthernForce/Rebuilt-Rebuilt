@@ -5,18 +5,18 @@
 
 /**
  * @brief Loads git metadata from a Java-style properties file
- * 
+ *
  * The build system generates a git.properties file with format:
  * key=value
- * 
+ *
  * This function parses that file and populates a GitMetadata structure.
  * If any expected keys are missing, those fields are left with default values.
- * 
+ *
  * ## Error Handling:
  * - Throws exception if file can't be opened
  * - Skips malformed lines (no '=' character)
  * - Handles numeric conversion errors gracefully
- * 
+ *
  * @param filePath Path to the git.properties file
  * @return Populated GitMetadata structure
  * @throws std::runtime_error if file cannot be opened
@@ -108,7 +108,8 @@ GitMetadata loadGitMetadata(const std::string& filePath)
         }
         else if (key == "git.dirty")
         {
-            // Convert string to boolean - "true" means uncommitted changes existed
+            // Convert string to boolean - "true" means uncommitted changes
+            // existed
             metadata.dirty = (value == "true");
         }
         else if (key == "git.remote.origin.url")
@@ -139,7 +140,7 @@ GitMetadata loadGitMetadata(const std::string& filePath)
         }
         // Unknown keys are ignored - this allows for future extensions
     }
-    
+
     file.close();
     return metadata;
 }

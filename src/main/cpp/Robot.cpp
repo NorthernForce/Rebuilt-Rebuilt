@@ -14,12 +14,13 @@
 #include "util/GitMetadataLoader.h"
 
 /**
- * @brief Checks if robot is connected to competition Field Management System (FMS)
- * 
+ * @brief Checks if robot is connected to competition Field Management System
+ * (FMS)
+ *
  * At competitions, robots connect to the FMS which controls match timing and
  * robot enable/disable. This function helps us change logging behavior between
  * practice (more debug info) and competition (less network traffic).
- * 
+ *
  * @return true if connected to FMS (at competition), false if practicing
  */
 bool isCompetition()
@@ -32,14 +33,14 @@ Robot::Robot()
     // Set up our logging system to help debug problems
     // WPILogManager saves logs to files on the robot for later analysis
     nfr::logger.AddOutput(std::make_shared<nfr::WPILogManager>());
-    
+
     // NTLogManager sends logs over NetworkTables to driver station in real-time
     // Only do this when NOT at competition to reduce network traffic
     if (!isCompetition())
     {
         nfr::logger.AddOutput(std::make_shared<nfr::NTLogManager>());
     }
-    
+
     // Log information about which version of our code is running
     // This helps us know exactly what code was deployed to the robot
     nfr::logger["git"] << getGitMetadata();
@@ -51,11 +52,11 @@ void Robot::RobotPeriodic()
     // Commands are like "drive forward", "shoot ball", etc.
     // The scheduler makes sure they run properly and don't conflict
     frc2::CommandScheduler::GetInstance().Run();
-    
+
     // Log current robot state for debugging and analysis
     // This includes drivetrain position, sensor values, etc.
     nfr::logger["robot"] << m_container;
-    
+
     // Actually write all pending log data
     // Logs are buffered for performance, this forces them to be written
     nfr::logger.Flush();

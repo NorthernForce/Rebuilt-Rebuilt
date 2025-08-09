@@ -13,27 +13,29 @@
 
 /**
  * @brief Main robot class that manages all robot operations
- * 
- * This class inherits from TimedRobot, which automatically calls different methods
- * based on what the robot is doing. In FRC, robots have several "modes":
- * 
+ *
+ * This class inherits from TimedRobot, which automatically calls different
+ * methods based on what the robot is doing. In FRC, robots have several
+ * "modes":
+ *
  * - **Disabled**: Robot is powered but motors/actuators are disabled for safety
  * - **Autonomous**: Robot runs by itself for 15 seconds at start of match
  * - **Teleop**: Human drivers control the robot (2 minutes 15 seconds)
  * - **Test**: Special mode for testing individual systems safely
- * 
- * Each mode has three phases: Init (runs once when entering), Periodic (runs every
- * 20ms while in that mode), and Exit (runs once when leaving that mode).
- * 
+ *
+ * Each mode has three phases: Init (runs once when entering), Periodic (runs
+ * every 20ms while in that mode), and Exit (runs once when leaving that mode).
+ *
  * @note This follows WPILib's TimedRobot pattern - you don't call these methods
- * directly, the robot framework calls them automatically based on driver station input.
+ * directly, the robot framework calls them automatically based on driver
+ * station input.
  */
 class Robot : public frc::TimedRobot
 {
 public:
     /**
      * @brief Constructor - sets up logging and initializes robot
-     * 
+     *
      * This runs once when the robot code starts up. It sets up our custom
      * logging system to help debug problems during matches and testing.
      */
@@ -41,7 +43,7 @@ public:
 
     /**
      * @brief Runs continuously every 20ms regardless of robot mode
-     * 
+     *
      * This is where we put code that should ALWAYS run, like:
      * - Updating our command scheduler (manages all robot commands)
      * - Logging robot data for debugging
@@ -51,7 +53,7 @@ public:
 
     // === DISABLED MODE METHODS ===
     // These run when the robot is powered but disabled (safest state)
-    
+
     /** @brief Runs once when robot enters disabled mode */
     void DisabledInit() override;
     /** @brief Runs every 20ms while robot is disabled */
@@ -61,10 +63,10 @@ public:
 
     // === AUTONOMOUS MODE METHODS ===
     // These run during the 15-second autonomous period at start of match
-    
+
     /**
      * @brief Runs once when autonomous period starts
-     * 
+     *
      * This is where we start our autonomous command (the pre-programmed
      * sequence the robot should follow during autonomous).
      */
@@ -76,10 +78,10 @@ public:
 
     // === TELEOP MODE METHODS ===
     // These run when human drivers control the robot
-    
+
     /**
      * @brief Runs once when teleop (driver control) period starts
-     * 
+     *
      * This cancels any autonomous commands that might still be running
      * and prepares for human driver control.
      */
@@ -91,10 +93,10 @@ public:
 
     // === TEST MODE METHODS ===
     // These run in test mode for safely testing individual systems
-    
+
     /**
      * @brief Runs once when test mode starts
-     * 
+     *
      * Cancels all commands for safety - test mode should only run
      * specific, controlled tests.
      */
@@ -107,7 +109,7 @@ public:
 private:
     /**
      * @brief Stores the autonomous command while it's running
-     * 
+     *
      * std::optional means this might or might not contain a value.
      * During autonomous, this holds our autonomous command so we can
      * cancel it later if needed. Outside autonomous, it's empty.
@@ -116,7 +118,7 @@ private:
 
     /**
      * @brief Container that holds all our subsystems and sets up controls
-     * 
+     *
      * This object contains our drivetrain, any other subsystems (like arms,
      * shooters, etc.), and sets up which controller buttons do what.
      * Think of it as the "brain" that connects everything together.
