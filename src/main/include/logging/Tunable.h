@@ -176,7 +176,7 @@ namespace nfr
         static std::shared_ptr<tunable<double>> CreateTunable(
             const std::string& key, double defaultValue)
         {
-            auto instance = std::make_shared<tunable>(key, defaultValue);
+            auto instance = std::make_shared<tunable<double>>(key, defaultValue);
             nt::NetworkTableInstance::GetDefault().AddListener(
                 TunableManager::GetInstance().GetTable()->GetEntry(key),
                 nt::EventFlags::kValueRemote,
