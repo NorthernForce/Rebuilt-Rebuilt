@@ -79,7 +79,7 @@ namespace nfr
                 });
             return instance;
         }
-        operator T()
+        operator T() const
         {
             return value;
         }
@@ -189,7 +189,7 @@ namespace nfr
                 });
             return instance;
         }
-        operator double()
+        operator double() const
         {
             return value;
         }
