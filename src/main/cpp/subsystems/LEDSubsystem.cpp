@@ -264,32 +264,56 @@ void LEDSubsystem::ApplyCurrentAnimation()
                 break;
                 
             case ctre::phoenix6::controls::AnimationType::RainbowAnimation:
-                m_candle.Animate(
-                    ctre::phoenix6::controls::RainbowAnimation(
-                        animation.brightness, animation.speed,
-                        animation.numLEDs, animation.startIndex));
+                {
+                    ctre::phoenix6::controls::RainbowAnimation rainbowConfig;
+                    rainbowConfig.Brightness = animation.brightness;
+                    rainbowConfig.Speed = animation.speed;
+                    rainbowConfig.NumLed = animation.numLEDs;
+                    rainbowConfig.StartingIndex = animation.startIndex;
+                    m_candle.Animate(rainbowConfig);
+                }
                 break;
                 
             case ctre::phoenix6::controls::AnimationType::ColorFadeAnimation:
-                m_candle.Animate(
-                    ctre::phoenix6::controls::TwoColorFadeAnimation(
-                        animation.color1[0], animation.color1[1], animation.color1[2],
-                        animation.color2[0], animation.color2[1], animation.color2[2],
-                        animation.speed, animation.numLEDs, animation.startIndex));
+                {
+                    ctre::phoenix6::controls::TwoColorFadeAnimation fadeConfig;
+                    fadeConfig.PrimaryRed = animation.color1[0];
+                    fadeConfig.PrimaryGreen = animation.color1[1];
+                    fadeConfig.PrimaryBlue = animation.color1[2];
+                    fadeConfig.SecondaryRed = animation.color2[0];
+                    fadeConfig.SecondaryGreen = animation.color2[1];
+                    fadeConfig.SecondaryBlue = animation.color2[2];
+                    fadeConfig.Speed = animation.speed;
+                    fadeConfig.NumLed = animation.numLEDs;
+                    fadeConfig.StartingIndex = animation.startIndex;
+                    m_candle.Animate(fadeConfig);
+                }
                 break;
                 
             case ctre::phoenix6::controls::AnimationType::SingleFadeAnimation:
-                m_candle.Animate(
-                    ctre::phoenix6::controls::SingleFadeAnimation(
-                        animation.color1[0], animation.color1[1], animation.color1[2],
-                        animation.speed, animation.numLEDs, animation.startIndex));
+                {
+                    ctre::phoenix6::controls::SingleFadeAnimation singleFadeConfig;
+                    singleFadeConfig.Red = animation.color1[0];
+                    singleFadeConfig.Green = animation.color1[1];
+                    singleFadeConfig.Blue = animation.color1[2];
+                    singleFadeConfig.Speed = animation.speed;
+                    singleFadeConfig.NumLed = animation.numLEDs;
+                    singleFadeConfig.StartingIndex = animation.startIndex;
+                    m_candle.Animate(singleFadeConfig);
+                }
                 break;
-                // super clean code blocks
+                
             case ctre::phoenix6::controls::AnimationType::StrobeAnimation:
-                m_candle.Animate(
-                    ctre::phoenix6::controls::StrobeAnimation(
-                        animation.color1[0], animation.color1[1], animation.color1[2],
-                        animation.speed, animation.numLEDs, animation.startIndex));
+                {
+                    ctre::phoenix6::controls::StrobeAnimation strobeConfig;
+                    strobeConfig.Red = animation.color1[0];
+                    strobeConfig.Green = animation.color1[1];
+                    strobeConfig.Blue = animation.color1[2];
+                    strobeConfig.Speed = animation.speed;
+                    strobeConfig.NumLed = animation.numLEDs;
+                    strobeConfig.StartingIndex = animation.startIndex;
+                    m_candle.Animate(strobeConfig);
+                }
                 break;
                 
             case ctre::phoenix6::controls::AnimationType::TwinkleAnimation:
