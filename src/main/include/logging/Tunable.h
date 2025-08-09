@@ -46,36 +46,37 @@ namespace nfr
     class tunable
     {
     public:
-        static std::shared_ptr<tunable<T>> CreateTunable(
-            const std::string& key, const T& defaultValue)
+        static std::shared_ptr<tunable<T>> CreateTunable(const std::string& key,
+                                                         const T& defaultValue)
         {
             auto instance = std::make_shared<tunable<T>>(key, defaultValue);
-            nt::NetworkTableInstance::GetDefault()
-                .AddListener(
-                    TunableManager::GetInstance().GetTable()->GetEntry(key),
-                    nt::EventFlags::kValueRemote, [instance](const nt::Event& event)
+            nt::NetworkTableInstance::GetDefault().AddListener(
+                TunableManager::GetInstance().GetTable()->GetEntry(key),
+                nt::EventFlags::kValueRemote,
+                [instance](const nt::Event& event)
+                {
+                    if (event.GetValueEventData()->value.IsValid())
                     {
-                        if (event.GetValueEventData()->value.IsValid())
-                        {
-                            instance->Update();
-                        }
-                    });
+                        instance->Update();
+                    }
+                });
             return instance;
         }
-        static std::shared_ptr<tunable<T>> CreateTunable(
-            const std::string& key, T&& defaultValue)
+        static std::shared_ptr<tunable<T>> CreateTunable(const std::string& key,
+                                                         T&& defaultValue)
         {
-            auto instance = std::make_shared<tunable<T>>(key, std::move(defaultValue));
-            nt::NetworkTableInstance::GetDefault()
-                .AddListener(
-                    TunableManager::GetInstance().GetTable()->GetEntry(key),
-                    nt::EventFlags::kValueRemote, [instance](const nt::Event& event)
+            auto instance =
+                std::make_shared<tunable<T>>(key, std::move(defaultValue));
+            nt::NetworkTableInstance::GetDefault().AddListener(
+                TunableManager::GetInstance().GetTable()->GetEntry(key),
+                nt::EventFlags::kValueRemote,
+                [instance](const nt::Event& event)
+                {
+                    if (event.GetValueEventData()->value.IsValid())
                     {
-                        if (event.GetValueEventData()->value.IsValid())
-                        {
-                            instance->Update();
-                        }
-                    });
+                        instance->Update();
+                    }
+                });
             return instance;
         }
         operator T()
@@ -176,16 +177,16 @@ namespace nfr
             const std::string& key, double defaultValue)
         {
             auto instance = std::make_shared<tunable>(key, defaultValue);
-            nt::NetworkTableInstance::GetDefault()
-                .AddListener(
-                    TunableManager::GetInstance().GetTable()->GetEntry(key),
-                    nt::EventFlags::kValueRemote, [instance](const nt::Event& event)
+            nt::NetworkTableInstance::GetDefault().AddListener(
+                TunableManager::GetInstance().GetTable()->GetEntry(key),
+                nt::EventFlags::kValueRemote,
+                [instance](const nt::Event& event)
+                {
+                    if (event.GetValueEventData()->value.IsValid())
                     {
-                        if (event.GetValueEventData()->value.IsValid())
-                        {
-                            instance->Update();
-                        }
-                    });
+                        instance->Update();
+                    }
+                });
             return instance;
         }
         operator double()
