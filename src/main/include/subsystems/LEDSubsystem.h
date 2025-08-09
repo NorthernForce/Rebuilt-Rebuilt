@@ -36,9 +36,11 @@ namespace nfr
     /**
      * @brief Represents an LED animation configuration
      */
-    struct LEDAnimation {
+    struct LEDAnimation
+    {
         // Animation type (used to determine which animation to apply)
-        enum class AnimationType {
+        enum class AnimationType
+        {
             None,
             SetAll,
             RainbowAnimation,
@@ -50,29 +52,31 @@ namespace nfr
             FireAnimation,
             LarsonAnimation
         };
-        
+
         // animation parameters
         AnimationType animationType = AnimationType::None;
         int animationSlot = 0;
-        double brightness = 1.0;  // 0.0-1.0 brightness scalar
-        double speed = 1.0;       // animation speed
-        std::array<uint8_t, 3> color1 = {0, 0, 0}; // RGB
-        std::array<uint8_t, 3> color2 = {0, 0, 0}; // RGB
+        double brightness = 1.0;                    // 0.0-1.0 brightness scalar
+        double speed = 1.0;                         // animation speed
+        std::array<uint8_t, 3> color1 = {0, 0, 0};  // RGB
+        std::array<uint8_t, 3> color2 = {0, 0, 0};  // RGB
         int startIndex = 0;
         int numLEDs = 8;
 
         // for custom animations
-        std::function<void(ctre::phoenix6::hardware::CANdle&)> customAnimationFunction = nullptr;
+        std::function<void(ctre::phoenix6::hardware::CANdle&)>
+            customAnimationFunction = nullptr;
     };
 
     /**
      * @brief A generic state-based LED subsystem using the CTRE CANdle lib
      */
-    class LEDSubsystem : public frc2::SubsystemBase {
+    class LEDSubsystem : public frc2::SubsystemBase
+    {
     public:
         /**
          * @brief Construct a new LED subsystem
-         * 
+         *
          * @param canID CAN ID of the CANdle device
          * @param canBus CAN bus name (optional ig)
          * @param numLEDs Number of LEDs connected to the CANdle
@@ -193,7 +197,8 @@ namespace nfr
          */
         void SetStateCustomAnimation(
             LEDState state,
-            std::function<void(ctre::phoenix6::hardware::CANdle&)> animationFunc);
+            std::function<void(ctre::phoenix6::hardware::CANdle&)>
+                animationFunc);
 
         /**
          * @brief Set the global brightness for all animations

@@ -166,7 +166,8 @@ void LEDSubsystem::SetStateChase(LEDState state, uint8_t r, uint8_t g,
 }
 
 void LEDSubsystem::SetStateCustomAnimation(
-    LEDState state, std::function<void(ctre::phoenix6::hardware::CANdle&)> animationFunc)
+    LEDState state,
+    std::function<void(ctre::phoenix6::hardware::CANdle&)> animationFunc)
 {
     LEDAnimation animation;
     animation.customAnimationFunction = animationFunc;
@@ -253,62 +254,77 @@ void LEDSubsystem::ApplyCurrentAnimation()
                 break;
 
             case LEDAnimation::AnimationType::SetAll:
-                {
-                    ctre::phoenix6::controls::SolidColor solidColor(animation.startIndex, animation.startIndex + animation.numLEDs - 1);
-                    solidColor.Color.Red = animation.color1[0];
-                    solidColor.Color.Green = animation.color1[1];
-                    solidColor.Color.Blue = animation.color1[2];
-                    solidColor.Color.White = 0;
-                    m_candle.SetControl(solidColor);
-                }
-                break;
+            {
+                ctre::phoenix6::controls::SolidColor solidColor(
+                    animation.startIndex,
+                    animation.startIndex + animation.numLEDs - 1);
+                solidColor.Color.Red = animation.color1[0];
+                solidColor.Color.Green = animation.color1[1];
+                solidColor.Color.Blue = animation.color1[2];
+                solidColor.Color.White = 0;
+                m_candle.SetControl(solidColor);
+            }
+            break;
 
             case LEDAnimation::AnimationType::RainbowAnimation:
-                {
-                    ctre::phoenix6::controls::RainbowAnimation rainbowConfig(animation.startIndex, animation.startIndex + animation.numLEDs - 1);
-                    // Set animation properties
-                    rainbowConfig.FrameRate = units::frequency::hertz_t(animation.speed);
-                    // Apply the animation using SetControl
-                    m_candle.SetControl(rainbowConfig);
-                }
-                break;
+            {
+                ctre::phoenix6::controls::RainbowAnimation rainbowConfig(
+                    animation.startIndex,
+                    animation.startIndex + animation.numLEDs - 1);
+                // Set animation properties
+                rainbowConfig.FrameRate =
+                    units::frequency::hertz_t(animation.speed);
+                // Apply the animation using SetControl
+                m_candle.SetControl(rainbowConfig);
+            }
+            break;
 
             case LEDAnimation::AnimationType::ColorFadeAnimation:
-                {
-                    // Use ColorFlow animation instead since TwoColorFadeAnimation doesn't exist
-                    ctre::phoenix6::controls::ColorFlowAnimation fadeConfig(animation.startIndex, animation.startIndex + animation.numLEDs - 1);
-                    fadeConfig.Color.Red = animation.color1[0];
-                    fadeConfig.Color.Green = animation.color1[1];
-                    fadeConfig.Color.Blue = animation.color1[2];
-                    fadeConfig.FrameRate = units::frequency::hertz_t(animation.speed);
-                    // Apply the animation using SetControl
-                    m_candle.SetControl(fadeConfig);
-                }
-                break;
+            {
+                // Use ColorFlow animation instead since TwoColorFadeAnimation
+                // doesn't exist
+                ctre::phoenix6::controls::ColorFlowAnimation fadeConfig(
+                    animation.startIndex,
+                    animation.startIndex + animation.numLEDs - 1);
+                fadeConfig.Color.Red = animation.color1[0];
+                fadeConfig.Color.Green = animation.color1[1];
+                fadeConfig.Color.Blue = animation.color1[2];
+                fadeConfig.FrameRate =
+                    units::frequency::hertz_t(animation.speed);
+                // Apply the animation using SetControl
+                m_candle.SetControl(fadeConfig);
+            }
+            break;
 
             case LEDAnimation::AnimationType::SingleFadeAnimation:
-                {
-                    ctre::phoenix6::controls::SingleFadeAnimation singleFadeConfig(animation.startIndex, animation.startIndex + animation.numLEDs - 1);
-                    singleFadeConfig.Color.Red = animation.color1[0];
-                    singleFadeConfig.Color.Green = animation.color1[1];
-                    singleFadeConfig.Color.Blue = animation.color1[2];
-                    singleFadeConfig.FrameRate = units::frequency::hertz_t(animation.speed);
-                    // Apply the animation using SetControl
-                    m_candle.SetControl(singleFadeConfig);
-                }
-                break;
-                
+            {
+                ctre::phoenix6::controls::SingleFadeAnimation singleFadeConfig(
+                    animation.startIndex,
+                    animation.startIndex + animation.numLEDs - 1);
+                singleFadeConfig.Color.Red = animation.color1[0];
+                singleFadeConfig.Color.Green = animation.color1[1];
+                singleFadeConfig.Color.Blue = animation.color1[2];
+                singleFadeConfig.FrameRate =
+                    units::frequency::hertz_t(animation.speed);
+                // Apply the animation using SetControl
+                m_candle.SetControl(singleFadeConfig);
+            }
+            break;
+
             case LEDAnimation::AnimationType::StrobeAnimation:
-                {
-                    ctre::phoenix6::controls::StrobeAnimation strobeConfig(animation.startIndex, animation.startIndex + animation.numLEDs - 1);
-                    strobeConfig.Color.Red = animation.color1[0];
-                    strobeConfig.Color.Green = animation.color1[1];
-                    strobeConfig.Color.Blue = animation.color1[2];
-                    strobeConfig.FrameRate = units::frequency::hertz_t(animation.speed);
-                    // Apply the animation using SetControl
-                    m_candle.SetControl(strobeConfig);
-                }
-                break;
+            {
+                ctre::phoenix6::controls::StrobeAnimation strobeConfig(
+                    animation.startIndex,
+                    animation.startIndex + animation.numLEDs - 1);
+                strobeConfig.Color.Red = animation.color1[0];
+                strobeConfig.Color.Green = animation.color1[1];
+                strobeConfig.Color.Blue = animation.color1[2];
+                strobeConfig.FrameRate =
+                    units::frequency::hertz_t(animation.speed);
+                // Apply the animation using SetControl
+                m_candle.SetControl(strobeConfig);
+            }
+            break;
 
             case LEDAnimation::AnimationType::TwinkleAnimation:
             case LEDAnimation::AnimationType::TwinkleOffAnimation:
@@ -318,7 +334,9 @@ void LEDSubsystem::ApplyCurrentAnimation()
                 // set up right now, so for simplicity it will just default to
                 // SetAll animation for now
                 {
-                    ctre::phoenix6::controls::SolidColor solidColor(animation.startIndex, animation.startIndex + animation.numLEDs - 1);
+                    ctre::phoenix6::controls::SolidColor solidColor(
+                        animation.startIndex,
+                        animation.startIndex + animation.numLEDs - 1);
                     solidColor.Color.Red = animation.color1[0];
                     solidColor.Color.Green = animation.color1[1];
                     solidColor.Color.Blue = animation.color1[2];
