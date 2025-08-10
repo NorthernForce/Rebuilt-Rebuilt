@@ -8,10 +8,11 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+
 #include "logging/Logger.h"
 #include "subsystems/LEDState.h"
-#include "subsystems/LEDStates.h"
 #include "subsystems/LEDStateEnum.h"
+#include "subsystems/LEDStates.h"
 
 namespace nfr
 {
@@ -81,7 +82,7 @@ namespace nfr
 
         /**
          * @brief Set the current LED state using the legacy enum
-         * 
+         *
          * @param stateEnum Legacy enum state value
          */
         void SetStateEnum(LEDStateEnum stateEnum);
@@ -95,7 +96,7 @@ namespace nfr
 
         /**
          * @brief Get the current LED state object
-         * 
+         *
          * @return LEDStatePtr Shared pointer to the current LED state
          */
         LEDStatePtr GetState() const;
@@ -130,7 +131,8 @@ namespace nfr
          * @param speed animation speed (0-1)
          * @return LEDStatePtr Shared pointer to the created state
          */
-        LEDStatePtr CreateRainbowState(const std::string& name, double brightness = 1.0,
+        LEDStatePtr CreateRainbowState(const std::string& name,
+                                       double brightness = 1.0,
                                        double speed = 1.0);
 
         /**
@@ -146,8 +148,9 @@ namespace nfr
          * @param speed animation speed (0-1)
          * @return LEDStatePtr Shared pointer to the created state
          */
-        LEDStatePtr CreateFadeState(const std::string& name, uint8_t r1, uint8_t g1, uint8_t b1,
-                                    uint8_t r2, uint8_t g2, uint8_t b2, double speed = 1.0);
+        LEDStatePtr CreateFadeState(const std::string& name, uint8_t r1,
+                                    uint8_t g1, uint8_t b1, uint8_t r2,
+                                    uint8_t g2, uint8_t b2, double speed = 1.0);
 
         /**
          * @brief Create and register a strobe animation state
@@ -159,8 +162,8 @@ namespace nfr
          * @param speed animation speed (0-1)
          * @return LEDStatePtr Shared pointer to the created state
          */
-        LEDStatePtr CreateStrobeState(const std::string& name, uint8_t r, uint8_t g, uint8_t b,
-                                      double speed = 1.0);
+        LEDStatePtr CreateStrobeState(const std::string& name, uint8_t r,
+                                      uint8_t g, uint8_t b, double speed = 1.0);
 
         /**
          * @brief Create and register a solid color state
@@ -172,7 +175,8 @@ namespace nfr
          * @param brightness brightness (0-1)
          * @return LEDStatePtr Shared pointer to the created state
          */
-        LEDStatePtr CreateColorState(const std::string& name, uint8_t r, uint8_t g, uint8_t b,
+        LEDStatePtr CreateColorState(const std::string& name, uint8_t r,
+                                     uint8_t g, uint8_t b,
                                      double brightness = 1.0);
 
         /**
@@ -184,12 +188,14 @@ namespace nfr
          */
         LEDStatePtr CreateCustomState(
             const std::string& name,
-            std::function<void(ctre::phoenix6::hardware::CANdle&)> animationFunction);
+            std::function<void(ctre::phoenix6::hardware::CANdle&)>
+                animationFunction);
 
         /**
          * @brief Set the global brightness for all animations
          *
-         * @param brightness Brightness value (0.0-1.0, where 1.0 is full brightness)
+         * @param brightness Brightness value (0.0-1.0, where 1.0 is full
+         * brightness)
          */
         void SetBrightness(double brightness);
 
@@ -200,7 +206,7 @@ namespace nfr
 
         /**
          * @brief Log subsystem data to the logging system
-         * 
+         *
          * @param log The logging context
          */
         void Log(const nfr::LogContext& log) const;
@@ -226,7 +232,7 @@ namespace nfr
 
         /**
          * @brief Register a state with the subsystem
-         * 
+         *
          * @param name State name
          * @param state State object
          * @return LEDStatePtr The registered state

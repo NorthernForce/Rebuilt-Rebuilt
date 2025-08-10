@@ -1,17 +1,21 @@
 #include "subsystems/LEDSubsystem.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
+
 #include "logging/LogTypes.h"
 #include "subsystems/CustomLEDState.h"
 
 using namespace nfr;
 
 LEDSubsystem::LEDSubsystem(int canID, const std::string& canBus, int numLEDs)
-    : m_candle(canID, canBus), m_numLEDs(numLEDs), m_initialized(false), m_brightness(1.0)
+    : m_candle(canID, canBus),
+      m_numLEDs(numLEDs),
+      m_initialized(false),
+      m_brightness(1.0)
 {
     // Configure the CANdle
-    // Note: In Phoenix 6, brightness is controlled directly through animation controls
-    // No need to set brightness in configuration
+    // Note: In Phoenix 6, brightness is controlled directly through animation
+    // controls No need to set brightness in configuration
 
     // Initialize default states
     InitializeDefaultStates();
@@ -29,7 +33,7 @@ void LEDSubsystem::Periodic()
     {
         m_currentState->Animate(m_candle);
     }
-    
+
     // Log subsystem data
     nfr::logger["LEDSubsystem"] << *this;
 }
@@ -65,7 +69,8 @@ LEDStatePtr LEDSubsystem::GetState() const
     return m_currentState;
 }
 
-LEDStatePtr LEDSubsystem::RegisterState(const std::string& name, LEDStatePtr state)
+LEDStatePtr LEDSubsystem::RegisterState(const std::string& name,
+                                        LEDStatePtr state)
 {
     if (state)
     {
@@ -88,7 +93,7 @@ void LEDSubsystem::InitializeDefaultStates()
     RegisterState("ERROR", LEDStateFactory::CreateErrorState());
     RegisterState("WARNING", LEDStateFactory::CreateWarningState());
     RegisterState("SUCCESS", LEDStateFactory::CreateSuccessState());
-    
+
     // Set up enum to state name mapping for backward compatibility
     m_enumToStateName[LEDStateEnum::OFF] = "OFF";
     m_enumToStateName[LEDStateEnum::DEFAULT] = "DEFAULT";
@@ -116,7 +121,7 @@ void LEDSubsystem::Log(const nfr::LogContext& log) const
 void LEDSubsystem::SetBrightness(double brightness)
 {
     m_brightness = brightness;
-    
+
     // Update the CANdle configuration with the new brightness
     ctre::phoenix6::configs::CANdleConfiguration config;
     m_candle.GetConfigurator().Refresh(config);
@@ -129,6 +134,3 @@ void LEDSubsystem::TurnOff()
     // Set state to OFF
     SetStateEnum(LEDStateEnum::OFF);
 }
-
-
-

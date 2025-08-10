@@ -2,7 +2,9 @@
 
 using namespace nfr;
 
-CustomLEDState::CustomLEDState(std::string name, std::function<void(ctre::phoenix6::hardware::CANdle&)> animationFunction)
+CustomLEDState::CustomLEDState(
+    std::string name,
+    std::function<void(ctre::phoenix6::hardware::CANdle&)> animationFunction)
     : m_name(std::move(name)), m_animationFunction(std::move(animationFunction))
 {
 }
