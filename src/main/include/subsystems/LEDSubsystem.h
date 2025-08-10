@@ -8,30 +8,13 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include "logging/Logger.h"
+#include "subsystems/LEDState.h"
+#include "subsystems/LEDStates.h"
+#include "subsystems/LEDStateEnum.h"
 
 namespace nfr
 {
-
-    /**
-     * @brief Represents different LED states the robot can be in
-     */
-    enum class LEDState
-    {
-        OFF,         // LEDs off (no really)
-        DEFAULT,     // default state (typically idle)
-        ENABLED,     // robot enabled
-        DISABLED,    // robot disabled
-        AUTONOMOUS,  // in autonomous mode
-        TELEOP,      // in teleop mode
-        ALIGNMENT,   // alignment mode (if we do vision stuff ig this would be
-                     // cool)
-        ERROR,       // error state
-        WARNING,     // warning state
-        SUCCESS,     // success state (like loaded a piece or scored? idk)
-        CUSTOM1,     // just
-        CUSTOM2,     // in
-        CUSTOM3      // case
-    };
 
     /**
      * @brief Represents an LED animation configuration
@@ -78,30 +61,44 @@ namespace nfr
          * @brief Construct a new LED subsystem
          *
          * @param canID CAN ID of the CANdle device
-         * @param canBus CAN bus name (optional ig)
+         * @param canBus CAN bus name (optional)
          * @param numLEDs Number of LEDs connected to the CANdle
          */
         LEDSubsystem(int canID, const std::string& canBus = "",
                      int numLEDs = 8);
 
         /**
-         * @brief Periodic update function -> (called by the command scheduler)
+         * @brief Periodic function called by the command scheduler
          */
         void Periodic() override;
 
         /**
          * @brief Set the current LED state
          *
-         * @param state New LED state
+         * @param state Shared pointer to an LED state object
          */
-        void SetState(LEDState state);
+        void SetState(LEDStatePtr state);
 
         /**
-         * @brief Get the current LED state
-         *
-         * @return Current LED state
+         * @brief Set the current LED state using the legacy enum
+         * 
+         * @param stateEnum Legacy enum state value
          */
-        LEDState GetState() const;
+        void SetStateEnum(LEDStateEnum stateEnum);
+
+        /**
+         * @brief Get the current LED state name
+         *
+         * @return std::string The name of the current state
+         */
+        std::string GetStateName() const;
+
+        /**
+         * @brief Get the current LED state object
+         * 
+         * @return LEDStatePtr Shared pointer to the current LED state
+         */
+        LEDStatePtr GetState() const;
 
         /**
          * @brief Configure an animation for a specific LED state
@@ -109,7 +106,7 @@ namespace nfr
          * @param state The LED state to configure
          * @param animation Animation configuration
          */
-        void ConfigureStateAnimation(LEDState state,
+        void ConfigureStateAnimation(LEDStatePtr state,
                                      const LEDAnimation& animation);
 
         /**
@@ -122,111 +119,121 @@ namespace nfr
          * @param startIndex first LED to set
          * @param count number of LEDs to set
          */
-        void SetStateColor(LEDState state, uint8_t r, uint8_t g, uint8_t b,
+        void SetStateColor(LEDStatePtr state, uint8_t r, uint8_t g, uint8_t b,
                            uint8_t startIndex = 0, uint8_t count = 8);
 
         /**
-         * @brief Set a rainbow animation for a specific state (could look cool)
+         * @brief Create and register a rainbow animation state
          *
-         * @param state the LED state
+         * @param name State name
          * @param brightness brightness (0-1)
-         * @param speed animation speed
-         * @param startIndex first LED to set
-         * @param count number of LEDs to set
+         * @param speed animation speed (0-1)
+         * @return LEDStatePtr Shared pointer to the created state
          */
-        void SetStateRainbow(LEDState state, double brightness = 1.0,
-                             uint32_t speed = 1, uint8_t startIndex = 0,
-                             uint8_t count = 8);
+        LEDStatePtr CreateRainbowState(const std::string& name, double brightness = 1.0,
+                                       double speed = 1.0);
 
         /**
-         * @brief Set a color fade animation for a specific state (for like a
-         * loading animation of some sort)
+         * @brief Create and register a color fade animation state
          *
-         * @param state the LED state
+         * @param name State name
          * @param r1 first color red (0-255)
          * @param g1 first color green (0-255)
          * @param b1 first color blue (0-255)
          * @param r2 second color red (0-255)
          * @param g2 second color green (0-255)
          * @param b2 second color blue (0-255)
-         * @param speed animation speed
-         * @param startIndex first LED to set
-         * @param count number of LEDs to set
+         * @param speed animation speed (0-1)
+         * @return LEDStatePtr Shared pointer to the created state
          */
-        void SetStateColorFade(LEDState state, uint8_t r1, uint8_t g1,
-                               uint8_t b1, uint8_t r2, uint8_t g2, uint8_t b2,
-                               uint32_t speed = 1, uint8_t startIndex = 0,
-                               uint8_t count = 8);
+        LEDStatePtr CreateFadeState(const std::string& name, uint8_t r1, uint8_t g1, uint8_t b1,
+                                    uint8_t r2, uint8_t g2, uint8_t b2, double speed = 1.0);
 
         /**
-         * @brief Set a strobe animation for a specific state
+         * @brief Create and register a strobe animation state
          *
-         * @param state The LED state
-         * @param r Red (0-255)
-         * @param g Green (0-255)
-         * @param b Blue (0-255)
-         * @param speed Animation speed
-         * @param startIndex First LED to set
-         * @param count Number of LEDs to set
+         * @param name State name
+         * @param r red (0-255)
+         * @param g green (0-255)
+         * @param b blue (0-255)
+         * @param speed animation speed (0-1)
+         * @return LEDStatePtr Shared pointer to the created state
          */
-        void SetStateStrobe(LEDState state, uint8_t r, uint8_t g, uint8_t b,
-                            uint32_t speed = 1, uint8_t startIndex = 0,
-                            uint8_t count = 8);
+        LEDStatePtr CreateStrobeState(const std::string& name, uint8_t r, uint8_t g, uint8_t b,
+                                      double speed = 1.0);
 
         /**
-         * @brief Set a chase animation for a specific state
+         * @brief Create and register a solid color state
          *
-         * @param state The LED state
-         * @param r Red (0-255)
-         * @param g Green (0-255)
-         * @param b Blue (0-255)
-         * @param speed Animation speed
-         * @param startIndex First LED to set
-         * @param count Number of LEDs to set
+         * @param name State name
+         * @param r red (0-255)
+         * @param g green (0-255)
+         * @param b blue (0-255)
+         * @param brightness brightness (0-1)
+         * @return LEDStatePtr Shared pointer to the created state
          */
-        void SetStateChase(LEDState state, uint8_t r, uint8_t g, uint8_t b,
-                           uint32_t speed = 1, uint8_t startIndex = 0,
-                           uint8_t count = 8);
+        LEDStatePtr CreateColorState(const std::string& name, uint8_t r, uint8_t g, uint8_t b,
+                                     double brightness = 1.0);
 
         /**
-         * @brief Set a custom animation function for a specific state
+         * @brief Create and register a custom animation state
          *
-         * @param state The LED state
-         * @param animationFunc Custom animation function that will be called in
-         * Periodic
+         * @param name State name
+         * @param animationFunction function to call to animate the LEDs
+         * @return LEDStatePtr Shared pointer to the created state
          */
-        void SetStateCustomAnimation(
-            LEDState state,
-            std::function<void(ctre::phoenix6::hardware::CANdle&)>
-                animationFunc);
+        LEDStatePtr CreateCustomState(
+            const std::string& name,
+            std::function<void(ctre::phoenix6::hardware::CANdle&)> animationFunction);
 
         /**
          * @brief Set the global brightness for all animations
          *
-         * @param brightness Brightness value (0-1) (decimals like %s)
+         * @param brightness Brightness value (0.0-1.0, where 1.0 is full brightness)
          */
         void SetBrightness(double brightness);
 
         /**
-         * @brief Turn off all LEDs (useful frrr)
+         * @brief Turn off all LEDs
          */
         void TurnOff();
+
+        /**
+         * @brief Log subsystem data to the logging system
+         * 
+         * @param log The logging context
+         */
+        void Log(const nfr::LogContext& log) const;
 
     private:
         ctre::phoenix6::hardware::CANdle m_candle;
         int m_numLEDs;
-        LEDState m_currentState = LEDState::DEFAULT;
-        double m_brightness = 1.0;
-        bool m_initialized = false;
+        bool m_initialized;
+        double m_brightness;
 
-        // map of state to animation config
-        std::unordered_map<LEDState, LEDAnimation> m_stateAnimations;
+        LEDStatePtr m_currentState;
 
-        // init default animations for each state
-        void InitializeDefaultAnimations();
+        // Map of registered states by name
+        std::unordered_map<std::string, LEDStatePtr> m_states;
 
-        // apply the current animation based on state
-        void ApplyCurrentAnimation();
+        // Map for backward compatibility with enum-based states
+        std::unordered_map<LEDStateEnum, std::string> m_enumToStateName;
+
+        /**
+         * @brief Initialize default states
+         */
+        void InitializeDefaultStates();
+
+        /**
+         * @brief Register a state with the subsystem
+         * 
+         * @param name State name
+         * @param state State object
+         * @return LEDStatePtr The registered state
+         */
+        LEDStatePtr RegisterState(const std::string& name, LEDStatePtr state);
     };
+
+    // LEDStateEnum is now defined in LEDStateEnum.h
 
 }  // namespace nfr
