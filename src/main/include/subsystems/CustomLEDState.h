@@ -1,7 +1,8 @@
 #pragma once
 
-#include "subsystems/LEDState.h"
 #include <functional>
+
+#include "subsystems/LEDState.h"
 
 namespace nfr
 {
@@ -13,17 +14,23 @@ namespace nfr
     public:
         /**
          * @brief Construct a new Custom LED State
-         * 
+         *
          * @param name State name
          * @param animationFunction Function to call to animate the LEDs
          */
-        CustomLEDState(std::string name, std::function<void(ctre::phoenix6::hardware::CANdle&)> animationFunction);
-        
+        CustomLEDState(std::string name,
+                       std::function<void(ctre::phoenix6::hardware::CANdle&)>
+                           animationFunction);
+
         void Animate(ctre::phoenix6::hardware::CANdle& candle) override;
-        std::string GetStateName() const override { return m_name; }
-        
+        std::string GetStateName() const override
+        {
+            return m_name;
+        }
+
     private:
         std::string m_name;
-        std::function<void(ctre::phoenix6::hardware::CANdle&)> m_animationFunction;
+        std::function<void(ctre::phoenix6::hardware::CANdle&)>
+            m_animationFunction;
     };
-} // namespace nfr
+}  // namespace nfr

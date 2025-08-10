@@ -21,4 +21,4 @@ namespace nfr
         CUSTOM2,
         CUSTOM3
     };
-} // namespace nfr
+}  // namespace nfr
