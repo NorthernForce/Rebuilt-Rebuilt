@@ -1,0 +1,12 @@
+services:
+  robot:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    network_mode: host
+    tty: true
+    volumes:
+      - /dev:/dev
+    device_cgroup_rules:
+      - "c 81:* rmw"
+      - "c 189:* rmw"
