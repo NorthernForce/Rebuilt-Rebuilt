@@ -1,4 +1,5 @@
 #include <subsystems/superstructure/Superstructure.h>
+
 #include "subsystems/superstructure/elevator/Elevator.h"
 
 using namespace std;
@@ -10,8 +11,10 @@ SuperstructureMoveToPositionCommand::SuperstructureMoveToPositionCommand(
     Superstructure::SuperstructureState position)
 {
     AddCommands(
-        ElevatorMoveToPositionCommand(superstructure->GetInnerElevator(), position.innerElevatorPosition),
-        ElevatorMoveToPositionCommand(superstructure->GetOuterElevator(), position.outerElevatorPosition));
+        ElevatorMoveToPositionCommand(superstructure->GetInnerElevator(),
+                                      position.innerElevatorPosition),
+        ElevatorMoveToPositionCommand(superstructure->GetOuterElevator(),
+                                      position.outerElevatorPosition));
     AddRequirements(superstructure);
 }
 
@@ -20,8 +23,10 @@ SuperstructureHoldAtPositionCommand::SuperstructureHoldAtPositionCommand(
     Superstructure::SuperstructureState position)
 {
     AddCommands(
-        ElevatorHoldAtPositionCommand(superstructure->GetInnerElevator(), position.innerElevatorPosition),
-        ElevatorHoldAtPositionCommand(superstructure->GetOuterElevator(), position.outerElevatorPosition));
+        ElevatorHoldAtPositionCommand(superstructure->GetInnerElevator(),
+                                      position.innerElevatorPosition),
+        ElevatorHoldAtPositionCommand(superstructure->GetOuterElevator(),
+                                      position.outerElevatorPosition));
     AddRequirements(superstructure);
 }
 
