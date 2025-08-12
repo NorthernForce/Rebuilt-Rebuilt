@@ -90,7 +90,7 @@ Elevator* Superstructure::GetOuterElevator()
 
 CommandPtr Superstructure::GetGoToPositionCommand(SuperstructureState position)
 {
-    return SuperstructureGoToPositionCommand(this, position).ToPtr();
+    return SuperstructureMoveToPositionCommand(this, position).ToPtr();
 }
 
 CommandPtr Superstructure::GetHoldAtPositionCommand(

@@ -1,53 +1,28 @@
 #include <subsystems/superstructure/Superstructure.h>
+#include "subsystems/superstructure/elevator/Elevator.h"
 
 using namespace std;
 using namespace units;
 using namespace frc2;
 
-SuperstructureGoToPositionCommand::SuperstructureGoToPositionCommand(
+SuperstructureMoveToPositionCommand::SuperstructureMoveToPositionCommand(
     Superstructure *superstructure,
     Superstructure::SuperstructureState position)
 {
+    AddCommands(
+        ElevatorMoveToPositionCommand(superstructure->GetInnerElevator(), position.innerElevatorPosition),
+        ElevatorMoveToPositionCommand(superstructure->GetOuterElevator(), position.outerElevatorPosition));
     AddRequirements(superstructure);
-    m_superstructure = superstructure;
-    m_position = position;
-}
-
-void SuperstructureGoToPositionCommand::Initialize()
-{
-    m_superstructure->SetTarget(m_position);
-    m_superstructure->GetInnerElevator()->SetTargetPosition(
-        m_position.innerElevatorPosition);
-    m_superstructure->GetOuterElevator()->SetTargetPosition(
-        m_position.outerElevatorPosition);
-}
-
-bool SuperstructureGoToPositionCommand::IsFinished()
-{
-    return m_superstructure->IsAtPosition(m_position);
 }
 
 SuperstructureHoldAtPositionCommand::SuperstructureHoldAtPositionCommand(
     Superstructure *superstructure,
     Superstructure::SuperstructureState position)
 {
+    AddCommands(
+        ElevatorHoldAtPositionCommand(superstructure->GetInnerElevator(), position.innerElevatorPosition),
+        ElevatorHoldAtPositionCommand(superstructure->GetOuterElevator(), position.outerElevatorPosition));
     AddRequirements(superstructure);
-    m_superstructure = superstructure;
-    m_position = position;
-}
-
-void SuperstructureHoldAtPositionCommand::Initialize()
-{
-    m_superstructure->SetTarget(m_position);
-    m_superstructure->GetInnerElevator()->SetTargetPosition(
-        m_position.innerElevatorPosition);
-    m_superstructure->GetOuterElevator()->SetTargetPosition(
-        m_position.outerElevatorPosition);
-}
-
-bool SuperstructureHoldAtPositionCommand::IsFinished()
-{
-    return false;
 }
 
 SuperstructureHomingCommand::SuperstructureHomingCommand(

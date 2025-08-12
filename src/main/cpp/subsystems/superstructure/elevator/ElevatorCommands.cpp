@@ -22,11 +22,6 @@ bool ElevatorHoldAtPositionCommand::IsFinished()
     return false;
 }
 
-void ElevatorHoldAtPositionCommand::End(bool interrupted)
-{
-    m_elevator->GetIO()->Stop();
-}
-
 ElevatorHomingCommand::ElevatorHomingCommand(Elevator *elevator, double speed)
 {
     AddRequirements(elevator);
@@ -37,11 +32,6 @@ ElevatorHomingCommand::ElevatorHomingCommand(Elevator *elevator, double speed)
 void ElevatorHomingCommand::Initialize()
 {
     m_elevator->GetIO()->SetLowerLimitEnable(false);
-}
-
-void ElevatorHomingCommand::Execute()
-{
-    m_elevator->GetIO()->SetSpeed(-m_speed, true);
 }
 
 bool ElevatorHomingCommand::IsFinished()
