@@ -4,6 +4,9 @@
 
 #include "Robot.h"
 
+#include "utils/NFRRobotChooser.h"
+#include "RalphContainer.h"
+
 using namespace std;
 
 Robot::Robot()
@@ -40,13 +43,13 @@ void Robot::DisabledExit()
 
 void Robot::AutonomousInit()
 {
-    m_container->AutonomousInit();
     m_autonomousCommand = m_container->GetAutonomousCommand();
-
     if (m_autonomousCommand)
     {
         m_autonomousCommand->Schedule();
     }
+
+    m_container->AutonomousInit();
 }
 
 void Robot::AutonomousPeriodic()
@@ -61,11 +64,11 @@ void Robot::AutonomousExit()
 
 void Robot::TeleopInit()
 {
-    m_container->TeleopInit();
     if (m_autonomousCommand)
     {
         m_autonomousCommand->Cancel();
     }
+    m_container->TeleopInit();
 }
 
 void Robot::TeleopPeriodic()
@@ -80,8 +83,8 @@ void Robot::TeleopExit()
 
 void Robot::TestInit()
 {
-    m_container->TestInit();
     frc2::CommandScheduler::GetInstance().CancelAll();
+    m_container->TestInit();
 }
 
 void Robot::TestPeriodic()

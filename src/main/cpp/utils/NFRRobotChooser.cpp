@@ -1,5 +1,8 @@
 #include "utils/NFRRobotChooser.h"
 
+#include <iostream>
+#include <fstream>
+
 using namespace std;
 
 NFRRobotChooser::NFRRobotChooser(shared_ptr<NFRRobotContainer> defaultRobot, map<string, shared_ptr<NFRRobotContainer>> otherRobots, string robotNamePath)

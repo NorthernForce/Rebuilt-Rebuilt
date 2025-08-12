@@ -3,10 +3,10 @@
 #include <utils/NFRRobotContainer.h>
 #include <subsystems/SwerveDrive.h>
 
-class RalphContainer : public NFRRobotContainer {
+class ZippyContainer : public NFRRobotContainer {
     public:
-        RalphContainer();
-        virtual ~RalphContainer() = default;
+        ZippyContainer();
+        virtual ~ZippyContainer() = default;
 
         void RobotInit() override;
         void RobotPeriodic() override;

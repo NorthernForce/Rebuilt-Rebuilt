@@ -12,6 +12,7 @@ class NFRRobotContainer
   public:
     virtual ~NFRRobotContainer() = default;
 
+    virtual void RobotInit() = 0;
     virtual void RobotPeriodic() = 0;
     virtual void DisabledInit() = 0;
     virtual void DisabledPeriodic() = 0;

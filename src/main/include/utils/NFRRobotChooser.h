@@ -2,9 +2,6 @@
 
 #include <utils/NFRRobotContainer.h>
 
-#include <iostream>
-#include <fstream>
-
 class NFRRobotChooser {
     public:
         NFRRobotChooser(std::shared_ptr<NFRRobotContainer> defaultRobot, std::map<std::string, std::shared_ptr<NFRRobotContainer>> otherRobots, std::string robotNamePath);
