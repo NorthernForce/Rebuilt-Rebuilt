@@ -122,13 +122,11 @@ void RobotContainer::ConfigureBindings()
     // them to robot movement
     drive->SetDefaultCommand(drive->DriveByJoystick(
         ProcessInput(
-            [&]()
-            {
+            [&]() {
                 return driverController.GetLeftX();
             }),  // Side-to-side movement (strafe)
         ProcessInput(
-            [&]()
-            {
+            [&]() {
                 return driverController.GetLeftY();
             }),  // Forward/backward movement
         ProcessInput([&]()
