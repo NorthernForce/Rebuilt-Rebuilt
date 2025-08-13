@@ -4,6 +4,7 @@
 
 #include "logging/LogTypes.h"
 #include "subsystems/CustomLEDState.h"
+#include "subsystems/RalphLEDStates.h"
 
 using namespace nfr;
 
@@ -82,17 +83,21 @@ LEDStatePtr LEDSubsystem::RegisterState(const std::string& name,
 
 void LEDSubsystem::InitializeDefaultStates()
 {
-    // Register default states
+    // Register common states
     RegisterState("OFF", LEDStateFactory::CreateOffState());
     RegisterState("DEFAULT", LEDStateFactory::CreateDefaultState());
     RegisterState("ENABLED", LEDStateFactory::CreateEnabledState());
     RegisterState("DISABLED", LEDStateFactory::CreateDisabledState());
-    RegisterState("AUTONOMOUS", LEDStateFactory::CreateAutonomousState());
-    RegisterState("TELEOP", LEDStateFactory::CreateTeleopState());
-    RegisterState("ALIGNMENT", LEDStateFactory::CreateAlignmentState());
     RegisterState("ERROR", LEDStateFactory::CreateErrorState());
     RegisterState("WARNING", LEDStateFactory::CreateWarningState());
     RegisterState("SUCCESS", LEDStateFactory::CreateSuccessState());
+
+    // Register Ralph-specific states
+    RegisterState("AUTONOMOUS",
+                  ralph::RalphLEDStateFactory::CreateAutonomousState());
+    RegisterState("TELEOP", ralph::RalphLEDStateFactory::CreateTeleopState());
+    RegisterState("ALIGNMENT",
+                  ralph::RalphLEDStateFactory::CreateAlignmentState());
 
     // Set up enum to state name mapping for backward compatibility
     m_enumToStateName[LEDStateEnum::OFF] = "OFF";
