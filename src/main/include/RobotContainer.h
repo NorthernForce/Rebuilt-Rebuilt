@@ -82,7 +82,7 @@ private:
      * the SwerveDrive object and will automatically delete it when destroyed.
      */
     std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
-    
+
     /**
      * @brief Our robot's LED subsystem
      *
