@@ -211,6 +211,15 @@ namespace nfr
          */
         void Log(const nfr::LogContext& log) const;
 
+        /**
+         * @brief Register a state with the subsystem
+         *
+         * @param name State name
+         * @param state State object
+         * @return LEDStatePtr The registered state
+         */
+        LEDStatePtr RegisterState(const std::string& name, LEDStatePtr state);
+
     private:
         ctre::phoenix6::hardware::CANdle m_candle;
         int m_numLEDs;
@@ -229,15 +238,6 @@ namespace nfr
          * @brief Initialize default states
          */
         void InitializeDefaultStates();
-
-        /**
-         * @brief Register a state with the subsystem
-         *
-         * @param name State name
-         * @param state State object
-         * @return LEDStatePtr The registered state
-         */
-        LEDStatePtr RegisterState(const std::string& name, LEDStatePtr state);
     };
 
     // LEDStateEnum is now defined in LEDStateEnum.h

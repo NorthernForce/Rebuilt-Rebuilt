@@ -8,6 +8,7 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
 
+#include "subsystems/LEDSubsystem.h"
 #include "subsystems/drive/SwerveDrive.h"
 
 class RobotContainer
@@ -21,7 +22,9 @@ public:
 
 private:
     void ConfigureBindings();
+    void InitializeRobotSpecificLEDStates();
     std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
+    std::unique_ptr<nfr::LEDSubsystem> leds{nullptr};
     std::optional<frc2::CommandPtr> resetModulesCommand;
     frc2::CommandXboxController driverController{0};
 };

@@ -4,7 +4,6 @@
 
 #include "logging/LogTypes.h"
 #include "subsystems/CustomLEDState.h"
-#include "subsystems/RalphLEDStates.h"
 
 using namespace nfr;
 
@@ -92,12 +91,7 @@ void LEDSubsystem::InitializeDefaultStates()
     RegisterState("WARNING", LEDStateFactory::CreateWarningState());
     RegisterState("SUCCESS", LEDStateFactory::CreateSuccessState());
 
-    // Register Ralph-specific states
-    RegisterState("AUTONOMOUS",
-                  ralph::RalphLEDStateFactory::CreateAutonomousState());
-    RegisterState("TELEOP", ralph::RalphLEDStateFactory::CreateTeleopState());
-    RegisterState("ALIGNMENT",
-                  ralph::RalphLEDStateFactory::CreateAlignmentState());
+    // Robot-specific states will be registered by RobotContainer
 
     // Set up enum to state name mapping for backward compatibility
     m_enumToStateName[LEDStateEnum::OFF] = "OFF";

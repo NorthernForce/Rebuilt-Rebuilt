@@ -14,6 +14,7 @@
 #include "frc/Preferences.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 #include "generated/TunerConstants.h"
+#include "subsystems/RalphLEDStates.h"
 
 using namespace std;
 using namespace nfr;
@@ -40,6 +41,7 @@ void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
 
 RobotContainer::RobotContainer()
 {
+    // Initialize drive subsystem
     drive = std::make_unique<SwerveDrive>(
         TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
         DriveConstants::kOdometryStandardDeviation,
@@ -49,6 +51,14 @@ RobotContainer::RobotContainer()
         TunerConstants::FrontLeft, TunerConstants::FrontRight,
         TunerConstants::BackLeft, TunerConstants::BackRight);
     drive->SetModuleOffsets(getModuleOffsets());
+
+    // Initialize LED subsystem
+    leds = std::make_unique<LEDSubsystem>(
+        0);  // Assuming CANdle ID 0, update as needed
+
+    // Initialize robot-specific LED states
+    InitializeRobotSpecificLEDStates();
+
     ConfigureBindings();
 }
 
@@ -93,4 +103,25 @@ void RobotContainer::Log(const nfr::LogContext& log) const
 {
     log["match_time"] << frc::DriverStation::GetMatchTime();
     log["drive"] << drive;
+    if (leds)
+    {
+        log["leds"] << leds;
+    }
+}
+
+void RobotContainer::InitializeRobotSpecificLEDStates()
+{
+    if (!leds)
+        return;
+
+    // Register Ralph-specific LED states
+    leds->RegisterState("AUTONOMOUS",
+                        ralph::RalphLEDStateFactory::CreateAutonomousState());
+    leds->RegisterState("TELEOP",
+                        ralph::RalphLEDStateFactory::CreateTeleopState());
+    leds->RegisterState("ALIGNMENT",
+                        ralph::RalphLEDStateFactory::CreateAlignmentState());
+
+    // Set up enum to state name mapping for backward compatibility
+    // This is now handled in LEDSubsystem::InitializeDefaultStates()
 }
