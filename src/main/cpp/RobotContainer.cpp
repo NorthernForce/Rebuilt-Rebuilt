@@ -80,7 +80,8 @@ RobotContainer::RobotContainer()
     drive->SetModuleOffsets(getModuleOffsets());
 
     // Initialize LED subsystem
-    leds = std::make_unique<LEDSubsystem>(LEDConstants::kCANdleID, "", LEDConstants::kLEDCount);
+    leds = std::make_unique<LEDSubsystem>(LEDConstants::kCANdleID, "",
+                                          LEDConstants::kLEDCount);
 
     // Initialize robot-specific LED states
     InitializeRobotSpecificLEDStates();
