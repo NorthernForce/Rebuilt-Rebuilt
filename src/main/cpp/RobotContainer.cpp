@@ -80,8 +80,7 @@ RobotContainer::RobotContainer()
     drive->SetModuleOffsets(getModuleOffsets());
 
     // Initialize LED subsystem
-    leds = std::make_unique<LEDSubsystem>(
-        0);  // Assuming CANdle ID 0, update as needed
+    leds = std::make_unique<LEDSubsystem>(LEDConstants::kCANdleID, "", LEDConstants::kLEDCount);
 
     // Initialize robot-specific LED states
     InitializeRobotSpecificLEDStates();
@@ -122,11 +121,13 @@ void RobotContainer::ConfigureBindings()
     // them to robot movement
     drive->SetDefaultCommand(drive->DriveByJoystick(
         ProcessInput(
-            [&]() {
+            [&]()
+            {
                 return driverController.GetLeftX();
             }),  // Side-to-side movement (strafe)
         ProcessInput(
-            [&]() {
+            [&]()
+            {
                 return driverController.GetLeftY();
             }),  // Forward/backward movement
         ProcessInput([&]()
