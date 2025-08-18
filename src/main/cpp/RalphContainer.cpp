@@ -168,19 +168,45 @@ frc2::CommandPtr RalphContainer::GetAutonomousCommand()
     return frc2::cmd::Print("No autonomous command configured");
 }
 
-void RalphContainer::RobotPeriodic() {}
-void RalphContainer::DisabledInit() {}
-void RalphContainer::DisabledPeriodic() {}
-void RalphContainer::DisabledExit() {}
-void RalphContainer::AutonomousInit() {}
-void RalphContainer::AutonomousPeriodic() {}
-void RalphContainer::AutonomousExit() {}
-void RalphContainer::TeleopInit() {}
-void RalphContainer::TeleopPeriodic() {}
-void RalphContainer::TeleopExit() {}
-void RalphContainer::TestInit() {}
-void RalphContainer::TestPeriodic() {}
-void RalphContainer::TestExit() {}
+void RalphContainer::RobotPeriodic()
+{
+}
+void RalphContainer::DisabledInit()
+{
+}
+void RalphContainer::DisabledPeriodic()
+{
+}
+void RalphContainer::DisabledExit()
+{
+}
+void RalphContainer::AutonomousInit()
+{
+}
+void RalphContainer::AutonomousPeriodic()
+{
+}
+void RalphContainer::AutonomousExit()
+{
+}
+void RalphContainer::TeleopInit()
+{
+}
+void RalphContainer::TeleopPeriodic()
+{
+}
+void RalphContainer::TeleopExit()
+{
+}
+void RalphContainer::TestInit()
+{
+}
+void RalphContainer::TestPeriodic()
+{
+}
+void RalphContainer::TestExit()
+{
+}
 void RalphContainer::Log(const nfr::LogContext& log) const
 {
     // Log important robot data for debugging and analysis

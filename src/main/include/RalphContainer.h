@@ -1,42 +1,43 @@
 #pragma once
 
-#include <util/NFRRobotContainer.h>
 #include <subsystems/drive/SwerveDrive.h>
+#include <util/NFRRobotContainer.h>
 
-class RalphContainer : public NFRRobotContainer {
-    public:
-        RalphContainer();
-        virtual ~RalphContainer() = default;
+class RalphContainer : public NFRRobotContainer
+{
+public:
+    RalphContainer();
+    virtual ~RalphContainer() = default;
 
-        void RobotInit() override;
-        void RobotPeriodic() override;
-        void DisabledInit() override;
-        void DisabledPeriodic() override;
-        void DisabledExit() override;
-        void AutonomousInit() override;
-        void AutonomousPeriodic() override;
-        void AutonomousExit() override;
-        void TeleopInit() override;
-        void TeleopPeriodic() override;
-        void TeleopExit() override;
-        void TestInit() override;
-        void TestPeriodic() override;
-        void TestExit() override;
+    void RobotInit() override;
+    void RobotPeriodic() override;
+    void DisabledInit() override;
+    void DisabledPeriodic() override;
+    void DisabledExit() override;
+    void AutonomousInit() override;
+    void AutonomousPeriodic() override;
+    void AutonomousExit() override;
+    void TeleopInit() override;
+    void TeleopPeriodic() override;
+    void TeleopExit() override;
+    void TestInit() override;
+    void TestPeriodic() override;
+    void TestExit() override;
 
-        frc2::CommandPtr GetAutonomousCommand() override;
+    frc2::CommandPtr GetAutonomousCommand() override;
 
-        /**
-        * @brief Logs current robot state for debugging and analysis
-        *
-        * This method is called every 20ms to record important robot data like
-        * drivetrain position, motor temperatures, etc. This data helps us debug
-        * problems and analyze robot performance.
-        *
-        * @param log The logging context to write data to
-        */
-        void Log(const nfr::LogContext &log) const override;
+    /**
+     * @brief Logs current robot state for debugging and analysis
+     *
+     * This method is called every 20ms to record important robot data like
+     * drivetrain position, motor temperatures, etc. This data helps us debug
+     * problems and analyze robot performance.
+     *
+     * @param log The logging context to write data to
+     */
+    void Log(const nfr::LogContext &log) const override;
 
-    private:
+private:
     /**
      * @brief Sets up controller button bindings and default commands
      *

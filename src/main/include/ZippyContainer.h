@@ -3,25 +3,26 @@
 #include <util/NFRRobotContainer.h>
 #include <subsystems/drive/SwerveDrive.h>
 
-class ZippyContainer : public NFRRobotContainer {
-    public:
-        ZippyContainer();
-        virtual ~ZippyContainer() = default;
+class ZippyContainer : public NFRRobotContainer
+{
+public:
+    ZippyContainer();
+    virtual ~ZippyContainer() = default;
 
-        void RobotInit() override;
-        void RobotPeriodic() override;
-        void DisabledInit() override;
-        void DisabledPeriodic() override;
-        void DisabledExit() override;
-        void AutonomousInit() override;
-        void AutonomousPeriodic() override;
-        void AutonomousExit() override;
-        void TeleopInit() override;
-        void TeleopPeriodic() override;
-        void TeleopExit() override;
-        void TestInit() override;
-        void TestPeriodic() override;
-        void TestExit() override;
+    void RobotInit() override;
+    void RobotPeriodic() override;
+    void DisabledInit() override;
+    void DisabledPeriodic() override;
+    void DisabledExit() override;
+    void AutonomousInit() override;
+    void AutonomousPeriodic() override;
+    void AutonomousExit() override;
+    void TeleopInit() override;
+    void TeleopPeriodic() override;
+    void TeleopExit() override;
+    void TestInit() override;
+    void TestPeriodic() override;
+    void TestExit() override;
 
         frc2::CommandPtr GetAutonomousCommand() override;
 
