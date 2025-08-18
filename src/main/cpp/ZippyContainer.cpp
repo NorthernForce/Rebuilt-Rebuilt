@@ -33,16 +33,27 @@ void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
 }
 
 ZippyContainer::ZippyContainer()
-    : m_drive(TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
-              DriveConstants::kOdometryStandardDeviation,
-              DriveConstants::kVisionStandardDeviation,
-              DriveConstants::kTranslationPID, DriveConstants::kRotationPID,
-              DriveConstants::kMaxTranslationSpeed,
-              DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
-              TunerConstants::FrontRight, TunerConstants::BackLeft,
-              TunerConstants::BackRight)
 {
-    m_drive.SetModuleOffsets(getModuleOffsets());
+    // Create our swerve drivetrain with all its configuration
+    // This big constructor call sets up:
+    // - Hardware configuration (motor controllers, encoders)
+    // - Update rate (how often to calculate new motor commands)
+    // - Odometry settings (how accurately we track robot position)
+    // - PID controllers for autonomous path following
+    // - Maximum speeds for safety
+    m_drive = std::make_unique<SwerveDrive>(
+        TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
+        DriveConstants::kOdometryStandardDeviation,
+        DriveConstants::kVisionStandardDeviation,
+        DriveConstants::kTranslationPID, DriveConstants::kRotationPID,
+        DriveConstants::kMaxTranslationSpeed, DriveConstants::kMaxRotationSpeed,
+        TunerConstants::FrontLeft, TunerConstants::FrontRight,
+        TunerConstants::BackLeft, TunerConstants::BackRight);
+
+    // Load saved swerve module offsets from previous calibration
+    m_drive->SetModuleOffsets(getModuleOffsets());
+
+    // Set up controller bindings and default commands
     ConfigureBindings();
 }
 
@@ -59,19 +70,19 @@ std::function<double()> ProcessInput(std::function<double()> input)
 
 void ZippyContainer::ConfigureBindings()
 {
-    m_drive.SetDefaultCommand(m_drive.DriveByJoystick(
+    m_drive->SetDefaultCommand(m_drive->DriveByJoystick(
         ProcessInput([&]() { return m_driverController.GetLeftX(); }),
         ProcessInput([&]() { return m_driverController.GetLeftY(); }),
         ProcessInput([&]() { return m_driverController.GetRightX(); }),
         true  // Field-centric driving
         ));
     m_driverController.Back().OnTrue(
-        m_drive.RunOnce([&]() { m_drive.SeedFieldCentric(); }));
-    m_resetModulesCommand = m_drive.RunOnce(
+        m_drive->RunOnce([&]() { m_drive->SeedFieldCentric(); }));
+    m_resetModulesCommand = m_drive->RunOnce(
         [&]()
         {
             auto offsets =
-                m_drive.ResetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
+                m_drive->ResetModuleOffsets({0_deg, 0_deg, 0_deg, 0_deg});
             SetModuleOffsets(offsets);
         });
     frc::SmartDashboard::PutData("Reset Swerve Modules",
