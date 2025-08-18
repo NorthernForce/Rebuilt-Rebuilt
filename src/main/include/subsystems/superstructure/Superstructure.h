@@ -121,12 +121,10 @@ public:
      * @brief Gets a command to home the superstructure
      * This command is a parallel command group consisting of two elevator
      * homing commands
-     * @param innerElevatorSpeed The homing speed for the inner elevator
-     * @param outerElevatorSpeed The homing speed for the outer elevator
+     * @param speed The homing speed
      * @return A homing command for the superstructure
      */
-    frc2::CommandPtr GetHomingCommand(double innerElevatorSpeed,
-                                      double outerElevatorSpeed);
+    frc2::CommandPtr GetHomingCommand(double speed);
 
     /**
      * @brief Gets a command to control the superstructure with a joystick

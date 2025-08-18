@@ -97,6 +97,34 @@ void RobotContainer::ConfigureBindings()
         });
     frc::SmartDashboard::PutData("Reset Swerve Modules",
                                  resetModulesCommand.value().get());
+
+    m_superstructure.SetDefaultCommand(
+        m_superstructure.GetManualControlCommand(
+            ProcessInput([&]() { return manipulatorController.GetRightY(); }),
+            ProcessInput([&]() { return manipulatorController.GetLeftY(); })
+        )
+    );
+    manipulatorController.POVLeft().WhileTrue(
+        m_superstructure.GetGoToPositionCommand(m_superstructure.GetPresetState(UniversalElevatorConstants::SuperstructurePresets::L1))
+    );
+    manipulatorController.POVUp().WhileTrue(
+        m_superstructure.GetGoToPositionCommand(m_superstructure.GetPresetState(UniversalElevatorConstants::SuperstructurePresets::L2))
+    );
+    manipulatorController.POVRight().WhileTrue(
+        m_superstructure.GetGoToPositionCommand(m_superstructure.GetPresetState(UniversalElevatorConstants::SuperstructurePresets::L3))
+    );
+    manipulatorController.POVDown().WhileTrue(
+        m_superstructure.GetGoToPositionCommand(m_superstructure.GetPresetState(UniversalElevatorConstants::SuperstructurePresets::L4))
+    );
+    manipulatorController.A().WhileTrue(
+        m_superstructure.GetGoToPositionCommand(m_superstructure.GetPresetState(UniversalElevatorConstants::SuperstructurePresets::CORAL_STATION))
+    );
+    manipulatorController.Start().WhileTrue(
+        m_superstructure.GetHomingCommand(UniversalElevatorConstants::kHomingSpeed)
+    );
+    driverController.Start().WhileTrue(
+        m_superstructure.GetHomingCommand(UniversalElevatorConstants::kHomingSpeed)
+    );
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()

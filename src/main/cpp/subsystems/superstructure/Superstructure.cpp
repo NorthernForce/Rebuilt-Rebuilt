@@ -99,11 +99,9 @@ CommandPtr Superstructure::GetHoldAtPositionCommand(
     return SuperstructureHoldAtPositionCommand(this, position).ToPtr();
 }
 
-CommandPtr Superstructure::GetHomingCommand(double innerElevatorSpeed,
-                                            double outerElevatorSpeed)
+CommandPtr Superstructure::GetHomingCommand(double speed)
 {
-    return SuperstructureHomingCommand(this, innerElevatorSpeed,
-                                       outerElevatorSpeed)
+    return SuperstructureHomingCommand(this, speed,speed)
         .ToPtr();
 }
 

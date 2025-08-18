@@ -28,4 +28,5 @@ private:
     std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
     std::optional<frc2::CommandPtr> resetModulesCommand;
     frc2::CommandXboxController driverController{0};
+    frc2::CommandXboxController manipulatorController{0};
 };
