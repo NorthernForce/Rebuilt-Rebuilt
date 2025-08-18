@@ -724,6 +724,7 @@ private:
     units::volt_t m_voltage;
     units::turns_per_second_t m_velocity;
     units::ampere_t m_current;
+    double kConversionFactor;
     double kG;
 };
 

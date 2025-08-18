@@ -1,6 +1,7 @@
 #include <subsystems/superstructure/elevator/Elevator.h>
 
 #include "frc/system/plant/DCMotor.h"
+#include "units/angular_acceleration.h"
 
 using namespace std;
 using namespace units;
@@ -26,13 +27,16 @@ ElevatorIOSparkMax::ElevatorIOSparkMax(
 
     auto& slot0Configs = sparkMaxConfigs.closedLoop;
     slot0Configs.Pid(kP, kI, kD, ClosedLoopSlot::kSlot0);
+    kConversionFactor = (kGearRatio / kSprocketCircumference).value();
     this->kG = kG;
 
     sparkMaxConfigs.Inverted(kInverted);
     sparkMaxConfigs.SetIdleMode(SparkBaseConfig::IdleMode::kBrake);
 
     sparkMaxConfigs.encoder.PositionConversionFactor(
-        (kGearRatio / kSprocketCircumference).value());
+        kConversionFactor);
+    sparkMaxConfigs.encoder.VelocityConversionFactor(
+        kConversionFactor);
 
     sparkMaxConfigs.softLimit.ForwardSoftLimitEnabled(true);
     sparkMaxConfigs.softLimit.ForwardSoftLimit(kUpperLimit.value());
@@ -115,6 +119,11 @@ volt_t ElevatorIOSparkMax::GetVoltage() const
 turns_per_second_t ElevatorIOSparkMax::GetVelocity() const
 {
     return (revolutions_per_minute_t)m_motor->GetEncoder().GetVelocity();
+}
+
+turns_per_second_t ElevatorIOSparkMax::GetRotorVelocity() const
+{
+    return (revolutions_per_minute_t)m_motor->GetEncoder().GetVelocity() * kConversionFactor;
 }
 
 ampere_t ElevatorIOSparkMax::GetCurrent() const
