@@ -171,10 +171,18 @@ out/
 # Simulation GUI and other tools window save file
 networktables.json
 simgui.json
+simgui-ds.json
 *-window.json
+imgui.ini
+glass.json
+shuffleboard.json
 
-# Simulation data log directory
+# Simulation data log files
 logs/
+*.wpilog
+*.hoot
+*.dslog
+*.dsevents
 
 # Folder that has CTRE Phoenix Sim device config storage
 ctre_sim/
@@ -182,3 +190,6 @@ ctre_sim/
 # clangd
 /.cache
 compile_commands.json
+
+git.properties
+external

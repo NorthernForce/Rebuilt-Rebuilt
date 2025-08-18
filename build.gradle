@@ -2,33 +2,27 @@ plugins {
     id "cpp"
     id "google-test-test-suite"
     id "edu.wpi.first.GradleRIO" version "2025.1.1-beta-3"
+    id "com.gorylenko.gradle-git-properties" version "2.4.1"
 }
 
-// Define my targets (RoboRIO) and artifacts (deployable files)
-// This is added by GradleRIO's backing project DeployUtils.
+// Configure the git-properties plugin to output to src/main/deploy
+gitProperties {
+    gitPropertiesDir = file('src/main/deploy')
+}
+
 deploy {
     targets {
         roborio(getTargetTypeClass('RoboRIO')) {
-            // Team number is loaded either from the .wpilib/wpilib_preferences.json
-            // or from command line. If not found an exception will be thrown.
-            // You can use getTeamOrDefault(team) instead of getTeamNumber if you
-            // want to store a team number in this file.
             team = project.frc.getTeamNumber()
             debug = project.frc.getDebugOrDefault(false)
 
             artifacts {
-                // First part is artifact name, 2nd is artifact type
-                // getTargetTypeClass is a shortcut to get the class type using a string
+                frcCpp(getArtifactTypeClass('FRCNativeArtifact')) {}
 
-                frcCpp(getArtifactTypeClass('FRCNativeArtifact')) {
-                }
-
-                // Static files artifact
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
-                    deleteOldFiles = false // Change to true to delete files on roboRIO that no
-                                           // longer exist in deploy directory of this project
+                    deleteOldFiles = false
                 }
             }
         }
@@ -40,18 +34,57 @@ def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 // Set this to true to enable desktop support.
 def includeDesktopSupport = true
 
+def buildForRoboRio = project.hasProperty('buildRoboRio') || 
+    gradle.startParameter.taskNames.any { it.contains('deploy') || it.contains('roborio') || it.contains('athena') }
+
 // Set to true to run simulation in debug mode
 wpi.cpp.debugSimulation = false
-
-// Default enable simgui
 wpi.sim.addGui().defaultEnabled = true
-// Enable DS but not by default
 wpi.sim.addDriverstation()
+
+tasks.withType(CppCompile).configureEach {
+    dependsOn generateGitProperties
+
+    if (toolChain in Gcc || toolChain in Clang) {
+        compilerArgs.addAll(["-O2", "-pipe"])
+    }
+}
+
+nativeUtils.platformConfigs.named('windowsx86-64').configure {
+  it.cppCompiler.args.add("/std:c++2b")
+}
+nativeUtils.platformConfigs.named('windowsx86').configure {
+  it.cppCompiler.args.add("/std:c++2b")
+}
+nativeUtils.platformConfigs.named('windowsarm64').configure {
+  it.cppCompiler.args.add("/std:c++2b")
+}
+nativeUtils.platformConfigs.named('osxuniversal').configure {
+  it.cppCompiler.args.add("-std=c++2b")
+}
+nativeUtils.platformConfigs.named('linuxx86-64').configure {
+  it.cppCompiler.args.add("-std=c++2b")
+}
+nativeUtils.platformConfigs.named('linuxarm64').configure {
+  it.cppCompiler.args.add("-std=c++2b")
+}
+nativeUtils.platformConfigs.named('linuxathena').configure {
+  it.cppCompiler.args.add("-std=c++2b")
+}
+nativeUtils.platformConfigs.named('linuxsystemcore').configure {
+  it.cppCompiler.args.add("-std=c++2b")
+}
+nativeUtils.platformConfigs.named('linuxarm32').configure {
+    it.cppCompiler.args.add("-std=c++2b")
+}
+
 
 model {
     components {
         frcUserProgram(NativeExecutableSpec) {
-            targetPlatform wpi.platforms.roborio
+            if (buildForRoboRio) {
+                targetPlatform wpi.platforms.roborio
+            }
             if (includeDesktopSupport) {
                 targetPlatform wpi.platforms.desktop
             }
@@ -66,17 +99,27 @@ model {
                 }
             }
 
-            // Set deploy task to deploy this component
+            // cppCompilerArgs += '-std=c++2b'
+
             deployArtifact.component = it
-
-            // Enable run tasks for this component
             wpi.cpp.enableExternalTasks(it)
-
-            // Enable simulation for this component
             wpi.sim.enable(it)
-            // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
             wpi.cpp.vendor.cpp(it)
             wpi.cpp.deps.wpilib(it)
+
+            binaries.all {
+                if (targetPlatform.name.contains('athena')) {
+                    // For RoboRIO, only build release (for deployment)
+                    if (buildType.name != 'release') {
+                        buildable = false
+                    }
+                } else {
+                    // For desktop/local, only build debug (for development)
+                    if (buildType.name != 'debug') {
+                        buildable = false
+                    }
+                }
+            }
         }
     }
     testSuites {
@@ -90,12 +133,24 @@ model {
                 }
             }
 
-            // Enable run tasks for this component
             wpi.cpp.enableExternalTasks(it)
-
             wpi.cpp.vendor.cpp(it)
             wpi.cpp.deps.wpilib(it)
             wpi.cpp.deps.googleTest(it)
+
+            binaries.all {
+                if (targetPlatform.name.contains('athena')) {
+                    // For RoboRIO, only build release tests
+                    if (buildType.name != 'release') {
+                        buildable = false
+                    }
+                } else {
+                    // For desktop/local, only build debug tests
+                    if (buildType.name != 'debug') {
+                        buildable = false
+                    }
+                }
+            }
         }
     }
 }
@@ -127,5 +182,70 @@ task format {
         }
         
         println 'Formatting complete!'
+    }
+}
+
+// In your build.gradle
+// Ensure this block is defined after your plugins block
+// (especially after where 'edu.wpi.first.GradleVsCode' and 'edu.wpi.first.GradleRIO' are applied)
+
+// import edu.wpi.first.gradlerio.wpi.WPIArtifact
+// import edu.wpi.first.gradlerio.wpi.WPIArtifactType
+
+task copyCompileCommands(type: Copy) {
+    def buildDir = layout.buildDirectory.get().asFile
+    def sourcePath = file("${buildDir}/TargetedCompileCommands/linuxathenarelease/compile_commands.json")
+    def destinationDir = project.rootDir
+
+    // Disable state tracking
+    outputs.upToDateWhen { false }
+    doNotTrackState("File access issues with compile_commands.json")
+ 
+    doFirst {
+        // Clean up existing file if present
+        def destFile = new File(destinationDir, "compile_commands.json")
+        if (destFile.exists()) {
+            destFile.delete()
+        }
+       
+        // Ensure directories exist
+        destinationDir.mkdirs()
+    }
+
+    from sourcePath
+    into destinationDir
+
+    // Optional: Only copy if the file exists
+    eachFile {
+        if (!sourcePath.exists()) {
+            throw new StopActionException("compile_commands.json not found at ${sourcePath}")
+        }
+    }
+
+    onlyIf() {
+        sourcePath.exists()
+    }
+}
+
+// Ensure copyCompileCommands runs after generateCompileCommands
+tasks.whenTaskAdded { task ->
+    if (task.name == 'generateCompileCommands') {
+        task.finalizedBy(tasks.named('copyCompileCommands'))
+        tasks.named('generateVsCodeConfig') {
+            dependsOn tasks.named('copyCompileCommands')
+        }
+    }
+}
+
+task buildForDeploy {
+    description = 'Build for RoboRio deployment (includes athena platform)'
+    group = 'build'
+
+    doLast {
+        // Execute the build with the buildRoboRio property
+        exec {
+            workingDir project.projectDir
+            commandLine './gradlew', 'clean', 'build', '-PbuildRoboRio=true'
+        }
     }
 }
