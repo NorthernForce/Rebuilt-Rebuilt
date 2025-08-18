@@ -1,19 +1,25 @@
 #include "util/NFRRobotChooser.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
-NFRRobotChooser::NFRRobotChooser(shared_ptr<NFRRobotContainer> defaultRobot, map<string, shared_ptr<NFRRobotContainer>> otherRobots, string robotNamePath)
+NFRRobotChooser::NFRRobotChooser(
+    shared_ptr<NFRRobotContainer> defaultRobot,
+    map<string, shared_ptr<NFRRobotContainer>> otherRobots,
+    string robotNamePath)
 {
     m_defaultRobot = defaultRobot;
     m_otherRobots = otherRobots;
     m_robotNamePath = robotNamePath;
 }
 
-NFRRobotChooser::NFRRobotChooser(shared_ptr<NFRRobotContainer> defaultRobot, map<string, shared_ptr<NFRRobotContainer>> otherRobots)
-: NFRRobotChooser(defaultRobot, otherRobots, "/home/admin/robot_settings.txt")
+NFRRobotChooser::NFRRobotChooser(
+    shared_ptr<NFRRobotContainer> defaultRobot,
+    map<string, shared_ptr<NFRRobotContainer>> otherRobots)
+    : NFRRobotChooser(defaultRobot, otherRobots,
+                      "/home/admin/robot_settings.txt")
 {
 }
 
@@ -28,7 +34,7 @@ shared_ptr<NFRRobotContainer> NFRRobotChooser::GetNFRRobotContainer()
 {
     string text;
     ifstream file(m_robotNamePath);
-    if(file.is_open())
+    if (file.is_open())
     {
         string robotName;
         getline(file, robotName);
@@ -39,7 +45,9 @@ shared_ptr<NFRRobotContainer> NFRRobotChooser::GetNFRRobotContainer()
                 return robot.second;
             }
         }
-    } else {
+    }
+    else
+    {
         cout << "Could not find file";
     }
     return m_defaultRobot;

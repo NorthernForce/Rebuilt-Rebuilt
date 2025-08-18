@@ -24,7 +24,7 @@
  */
 class NFRRobotContainer
 {
-  public:
+public:
     /**
      * @brief Constructor - creates subsystems and sets up controller bindings
      *

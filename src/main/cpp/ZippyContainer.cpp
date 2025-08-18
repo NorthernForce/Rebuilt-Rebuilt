@@ -34,13 +34,13 @@ void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
 
 ZippyContainer::ZippyContainer()
     : m_drive(TunerConstants::DrivetrainConstants, DriveConstants::kUpdateRate,
-            DriveConstants::kOdometryStandardDeviation,
-            DriveConstants::kVisionStandardDeviation,
-            DriveConstants::kTranslationPID, DriveConstants::kRotationPID,
-            DriveConstants::kMaxTranslationSpeed,
-            DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
-            TunerConstants::FrontRight, TunerConstants::BackLeft,
-            TunerConstants::BackRight)
+              DriveConstants::kOdometryStandardDeviation,
+              DriveConstants::kVisionStandardDeviation,
+              DriveConstants::kTranslationPID, DriveConstants::kRotationPID,
+              DriveConstants::kMaxTranslationSpeed,
+              DriveConstants::kMaxRotationSpeed, TunerConstants::FrontLeft,
+              TunerConstants::FrontRight, TunerConstants::BackLeft,
+              TunerConstants::BackRight)
 {
     m_drive.SetModuleOffsets(getModuleOffsets());
     ConfigureBindings();
@@ -83,16 +83,42 @@ frc2::CommandPtr ZippyContainer::GetAutonomousCommand()
     return frc2::cmd::Print("No autonomous command configured");
 }
 
-void ZippyContainer::RobotPeriodic() {}
-void ZippyContainer::DisabledInit() {}
-void ZippyContainer::DisabledPeriodic() {}
-void ZippyContainer::DisabledExit() {}
-void ZippyContainer::AutonomousInit() {}
-void ZippyContainer::AutonomousPeriodic() {}
-void ZippyContainer::AutonomousExit() {}
-void ZippyContainer::TeleopInit() {}
-void ZippyContainer::TeleopPeriodic() {}
-void ZippyContainer::TeleopExit() {}
-void ZippyContainer::TestInit() {}
-void ZippyContainer::TestPeriodic() {}
-void ZippyContainer::TestExit() {}
+void ZippyContainer::RobotPeriodic()
+{
+}
+void ZippyContainer::DisabledInit()
+{
+}
+void ZippyContainer::DisabledPeriodic()
+{
+}
+void ZippyContainer::DisabledExit()
+{
+}
+void ZippyContainer::AutonomousInit()
+{
+}
+void ZippyContainer::AutonomousPeriodic()
+{
+}
+void ZippyContainer::AutonomousExit()
+{
+}
+void ZippyContainer::TeleopInit()
+{
+}
+void ZippyContainer::TeleopPeriodic()
+{
+}
+void ZippyContainer::TeleopExit()
+{
+}
+void ZippyContainer::TestInit()
+{
+}
+void ZippyContainer::TestPeriodic()
+{
+}
+void ZippyContainer::TestExit()
+{
+}

@@ -4,8 +4,8 @@
 
 #include "Robot.h"
 
-#include "util/NFRRobotChooser.h"
 #include "RalphContainer.h"
+#include "util/NFRRobotChooser.h"
 
 using namespace std;
 #include <frc/DriverStation.h>
@@ -52,8 +52,10 @@ Robot::Robot()
 
 void Robot::RobotInit()
 {
-    map<string, shared_ptr<NFRRobotContainer>> robots = { {"023C3578", make_shared<RalphContainer>()} };
-    NFRRobotChooser chooser = NFRRobotChooser(make_shared<RalphContainer>(), robots);
+    map<string, shared_ptr<NFRRobotContainer>> robots = {
+        {"023C3578", make_shared<RalphContainer>()}};
+    NFRRobotChooser chooser =
+        NFRRobotChooser(make_shared<RalphContainer>(), robots);
     m_container = chooser.GetNFRRobotContainer();
 }
 
