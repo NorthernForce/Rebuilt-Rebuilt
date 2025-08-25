@@ -8,6 +8,7 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
 
+#include "subsystems/LEDSubsystem.h"
 #include "subsystems/drive/SwerveDrive.h"
 
 /**
@@ -68,6 +69,7 @@ private:
      * - Default commands that run when no other commands are active
      */
     void ConfigureBindings();
+    void InitializeRobotSpecificLEDStates();
 
     /**
      * @brief Our robot's swerve drivetrain subsystem
@@ -80,6 +82,14 @@ private:
      * the SwerveDrive object and will automatically delete it when destroyed.
      */
     std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
+
+    /**
+     * @brief Our robot's LED subsystem
+     *
+     * Controls the LED strips on the robot using a CANdle controller.
+     * Supports various animation patterns and state-based LED control.
+     */
+    std::unique_ptr<nfr::LEDSubsystem> leds{nullptr};
 
     /**
      * @brief Command to reset swerve module positions

@@ -14,6 +14,7 @@
 #include "frc/Preferences.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 #include "generated/TunerConstants.h"
+#include "subsystems/RalphLEDStates.h"
 
 using namespace std;
 using namespace nfr;
@@ -77,6 +78,13 @@ RobotContainer::RobotContainer()
 
     // Load saved swerve module offsets from previous calibration
     drive->SetModuleOffsets(getModuleOffsets());
+
+    // Initialize LED subsystem
+    leds = std::make_unique<LEDSubsystem>(LEDConstants::kCANdleID, "",
+                                          LEDConstants::kLEDCount);
+
+    // Initialize robot-specific LED states
+    InitializeRobotSpecificLEDStates();
 
     // Set up controller bindings and default commands
     ConfigureBindings();
@@ -177,4 +185,25 @@ void RobotContainer::Log(const nfr::LogContext& log) const
     // Log drivetrain state (position, velocity, motor currents, etc.)
     // The drivetrain Log method will record detailed state information
     log["drive"] << drive;
+    if (leds)
+    {
+        log["leds"] << leds;
+    }
+}
+
+void RobotContainer::InitializeRobotSpecificLEDStates()
+{
+    if (!leds)
+        return;
+
+    // Register Ralph-specific LED states
+    leds->RegisterState("AUTONOMOUS",
+                        ralph::RalphLEDStateFactory::CreateAutonomousState());
+    leds->RegisterState("TELEOP",
+                        ralph::RalphLEDStateFactory::CreateTeleopState());
+    leds->RegisterState("ALIGNMENT",
+                        ralph::RalphLEDStateFactory::CreateAlignmentState());
+
+    // Set up enum to state name mapping for backward compatibility
+    // This is now handled in LEDSubsystem::InitializeDefaultStates()
 }

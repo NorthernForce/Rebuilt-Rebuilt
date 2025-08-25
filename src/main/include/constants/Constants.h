@@ -6,6 +6,33 @@
 namespace nfr
 {
     /**
+     * @brief Configuration constants for the robot's LED subsystem
+     *
+     * This class contains all the important numbers that control how our LED
+     * subsystem behaves. These values are set based on hardware configuration
+     * and should be adjusted when hardware changes.
+     */
+    class LEDConstants
+    {
+    public:
+        /**
+         * @brief CAN ID for the CANdle controller
+         *
+         * This is the device ID on the CAN bus for the CTRE CANdle that
+         * controls the LED strips.
+         */
+        static constexpr int kCANdleID = 30;
+
+        /**
+         * @brief Number of LEDs in the LED strip
+         *
+         * This defines how many individual LEDs are in the strip connected
+         * to the CANdle controller.
+         */
+        static constexpr int kLEDCount = 72;
+    };
+
+    /**
      * @brief Configuration constants for the robot's swerve drivetrain
      *
      * This class contains all the important numbers that control how our swerve
