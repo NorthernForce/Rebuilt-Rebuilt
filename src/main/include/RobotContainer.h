@@ -8,6 +8,7 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
 
+#include "subsystems/Localizer.h"
 #include "subsystems/drive/SwerveDrive.h"
 
 /**
@@ -48,14 +49,10 @@ public:
     frc2::CommandPtr GetAutonomousCommand();
 
     /**
-     * @brief Logs current robot state for debugging and analysis
-     *
-     * This method is called every 20ms to record important robot data like
-     * drivetrain position, motor temperatures, etc. This data helps us debug
-     * problems and analyze robot performance.
-     *
-     * @param log The logging context to write data to
+     * Periodic function to update vision integration
      */
+    void Periodic();
+
     void Log(const nfr::LogContext &log) const;
 
 private:
@@ -80,6 +77,7 @@ private:
      * the SwerveDrive object and will automatically delete it when destroyed.
      */
     std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
+    nfr::Localizer localizer;
 
     /**
      * @brief Command to reset swerve module positions

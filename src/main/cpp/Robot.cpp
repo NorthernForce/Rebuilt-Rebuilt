@@ -52,6 +52,7 @@ void Robot::RobotPeriodic()
     // Commands are like "drive forward", "shoot ball", etc.
     // The scheduler makes sure they run properly and don't conflict
     frc2::CommandScheduler::GetInstance().Run();
+    m_container.Periodic();
 
     // Log current robot state for debugging and analysis
     // This includes drivetrain position, sensor values, etc.
