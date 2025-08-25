@@ -41,14 +41,15 @@ std::vector<CameraConfig> CreateCameraConfigurations()
                     CameraConstants::kFrontLeftCameraTransform);
             });
 
-        configs.emplace_back("Center", std::string(CameraConstants::kCenterCameraName),
-                             CameraConstants::kCenterCameraTransform,
-                             []()
-                             {
-                                 return std::make_unique<PhotonVisionCameraIO>(
-                                     std::string(CameraConstants::kCenterCameraName),
-                                     CameraConstants::kCenterCameraTransform);
-                             });
+        configs.emplace_back(
+            "Center", std::string(CameraConstants::kCenterCameraName),
+            CameraConstants::kCenterCameraTransform,
+            []()
+            {
+                return std::make_unique<PhotonVisionCameraIO>(
+                    std::string(CameraConstants::kCenterCameraName),
+                    CameraConstants::kCenterCameraTransform);
+            });
 
         // LimeLight cameras
         configs.emplace_back(
@@ -87,7 +88,8 @@ std::vector<CameraConfig> CreateCameraConfigurations()
 
         // Use PhotonVision simulation for LimeLight cameras too
         configs.emplace_back(
-            "LimeLight-Sim", std::string(CameraConstants::kFrontRightCameraName),
+            "LimeLight-Sim",
+            std::string(CameraConstants::kFrontRightCameraName),
             CameraConstants::kFrontRightCameraTransform,
             []()
             {
@@ -278,7 +280,7 @@ void RobotContainer::Periodic()
         if (estimateAge < VisionConstants::kMaxEstimateAge)
         {
             drive->AddVisionMeasurement(estimatedPose.pose,
-                                       estimatedPose.timestamp);
+                                        estimatedPose.timestamp);
         }
     }
 }

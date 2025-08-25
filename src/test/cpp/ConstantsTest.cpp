@@ -7,7 +7,7 @@ using namespace nfr;
 
 class ConstantsTest : public ::testing::Test
 {
-  protected:
+protected:
     void SetUp() override
     {
     }

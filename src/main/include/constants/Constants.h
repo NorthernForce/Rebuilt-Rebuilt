@@ -121,7 +121,8 @@ namespace nfr
         static constexpr units::second_t kEstimateTimeout = 0.5_s;
 
         // AprilTag field layout
-        static constexpr const char* kAprilTagFieldLayout = "2024-crescendo.json";
+        static constexpr const char* kAprilTagFieldLayout =
+            "2024-crescendo.json";
     };
 
     class CameraConstants
@@ -134,8 +135,9 @@ namespace nfr
             frc::Rotation3d{0_deg, -15_deg, 0_deg}  // Slight downward tilt
         };
         static constexpr frc::Transform3d kCenterCameraTransform{
-            frc::Translation3d{0.0_m, 0.0_m, 0.5_m},  // Center of robot, 50cm up
-            frc::Rotation3d{0_deg, -15_deg, 0_deg}    // Slight downward tilt
+            frc::Translation3d{0.0_m, 0.0_m,
+                               0.5_m},              // Center of robot, 50cm up
+            frc::Rotation3d{0_deg, -15_deg, 0_deg}  // Slight downward tilt
         };
         static constexpr frc::Transform3d kFrontRightCameraTransform{
             frc::Translation3d{0.3_m, -0.2_m,
@@ -143,9 +145,11 @@ namespace nfr
             frc::Rotation3d{0_deg, -15_deg, 0_deg}  // Slight downward tilt
         };
         static constexpr frc::Transform3d kCenterBackCameraTransform{
-            frc::Translation3d{-0.3_m, 0.0_m, 0.5_m},  // 30cm back, center, 50cm up
-            frc::Rotation3d{0_deg, -15_deg,
-                            180_deg}  // Facing backwards with slight downward tilt
+            frc::Translation3d{-0.3_m, 0.0_m,
+                               0.5_m},  // 30cm back, center, 50cm up
+            frc::Rotation3d{
+                0_deg, -15_deg,
+                180_deg}  // Facing backwards with slight downward tilt
         };
 
         // PhotonVision camera names
@@ -154,7 +158,9 @@ namespace nfr
         static constexpr std::string_view kCenterCameraName = "center_camera";
 
         // LimeLight camera names
-        static constexpr std::string_view kFrontRightCameraName = "limelight-fl";
-        static constexpr std::string_view kCenterBackCameraName = "limelight-ctr";
+        static constexpr std::string_view kFrontRightCameraName =
+            "limelight-fl";
+        static constexpr std::string_view kCenterBackCameraName =
+            "limelight-ctr";
     };
 }  // namespace nfr
