@@ -33,10 +33,8 @@ ElevatorIOSparkMax::ElevatorIOSparkMax(
     sparkMaxConfigs.Inverted(kInverted);
     sparkMaxConfigs.SetIdleMode(SparkBaseConfig::IdleMode::kBrake);
 
-    sparkMaxConfigs.encoder.PositionConversionFactor(
-        kConversionFactor);
-    sparkMaxConfigs.encoder.VelocityConversionFactor(
-        kConversionFactor);
+    sparkMaxConfigs.encoder.PositionConversionFactor(kConversionFactor);
+    sparkMaxConfigs.encoder.VelocityConversionFactor(kConversionFactor);
 
     sparkMaxConfigs.softLimit.ForwardSoftLimitEnabled(true);
     sparkMaxConfigs.softLimit.ForwardSoftLimit(kUpperLimit.value());
@@ -123,7 +121,8 @@ turns_per_second_t ElevatorIOSparkMax::GetVelocity() const
 
 turns_per_second_t ElevatorIOSparkMax::GetRotorVelocity() const
 {
-    return (revolutions_per_minute_t)m_motor->GetEncoder().GetVelocity() * kConversionFactor;
+    return (revolutions_per_minute_t)m_motor->GetEncoder().GetVelocity() *
+           kConversionFactor;
 }
 
 ampere_t ElevatorIOSparkMax::GetCurrent() const

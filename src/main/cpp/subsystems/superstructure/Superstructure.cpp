@@ -101,8 +101,7 @@ CommandPtr Superstructure::GetHoldAtPositionCommand(
 
 CommandPtr Superstructure::GetHomingCommand(double speed)
 {
-    return SuperstructureHomingCommand(this, speed,speed)
-        .ToPtr();
+    return SuperstructureHomingCommand(this, speed, speed).ToPtr();
 }
 
 CommandPtr Superstructure::GetManualControlCommand(

@@ -104,18 +104,19 @@ private:
 
     /**
      * @brief Xbox controller for manipulator input
-     * 
+     *
      * CommandXboxController integrates with the command system, allowing us to
      * easily bind buttons to commands. The number (1) indicates this is the
      * second controller connected to the driver station.
      */
     frc2::CommandXboxController manipulatorController{0};
-    
+
     /**
      * @brief Our robot's superstructure subsystem
      *
-     * This superstructure consists of two elevator stages that can be individually
-     * controlled, allowing us to elevate the game pieces to any level we want.
+     * This superstructure consists of two elevator stages that can be
+     * individually controlled, allowing us to elevate the game pieces to any
+     * level we want.
      */
     Superstructure m_superstructure;
 };
