@@ -34,9 +34,6 @@ def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 // Set this to true to enable desktop support.
 def includeDesktopSupport = true
 
-def buildForRoboRio = project.hasProperty('buildRoboRio') || 
-    gradle.startParameter.taskNames.any { it.contains('deploy') || it.contains('roborio') || it.contains('athena') }
-
 // Set to true to run simulation in debug mode
 wpi.cpp.debugSimulation = false
 wpi.sim.addGui().defaultEnabled = true
@@ -44,10 +41,6 @@ wpi.sim.addDriverstation()
 
 tasks.withType(CppCompile).configureEach {
     dependsOn generateGitProperties
-
-    if (toolChain in Gcc || toolChain in Clang) {
-        compilerArgs.addAll(["-O2", "-pipe"])
-    }
 }
 
 nativeUtils.platformConfigs.named('windowsx86-64').configure {
@@ -82,9 +75,7 @@ nativeUtils.platformConfigs.named('linuxarm32').configure {
 model {
     components {
         frcUserProgram(NativeExecutableSpec) {
-            if (buildForRoboRio) {
-                targetPlatform wpi.platforms.roborio
-            }
+            targetPlatform wpi.platforms.roborio
             if (includeDesktopSupport) {
                 targetPlatform wpi.platforms.desktop
             }
@@ -106,20 +97,6 @@ model {
             wpi.sim.enable(it)
             wpi.cpp.vendor.cpp(it)
             wpi.cpp.deps.wpilib(it)
-
-            binaries.all {
-                if (targetPlatform.name.contains('athena')) {
-                    // For RoboRIO, only build release (for deployment)
-                    if (buildType.name != 'release') {
-                        buildable = false
-                    }
-                } else {
-                    // For desktop/local, only build debug (for development)
-                    if (buildType.name != 'debug') {
-                        buildable = false
-                    }
-                }
-            }
         }
     }
     testSuites {
@@ -137,20 +114,6 @@ model {
             wpi.cpp.vendor.cpp(it)
             wpi.cpp.deps.wpilib(it)
             wpi.cpp.deps.googleTest(it)
-
-            binaries.all {
-                if (targetPlatform.name.contains('athena')) {
-                    // For RoboRIO, only build release tests
-                    if (buildType.name != 'release') {
-                        buildable = false
-                    }
-                } else {
-                    // For desktop/local, only build debug tests
-                    if (buildType.name != 'debug') {
-                        buildable = false
-                    }
-                }
-            }
         }
     }
 }
@@ -233,19 +196,6 @@ tasks.whenTaskAdded { task ->
         task.finalizedBy(tasks.named('copyCompileCommands'))
         tasks.named('generateVsCodeConfig') {
             dependsOn tasks.named('copyCompileCommands')
-        }
-    }
-}
-
-task buildForDeploy {
-    description = 'Build for RoboRio deployment (includes athena platform)'
-    group = 'build'
-
-    doLast {
-        // Execute the build with the buildRoboRio property
-        exec {
-            workingDir project.projectDir
-            commandLine './gradlew', 'clean', 'build', '-PbuildRoboRio=true'
         }
     }
 }
