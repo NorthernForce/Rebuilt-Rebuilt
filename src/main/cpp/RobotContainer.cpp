@@ -140,6 +140,10 @@ void RobotContainer::ConfigureBindings()
     driverController.Back().OnTrue(
         drive->RunOnce([&]() { drive->SeedFieldCentric(); }));
 
+    // Example usage of PathToPose - navigate to a specific position
+    driverController.A().OnTrue(
+        drive->PathToPose(frc::Pose2d{2.0_m, 1.0_m, frc::Rotation2d{0_deg}}));
+
     // Create a command to reset swerve module offsets and put it on
     // SmartDashboard This allows drivers/programmers to recalibrate swerve
     // modules from the dashboard

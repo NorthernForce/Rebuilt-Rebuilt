@@ -12,6 +12,7 @@
 
 #include <ctre/phoenix6/SignalLogger.hpp>
 #include <ctre/phoenix6/swerve/SwerveDrivetrain.hpp>
+#include <optional>
 
 namespace nfr
 {
@@ -57,6 +58,10 @@ namespace nfr
         /** @brief How often to update simulation physics (200 Hz = every 5ms)
          */
         static constexpr units::second_t kSimLoopPeriod = 5_ms;
+        static constexpr units::meters_per_second_squared_t
+            kDefaultMaxTranslationAcceleration = 3.0_mps_sq;
+        static constexpr units::radians_per_second_squared_t
+            kDefaultMaxAngularAcceleration = 12.0_rad_per_s_sq;
 
         /** @brief Handles periodic simulation updates */
         std::unique_ptr<frc::Notifier> simNotifier;
@@ -264,6 +269,8 @@ namespace nfr
 
         /** @brief Maximum speed for rotation (rad/s) */
         units::radians_per_second_t maxRotationSpeed;
+        units::meters_per_second_squared_t maxTranslationAcceleration;
+        units::radians_per_second_squared_t maxAngularAcceleration;
 
     public:
         /**
@@ -306,20 +313,29 @@ namespace nfr
          * @param backLeftConstants Hardware configuration for back-left module
          * @param backRightConstants Hardware configuration for back-right
          * module
+         * @param maxTranslationAcceleration Maximum acceleration for
+         * translation (m/s²)
+         * @param maxAngularAcceleration Maximum acceleration for rotation
+         * (rad/s²)
          */
-        SwerveDrive(const ctre::phoenix6::swerve::SwerveDrivetrainConstants
-                        &drivetrainConstants,
-                    units::hertz_t updateRate,
-                    std::array<double, 3> const &odometryStandardDeviation,
-                    std::array<double, 3> const &visionStandardDeviation,
-                    pathplanner::PIDConstants translationPID,
-                    pathplanner::PIDConstants rotationPID,
-                    units::meters_per_second_t maxTranslationSpeed,
-                    units::radians_per_second_t maxRotationSpeed,
-                    const SwerveModuleConstants &frontLeftConstants,
-                    const SwerveModuleConstants &frontRightConstants,
-                    const SwerveModuleConstants &backLeftConstants,
-                    const SwerveModuleConstants &backRightConstants);
+        SwerveDrive(
+            const ctre::phoenix6::swerve::SwerveDrivetrainConstants
+                &drivetrainConstants,
+            units::hertz_t updateRate,
+            std::array<double, 3> const &odometryStandardDeviation,
+            std::array<double, 3> const &visionStandardDeviation,
+            pathplanner::PIDConstants translationPID,
+            pathplanner::PIDConstants rotationPID,
+            units::meters_per_second_t maxTranslationSpeed,
+            units::radians_per_second_t maxRotationSpeed,
+            const SwerveModuleConstants &frontLeftConstants,
+            const SwerveModuleConstants &frontRightConstants,
+            const SwerveModuleConstants &backLeftConstants,
+            const SwerveModuleConstants &backRightConstants,
+            units::meters_per_second_squared_t maxTranslationAcceleration =
+                kDefaultMaxTranslationAcceleration,
+            units::radians_per_second_squared_t maxAngularAcceleration =
+                kDefaultMaxAngularAcceleration);
 
         // === SYSTEM IDENTIFICATION (SYSID) METHODS ===
         // These help automatically tune PID controllers
@@ -504,6 +520,25 @@ namespace nfr
                                          std::function<double()> yAxis,
                                          std::function<double()> rotationAxis,
                                          bool fieldRelative = true);
+
+        /**
+         * @brief Creates command to path to a specific pose
+         * This command uses PathPlanner to generate a smooth path from the
+         * robot's current position to the target pose, then follows that path
+         * using closed-loop control.
+         * @param targetPose Desired end position and orientation
+         * @param overrideTranslationAcceleration Optional max translation
+         * acceleration (m/s²); if not provided, uses default
+         * @param overrideAngularAcceleration Optional max angular
+         * acceleration (rad/s²); if not provided, uses default
+         * @return Command that drives the robot to the target pose
+         */
+        frc2::CommandPtr PathToPose(
+            frc::Pose2d targetPose,
+            std::optional<units::meters_per_second_squared_t>
+                overrideTranslationAcceleration = std::nullopt,
+            std::optional<units::radians_per_second_squared_t>
+                overrideAngularAcceleration = std::nullopt);
 
         /**
          * @brief Logs current drivetrain state for debugging and analysis
