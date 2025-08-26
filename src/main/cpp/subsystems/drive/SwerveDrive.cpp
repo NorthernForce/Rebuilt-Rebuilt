@@ -5,6 +5,11 @@
 #include <frc/MathUtil.h>
 #include <frc/RobotController.h>
 
+#include "frc/geometry/Pose2d.h"
+
+#include "logging/Logger.h"
+#include "pathplanner/lib/util/PathPlannerLogging.h"
+
 using namespace nfr;
 using namespace ctre::phoenix6;
 using namespace ctre::phoenix6::swerve;
@@ -72,6 +77,15 @@ void SwerveDrive::ConfigurePathplanner(PIDConstants translationPID,
             return alliance == DriverStation::Alliance::kRed;
         },
         this);
+    pathplanner::PathPlannerLogging::setLogActivePathCallback([](std::vector<Pose2d> const& path) {
+        nfr::logger["robot"]["drive"]["pathplanner"]["active_path"] << path;
+    });
+    pathplanner::PathPlannerLogging::setLogCurrentPoseCallback([](const frc::Pose2d &pose) {
+        nfr::logger["robot"]["drive"]["pathplanner"]["current_pose"] << pose;
+    });
+    pathplanner::PathPlannerLogging::setLogTargetPoseCallback([](const frc::Pose2d &pose) {
+        nfr::logger["robot"]["drive"]["pathplanner"]["target_pose"] << pose;
+    });
 }
 
 void SwerveDrive::StartSimThread()
