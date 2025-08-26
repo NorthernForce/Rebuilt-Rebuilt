@@ -318,24 +318,24 @@ namespace nfr
          * @param maxAngularAcceleration Maximum acceleration for rotation
          * (rad/s²)
          */
-        SwerveDrive(const ctre::phoenix6::swerve::SwerveDrivetrainConstants
-                        &drivetrainConstants,
-                    units::hertz_t updateRate,
-                    std::array<double, 3> const &odometryStandardDeviation,
-                    std::array<double, 3> const &visionStandardDeviation,
-                    pathplanner::PIDConstants translationPID,
-                    pathplanner::PIDConstants rotationPID,
-                    units::meters_per_second_t maxTranslationSpeed,
-                    units::radians_per_second_t maxRotationSpeed,
-                    const SwerveModuleConstants &frontLeftConstants,
-                    const SwerveModuleConstants &frontRightConstants,
-                    const SwerveModuleConstants &backLeftConstants,
-                    const SwerveModuleConstants &backRightConstants,
-                    units::meters_per_second_squared_t
-                        maxTranslationAcceleration =
-                            kDefaultMaxTranslationAcceleration,
-                    units::radians_per_second_squared_t
-                        maxAngularAcceleration = kDefaultMaxAngularAcceleration);
+        SwerveDrive(
+            const ctre::phoenix6::swerve::SwerveDrivetrainConstants
+                &drivetrainConstants,
+            units::hertz_t updateRate,
+            std::array<double, 3> const &odometryStandardDeviation,
+            std::array<double, 3> const &visionStandardDeviation,
+            pathplanner::PIDConstants translationPID,
+            pathplanner::PIDConstants rotationPID,
+            units::meters_per_second_t maxTranslationSpeed,
+            units::radians_per_second_t maxRotationSpeed,
+            const SwerveModuleConstants &frontLeftConstants,
+            const SwerveModuleConstants &frontRightConstants,
+            const SwerveModuleConstants &backLeftConstants,
+            const SwerveModuleConstants &backRightConstants,
+            units::meters_per_second_squared_t maxTranslationAcceleration =
+                kDefaultMaxTranslationAcceleration,
+            units::radians_per_second_squared_t maxAngularAcceleration =
+                kDefaultMaxAngularAcceleration);
 
         // === SYSTEM IDENTIFICATION (SYSID) METHODS ===
         // These help automatically tune PID controllers
@@ -522,17 +522,17 @@ namespace nfr
                                          bool fieldRelative = true);
 
         /**
-            * @brief Creates command to path to a specific pose
-            * This command uses PathPlanner to generate a smooth path from the
-            * robot's current position to the target pose, then follows that path
-            * using closed-loop control.
-            * @param targetPose Desired end position and orientation
-            * @param overrideTranslationAcceleration Optional max translation
-            * acceleration (m/s²); if not provided, uses default
-            * @param overrideAngularAcceleration Optional max angular
-            * acceleration (rad/s²); if not provided, uses default
-            * @return Command that drives the robot to the target pose
-            */
+         * @brief Creates command to path to a specific pose
+         * This command uses PathPlanner to generate a smooth path from the
+         * robot's current position to the target pose, then follows that path
+         * using closed-loop control.
+         * @param targetPose Desired end position and orientation
+         * @param overrideTranslationAcceleration Optional max translation
+         * acceleration (m/s²); if not provided, uses default
+         * @param overrideAngularAcceleration Optional max angular
+         * acceleration (rad/s²); if not provided, uses default
+         * @return Command that drives the robot to the target pose
+         */
         frc2::CommandPtr PathToPose(
             frc::Pose2d targetPose,
             std::optional<units::meters_per_second_squared_t>
