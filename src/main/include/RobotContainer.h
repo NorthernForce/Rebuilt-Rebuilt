@@ -7,8 +7,11 @@
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
-
-#include "subsystems/drive/SwerveDrive.h"
+#include <subsystems/drive/SwerveDrive.h>
+#ifdef PI
+#undef PI
+#endif
+#include "subsystems/superstructure/Superstructure.h"
 
 /**
  * @brief Container class that organizes all robot subsystems and controller
@@ -99,4 +102,22 @@ private:
      * first controller connected to the driver station.
      */
     frc2::CommandXboxController driverController{0};
+
+    /**
+     * @brief Xbox controller for manipulator input
+     *
+     * CommandXboxController integrates with the command system, allowing us to
+     * easily bind buttons to commands. The number (1) indicates this is the
+     * second controller connected to the driver station.
+     */
+    frc2::CommandXboxController manipulatorController{0};
+
+    /**
+     * @brief Our robot's superstructure subsystem
+     *
+     * This superstructure consists of two elevator stages that can be
+     * individually controlled, allowing us to elevate the game pieces to any
+     * level we want.
+     */
+    Superstructure m_superstructure;
 };

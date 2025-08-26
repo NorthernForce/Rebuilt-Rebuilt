@@ -59,6 +59,21 @@ void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
 }
 
 RobotContainer::RobotContainer()
+    : m_superstructure(
+          make_shared<Elevator>(string("Inner Elevator"),
+                                make_shared<ElevatorIOTalonFX>(
+                                    InnerElevatorConstants::kId,
+                                    InnerElevatorConstants::kConstants),
+                                make_shared<ElevatorSensorIOLimitSwitch>(
+                                    InnerElevatorConstants::kSensorId),
+                                UniversalElevatorConstants::kTolerance),
+          make_shared<Elevator>(string("Outer Elevator"),
+                                make_shared<ElevatorIOTalonFX>(
+                                    OuterElevatorConstants::kId,
+                                    OuterElevatorConstants::kConstants),
+                                make_shared<ElevatorSensorIOLimitSwitch>(
+                                    OuterElevatorConstants::kSensorId),
+                                UniversalElevatorConstants::kTolerance))
 {
     // Create our swerve drivetrain with all its configuration
     // This big constructor call sets up:
@@ -155,6 +170,29 @@ void RobotContainer::ConfigureBindings()
     // station
     frc::SmartDashboard::PutData("Reset Swerve Modules",
                                  resetModulesCommand.value().get());
+
+    m_superstructure.SetDefaultCommand(m_superstructure.GetManualControlCommand(
+        ProcessInput([&]() { return manipulatorController.GetRightY(); }),
+        ProcessInput([&]() { return manipulatorController.GetLeftY(); })));
+    manipulatorController.POVLeft().WhileTrue(
+        m_superstructure.GetGoToPositionCommand(m_superstructure.GetPresetState(
+            UniversalElevatorConstants::SuperstructurePresets::L1)));
+    manipulatorController.POVUp().WhileTrue(
+        m_superstructure.GetGoToPositionCommand(m_superstructure.GetPresetState(
+            UniversalElevatorConstants::SuperstructurePresets::L2)));
+    manipulatorController.POVRight().WhileTrue(
+        m_superstructure.GetGoToPositionCommand(m_superstructure.GetPresetState(
+            UniversalElevatorConstants::SuperstructurePresets::L3)));
+    manipulatorController.POVDown().WhileTrue(
+        m_superstructure.GetGoToPositionCommand(m_superstructure.GetPresetState(
+            UniversalElevatorConstants::SuperstructurePresets::L4)));
+    manipulatorController.A().WhileTrue(
+        m_superstructure.GetGoToPositionCommand(m_superstructure.GetPresetState(
+            UniversalElevatorConstants::SuperstructurePresets::CORAL_STATION)));
+    manipulatorController.Start().WhileTrue(m_superstructure.GetHomingCommand(
+        UniversalElevatorConstants::kHomingSpeed));
+    driverController.Start().WhileTrue(m_superstructure.GetHomingCommand(
+        UniversalElevatorConstants::kHomingSpeed));
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
@@ -174,9 +212,7 @@ void RobotContainer::Log(const nfr::LogContext& log) const
     // Log important robot data for debugging and analysis
     // Match time helps correlate log data with what happened during the match
     log["match_time"] << frc::DriverStation::GetMatchTime();
-
-    // Log drivetrain state (position, velocity, motor currents, etc.)
-    // The drivetrain Log method will record detailed state information
+    log["superstructure"] << m_superstructure;
     log["drive"] << drive;
 
     // AdvantageScope 3D robot visualization
