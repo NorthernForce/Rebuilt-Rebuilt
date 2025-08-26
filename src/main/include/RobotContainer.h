@@ -8,6 +8,9 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
 
+#include <memory>
+
+#include "subsystems/dashboard/Dashboard.h"
 #include "subsystems/drive/SwerveDrive.h"
 
 /**
@@ -99,4 +102,5 @@ private:
      * first controller connected to the driver station.
      */
     frc2::CommandXboxController driverController{0};
+    std::unique_ptr<nfr::Dashboard> dashboard;
 };

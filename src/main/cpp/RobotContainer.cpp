@@ -8,6 +8,8 @@
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/CommandXboxController.h>
 
+#include <memory>
+
 #include "constants/Constants.h"
 #include "frc/MathUtil.h"
 #include "frc/Preferences.h"
@@ -81,6 +83,10 @@ RobotContainer::RobotContainer()
 
     // Set up controller bindings and default commands
     ConfigureBindings();
+    dashboard = std::make_unique<nfr::Dashboard>(
+        std::filesystem::path(frc::filesystem::GetDeployDirectory()) /
+            DashboardConstants::kDistSubdirectory,
+        DashboardConstants::kPort);
 }
 
 /**
