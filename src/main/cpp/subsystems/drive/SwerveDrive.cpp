@@ -5,8 +5,6 @@
 #include <frc/MathUtil.h>
 #include <frc/RobotController.h>
 
-#include "logging/LogTypes.h"
-
 using namespace nfr;
 using namespace ctre::phoenix6;
 using namespace ctre::phoenix6::swerve;

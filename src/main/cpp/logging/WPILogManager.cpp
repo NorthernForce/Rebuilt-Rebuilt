@@ -2,6 +2,9 @@
 #include <frc/DriverStation.h>
 #include <logging/WPILogManager.h>
 
+#include <string_view>
+#include <unordered_map>
+
 using namespace nfr;
 using namespace wpi::log;
 using namespace std;
@@ -12,11 +15,11 @@ WPILogManager::WPILogManager() : logRef(frc::DataLogManager::GetLog())
     DriverStation::StartDataLog(logRef);
 }
 
-void WPILogManager::Log(const string& key, double value)
+void WPILogManager::Log(const string_view& key, double value)
 {
-    if (!entries.contains(key))
+    if (!entries.contains(string(key)))
     {
-        entries[key] = DoubleLogEntry(logRef, key);
+        entries[string(key)] = DoubleLogEntry(logRef, key);
     }
     std::visit(
         [&](auto& entry)
@@ -28,18 +31,19 @@ void WPILogManager::Log(const string& key, double value)
             }
             else
             {
-                throw runtime_error("Log entry type mismatch for key: " + key +
-                                    ". Expected double, got different type.");
+                throw runtime_error(
+                    "Log entry type mismatch for key: " + string(key) +
+                    ". Expected double, got different type.");
             }
         },
-        entries[key]);
+        entries[string(key)]);
 }
 
-void WPILogManager::Log(const string& key, long value)
+void WPILogManager::Log(const string_view& key, long value)
 {
-    if (!entries.contains(key))
+    if (!entries.contains(string(key)))
     {
-        entries[key] = IntegerLogEntry(logRef, key);
+        entries[string(key)] = IntegerLogEntry(logRef, key);
     }
     std::visit(
         [&](auto& entry)
@@ -51,18 +55,19 @@ void WPILogManager::Log(const string& key, long value)
             }
             else
             {
-                throw runtime_error("Log entry type mismatch for key: " + key +
-                                    ". Expected integer, got different type.");
+                throw runtime_error(
+                    "Log entry type mismatch for key: " + string(key) +
+                    ". Expected integer, got different type.");
             }
         },
-        entries[key]);
+        entries[string(key)]);
 }
 
-void WPILogManager::Log(const string& key, bool value)
+void WPILogManager::Log(const string_view& key, bool value)
 {
-    if (!entries.contains(key))
+    if (!entries.contains(string(key)))
     {
-        entries[key] = BooleanLogEntry(logRef, key);
+        entries[string(key)] = BooleanLogEntry(logRef, key);
     }
     std::visit(
         [&](auto& entry)
@@ -74,18 +79,19 @@ void WPILogManager::Log(const string& key, bool value)
             }
             else
             {
-                throw runtime_error("Log entry type mismatch for key: " + key +
-                                    ". Expected boolean, got different type.");
+                throw runtime_error(
+                    "Log entry type mismatch for key: " + string(key) +
+                    ". Expected boolean, got different type.");
             }
         },
-        entries[key]);
+        entries[string(key)]);
 }
 
-void WPILogManager::Log(const string& key, const string& value)
+void WPILogManager::Log(const string_view& key, const string_view& value)
 {
-    if (!entries.contains(key))
+    if (!entries.contains(string(key)))
     {
-        entries[key] = StringLogEntry(logRef, key);
+        entries[string(key)] = StringLogEntry(logRef, key);
     }
     std::visit(
         [&](auto& entry)
@@ -97,18 +103,19 @@ void WPILogManager::Log(const string& key, const string& value)
             }
             else
             {
-                throw runtime_error("Log entry type mismatch for key: " + key +
-                                    ". Expected string, got different type.");
+                throw runtime_error(
+                    "Log entry type mismatch for key: " + string(key) +
+                    ". Expected string, got different type.");
             }
         },
-        entries[key]);
+        entries[string(key)]);
 }
 
-void WPILogManager::Log(const string& key, std::span<double> values)
+void WPILogManager::Log(const string_view& key, std::span<double> values)
 {
-    if (!entries.contains(key))
+    if (!entries.contains(string(key)))
     {
-        entries[key] = DoubleArrayLogEntry(logRef, key);
+        entries[string(key)] = DoubleArrayLogEntry(logRef, key);
     }
     std::visit(
         [&](auto& entry)
@@ -121,18 +128,18 @@ void WPILogManager::Log(const string& key, std::span<double> values)
             else
             {
                 throw runtime_error(
-                    "Log entry type mismatch for key: " + key +
+                    "Log entry type mismatch for key: " + string(key) +
                     ". Expected double array, got different type.");
             }
         },
-        entries[key]);
+        entries[string(key)]);
 }
 
-void WPILogManager::Log(const string& key, std::span<long> values)
+void WPILogManager::Log(const string_view& key, std::span<long> values)
 {
-    if (!entries.contains(key))
+    if (!entries.contains(string(key)))
     {
-        entries[key] = IntegerArrayLogEntry(logRef, key);
+        entries[string(key)] = IntegerArrayLogEntry(logRef, key);
     }
     std::visit(
         [&](auto& entry)
@@ -146,18 +153,18 @@ void WPILogManager::Log(const string& key, std::span<long> values)
             else
             {
                 throw runtime_error(
-                    "Log entry type mismatch for key: " + key +
+                    "Log entry type mismatch for key: " + string(key) +
                     ". Expected integer array, got different type.");
             }
         },
-        entries[key]);
+        entries[string(key)]);
 }
 
-void WPILogManager::Log(const string& key, std::span<bool> values)
+void WPILogManager::Log(const string_view& key, std::span<bool> values)
 {
-    if (!entries.contains(key))
+    if (!entries.contains(string(key)))
     {
-        entries[key] = BooleanArrayLogEntry(logRef, key);
+        entries[string(key)] = BooleanArrayLogEntry(logRef, key);
     }
     std::visit(
         [&](auto& entry)
@@ -170,18 +177,19 @@ void WPILogManager::Log(const string& key, std::span<bool> values)
             else
             {
                 throw runtime_error(
-                    "Log entry type mismatch for key: " + key +
+                    "Log entry type mismatch for key: " + string(key) +
                     ". Expected boolean array, got different type.");
             }
         },
-        entries[key]);
+        entries[string(key)]);
 }
 
-void WPILogManager::Log(const string& key, std::span<std::string> values)
+void WPILogManager::Log(const string_view& key,
+                        std::span<std::string_view> values)
 {
-    if (!entries.contains(key))
+    if (!entries.contains(string(key)))
     {
-        entries[key] = StringArrayLogEntry(logRef, key);
+        entries[string(key)] = StringArrayLogEntry(logRef, key);
     }
     std::visit(
         [&](auto& entry)
@@ -194,9 +202,9 @@ void WPILogManager::Log(const string& key, std::span<std::string> values)
             else
             {
                 throw runtime_error(
-                    "Log entry type mismatch for key: " + key +
+                    "Log entry type mismatch for key: " + string(key) +
                     ". Expected string array, got different type.");
             }
         },
-        entries[key]);
+        entries[string(key)]);
 }
