@@ -247,6 +247,20 @@ namespace nfr
     }
 
     template <typename T>
+    concept IsStructArray = requires(T t) {
+        requires wpi::StructSerializable<typename T::value_type>;
+        { std::span(t) };  // Use span constructor from pointer + size
+    };
+
+    template <typename T>
+        requires IsStructArray<T>
+    inline const LogContext& operator<<(const LogContext& logContext, T values)
+    {
+        logContext.GetLogger()->Log(logContext.GetKey(), std::span(values));
+        return logContext;
+    }
+
+    template <typename T>
         requires units::traits::is_unit_t_v<T>
     inline const LogContext& operator<<(const LogContext& logContext,
                                         const T& t)
