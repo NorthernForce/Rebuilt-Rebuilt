@@ -7,7 +7,7 @@
 using namespace nfr;
 using namespace std;
 
-LogContext::LogContext(const string& key, Logger* logger)
+LogContext::LogContext(const string_view& key, Logger* logger)
     : key(key), logger(logger)
 {
 }
@@ -30,7 +30,7 @@ const LogContext& LogContext::operator<<(bool value) const
     return *this;
 }
 
-const LogContext& LogContext::operator<<(const string& value) const
+const LogContext& LogContext::operator<<(const string_view& value) const
 {
     logger->Log(key, value);
     return *this;
@@ -54,7 +54,7 @@ const LogContext& LogContext::operator<<(span<bool> values) const
     return *this;
 }
 
-const LogContext& LogContext::operator<<(span<string> values) const
+const LogContext& LogContext::operator<<(span<string_view> values) const
 {
     logger->Log(key, values);
     return *this;
@@ -70,79 +70,123 @@ Logger::Logger()
       // Initialize tee streambufs with original and log streams
       cout_tee_buf_(original_cout_buf_, cout_log_stream_),
       cerr_tee_buf_(original_cerr_buf_, cerr_log_stream_)
+
 {
     // Set cout and cerr to use our tee streambufs
     std::cout.rdbuf(&cout_tee_buf_);
     std::cerr.rdbuf(&cerr_tee_buf_);
 }
 
-void Logger::Log(const string& key, double value)
+void Logger::Log(const string_view& key, double value)
 {
-    for (auto& output : outputs)
+    if (wpi_log_manager_)
     {
-        output->Log(key, value);
+        wpi_log_manager_->Log(key, value);
+    }
+    if (nt_log_manager_)
+    {
+        nt_log_manager_->Log(key, value);
     }
 }
 
-void Logger::Log(const string& key, long value)
+void Logger::Log(const string_view& key, long value)
 {
-    for (auto& output : outputs)
+    if (wpi_log_manager_)
     {
-        output->Log(key, value);
+        wpi_log_manager_->Log(key, value);
+    }
+    if (nt_log_manager_)
+    {
+        nt_log_manager_->Log(key, value);
     }
 }
 
-void Logger::Log(const string& key, bool value)
+void Logger::Log(const string_view& key, bool value)
 {
-    for (auto& output : outputs)
+    if (wpi_log_manager_)
     {
-        output->Log(key, value);
+        wpi_log_manager_->Log(key, value);
+    }
+    if (nt_log_manager_)
+    {
+        nt_log_manager_->Log(key, value);
     }
 }
 
-void Logger::Log(const string& key, const string& value)
+void Logger::Log(const string_view& key, const string_view& value)
 {
-    for (auto& output : outputs)
+    if (wpi_log_manager_)
     {
-        output->Log(key, value);
+        wpi_log_manager_->Log(key, value);
+    }
+    if (nt_log_manager_)
+    {
+        nt_log_manager_->Log(key, value);
     }
 }
 
-void Logger::Log(const string& key, span<double> values)
+void Logger::Log(const string_view& key, span<double> values)
 {
-    for (auto& output : outputs)
+    if (wpi_log_manager_)
     {
-        output->Log(key, values);
+        wpi_log_manager_->Log(key, values);
+    }
+    if (nt_log_manager_)
+    {
+        nt_log_manager_->Log(key, values);
     }
 }
 
-void Logger::Log(const string& key, span<long> values)
+void Logger::Log(const string_view& key, span<long> values)
 {
-    for (auto& output : outputs)
+    if (wpi_log_manager_)
     {
-        output->Log(key, values);
+        wpi_log_manager_->Log(key, values);
+    }
+    if (nt_log_manager_)
+    {
+        nt_log_manager_->Log(key, values);
     }
 }
 
-void Logger::Log(const string& key, span<bool> values)
+void Logger::Log(const string_view& key, span<bool> values)
 {
-    for (auto& output : outputs)
+    if (wpi_log_manager_)
     {
-        output->Log(key, values);
+        wpi_log_manager_->Log(key, values);
+    }
+    if (nt_log_manager_)
+    {
+        nt_log_manager_->Log(key, values);
     }
 }
 
-void Logger::Log(const string& key, span<string> values)
+void Logger::Log(const string_view& key, span<string_view> values)
 {
-    for (auto& output : outputs)
+    if (wpi_log_manager_)
     {
-        output->Log(key, values);
+        wpi_log_manager_->Log(key, values);
+    }
+    if (nt_log_manager_)
+    {
+        nt_log_manager_->Log(key, values);
     }
 }
 
-void Logger::AddOutput(shared_ptr<ILogOutput> output)
+void Logger::EnableNTLogging(const string_view& tableName)
 {
-    outputs.push_back(std::move(output));
+    if (!nt_log_manager_)
+    {
+        nt_log_manager_ = std::make_unique<NTLogManager>(tableName);
+    }
+}
+
+void Logger::EnableWPILogging()
+{
+    if (!wpi_log_manager_)
+    {
+        wpi_log_manager_ = std::make_unique<WPILogManager>();
+    }
 }
 
 void Logger::Flush()

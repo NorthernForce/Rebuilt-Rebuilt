@@ -27,14 +27,16 @@
 
 #pragma once
 
-#include <logging/LogManager.h>
-
 #include <memory>
 #include <span>
 #include <sstream>
 #include <streambuf>  // Include for std::streambuf
 #include <string>
-#include <vector>
+
+#include "logging/NTLogManager.h"
+#include "logging/WPILogManager.h"
+#include "units/base.h"
+#include "wpi/struct/Struct.h"
 
 namespace nfr
 {
@@ -113,15 +115,7 @@ namespace nfr
     class LogContext
     {
     public:
-        /**
-         * @brief Constructor - creates a log context for a specific key path
-         * @param key The hierarchical key (like "robot/drivetrain/speed")
-         * @param logger Pointer to the logger that will handle the actual
-         * output
-         */
-        LogContext(const std::string& key, Logger* logger);
-
-        // Prevent copying (for performance - LogContext objects can be large)
+        LogContext(const std::string_view& key, Logger* logger);
         LogContext(const LogContext&) = delete;
         LogContext& operator=(const LogContext&) = delete;
 
@@ -146,14 +140,7 @@ namespace nfr
         }
         /** @brief Log a boolean value (true/false) */
         const LogContext& operator<<(bool value) const;
-
-        /** @brief Log a string value */
-        const LogContext& operator<<(const std::string& value) const;
-
-        // === ARRAY LOGGING ===
-        // These handle arrays/lists of values efficiently
-
-        /** @brief Log an array of decimal numbers */
+        const LogContext& operator<<(const std::string_view& value) const;
         const LogContext& operator<<(std::span<double> values) const;
 
         /** @brief Log an array of integers */
@@ -161,19 +148,7 @@ namespace nfr
 
         /** @brief Log an array of boolean values */
         const LogContext& operator<<(std::span<bool> values) const;
-
-        /** @brief Log an array of strings */
-        const LogContext& operator<<(std::span<std::string> values) const;
-
-        // === TEMPLATE OPERATORS FOR CUSTOM TYPES ===
-        // These use C++ concepts to determine how to log different object types
-
-        /**
-         * @brief Log objects that have a standalone Log() function
-         *
-         * For types like Pose2d where we define: `void Log(LogContext&, const
-         * Pose2d&)`
-         */
+        const LogContext& operator<<(std::span<std::string_view> values) const;
         template <typename T>
             requires ExistsLogMethodFor<T>
         const LogContext& operator<<(const T& value) const
@@ -244,6 +219,16 @@ namespace nfr
             return LogContext{key + "/" + std::string(newKey), logger};
         }
 
+        Logger* GetLogger() const
+        {
+            return logger;
+        }
+
+        std::string GetKey() const
+        {
+            return key;
+        }
+
     private:
         std::string key;
         Logger* logger;
@@ -307,15 +292,43 @@ namespace nfr
         // Delete copy constructor and assignment operator
         Logger(const Logger&) = delete;
         Logger& operator=(const Logger&) = delete;
-        void Log(const std::string& key, double value);
-        void Log(const std::string& key, long value);
-        void Log(const std::string& key, bool value);
-        void Log(const std::string& key, const std::string& value);
-        void Log(const std::string& key, std::span<double> values);
-        void Log(const std::string& key, std::span<long> values);
-        void Log(const std::string& key, std::span<bool> values);
-        void Log(const std::string& key, std::span<std::string> values);
-        void AddOutput(std::shared_ptr<ILogOutput> output);
+        void Log(const std::string_view& key, double value);
+        void Log(const std::string_view& key, long value);
+        void Log(const std::string_view& key, bool value);
+        void Log(const std::string_view& key, const std::string_view& value);
+        void Log(const std::string_view& key, std::span<double> values);
+        void Log(const std::string_view& key, std::span<long> values);
+        void Log(const std::string_view& key, std::span<bool> values);
+        void Log(const std::string_view& key,
+                 std::span<std::string_view> values);
+        template <typename T, typename... I>
+            requires wpi::StructSerializable<T, I...>
+        void Log(const std::string_view& key, const T& value)
+        {
+            if (wpi_log_manager_)
+            {
+                wpi_log_manager_->Log(key, value);
+            }
+            if (nt_log_manager_)
+            {
+                nt_log_manager_->Log(key, value);
+            }
+        }
+        template <typename T, typename... I>
+            requires wpi::StructSerializable<T, I...>
+        void Log(const std::string_view& key, std::span<T> values)
+        {
+            if (wpi_log_manager_)
+            {
+                wpi_log_manager_->Log(key, values);
+            }
+            if (nt_log_manager_)
+            {
+                nt_log_manager_->Log(key, values);
+            }
+        }
+        void EnableNTLogging(const std::string_view& tableName = "logs");
+        void EnableWPILogging();
         LogContext operator[](std::string_view key)
         {
             return LogContext{std::string(key), this};
@@ -323,7 +336,8 @@ namespace nfr
         void Flush();
 
     private:
-        std::vector<std::shared_ptr<ILogOutput>> outputs;
+        std::unique_ptr<NTLogManager> nt_log_manager_{nullptr};
+        std::unique_ptr<WPILogManager> wpi_log_manager_{nullptr};
 
         // Store original streambufs
         std::streambuf* original_cout_buf_;
@@ -337,6 +351,64 @@ namespace nfr
         TeeStreamBuf cout_tee_buf_;
         TeeStreamBuf cerr_tee_buf_;
     };
+
+    template <typename T>
+        requires wpi::StructSerializable<T>
+    inline const LogContext& operator<<(const LogContext& logContext,
+                                        const T& t)
+    {
+        logContext.GetLogger()->Log(logContext.GetKey(), t);
+        return logContext;
+    }
+
+    template <typename T>
+        requires wpi::StructSerializable<T>
+    inline const LogContext& operator<<(const LogContext& logContext,
+                                        std::span<T> values)
+    {
+        logContext.GetLogger()->Log(logContext.GetKey(), values);
+        return logContext;
+    }
+
+    template <typename T>
+    concept IsStructArray = requires(T t) {
+        requires wpi::StructSerializable<typename T::value_type>;
+        { std::span(t) };  // Use span constructor from pointer + size
+    };
+
+    template <typename T>
+        requires IsStructArray<T>
+    inline const LogContext& operator<<(const LogContext& logContext, T values)
+    {
+        logContext.GetLogger()->Log(logContext.GetKey(), std::span(values));
+        return logContext;
+    }
+
+    template <typename T>
+        requires units::traits::is_unit_t_v<T>
+    inline const LogContext& operator<<(const LogContext& logContext,
+                                        const T& t)
+    {
+        logContext.GetLogger()->Log(logContext.GetKey(),
+                                    static_cast<double>(t));
+        return logContext;
+    }
+
+    template <typename T>
+        requires units::traits::is_unit_t_v<T>
+    inline const LogContext& operator<<(const LogContext& logContext,
+                                        std::span<T> values)
+    {
+        std::vector<double> double_values;
+        double_values.reserve(values.size());
+        for (const auto& v : values)
+        {
+            double_values.push_back(static_cast<double>(v));
+        }
+        logContext.GetLogger()->Log(logContext.GetKey(),
+                                    std::span<double>{double_values});
+        return logContext;
+    }
 
     extern Logger logger;  // Global logger instance
 }  // namespace nfr
