@@ -6,10 +6,12 @@
 
 #include <frc/TimedRobot.h>
 #include <frc2/command/CommandPtr.h>
+#include <frc2/command/CommandScheduler.h>
 
+#include <memory>
 #include <optional>
 
-#include "RobotContainer.h"
+#include "util/NFRRobotContainer.h"
 
 /**
  * @brief Main robot class that manages all robot operations
@@ -40,6 +42,9 @@ public:
      * logging system to help debug problems during matches and testing.
      */
     Robot();
+
+    /** @brief Runs once when the robot is powered on */
+    void RobotInit() override;
 
     /**
      * @brief Runs continuously every 20ms regardless of robot mode
@@ -123,5 +128,5 @@ private:
      * shooters, etc.), and sets up which controller buttons do what.
      * Think of it as the "brain" that connects everything together.
      */
-    RobotContainer m_container;
+    std::shared_ptr<NFRRobotContainer> m_container;
 };

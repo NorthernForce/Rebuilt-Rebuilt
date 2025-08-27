@@ -4,6 +4,10 @@
 
 #include "Robot.h"
 
+#include "RalphContainer.h"
+#include "util/NFRRobotChooser.h"
+
+using namespace std;
 #include <frc/DriverStation.h>
 #include <frc2/command/CommandScheduler.h>
 
@@ -47,12 +51,22 @@ Robot::Robot()
     nfr::logger["git"] << getGitMetadata();
 }
 
+void Robot::RobotInit()
+{
+    map<string, shared_ptr<NFRRobotContainer>> robots = {
+        {"023C3578", make_shared<RalphContainer>()}};
+    NFRRobotChooser chooser =
+        NFRRobotChooser(make_shared<RalphContainer>(), robots);
+    m_container = chooser.GetNFRRobotContainer();
+}
+
 void Robot::RobotPeriodic()
 {
     // Run the command scheduler - this manages all active commands
     // Commands are like "drive forward", "shoot ball", etc.
     // The scheduler makes sure they run properly and don't conflict
     frc2::CommandScheduler::GetInstance().Run();
+    m_container->RobotPeriodic();
 
     // Log current robot state for debugging and analysis
     // This includes drivetrain position, sensor values, etc.
@@ -65,12 +79,14 @@ void Robot::RobotPeriodic()
 
 void Robot::DisabledInit()
 {
+    m_container->DisabledInit();
     // Robot just entered disabled mode - currently nothing special to do
     // This is where you'd add code that should run once when disabling
 }
 
 void Robot::DisabledPeriodic()
 {
+    m_container->DisabledPeriodic();
     // Robot is disabled - currently nothing special to do
     // This runs every 20ms while disabled
     // You might use this to display diagnostic info on dashboard
@@ -78,6 +94,7 @@ void Robot::DisabledPeriodic()
 
 void Robot::DisabledExit()
 {
+    m_container->DisabledExit();
     // Robot is about to leave disabled mode - currently nothing special to do
     // This is where you'd add code to prepare for enabling
 }
@@ -87,19 +104,22 @@ void Robot::AutonomousInit()
     // Get the autonomous command from our container
     // This is the pre-programmed sequence the robot should follow
     // during the 15-second autonomous period
-    m_autonomousCommand = m_container.GetAutonomousCommand();
+    m_autonomousCommand = m_container->GetAutonomousCommand();
 
     // If we have an autonomous command, start it running
     if (m_autonomousCommand)
     {
         m_autonomousCommand->Schedule();
     }
+
+    m_container->AutonomousInit();
     // Note: If no autonomous command is set, robot will just sit still
     // This is safer than having a default that might not work
 }
 
 void Robot::AutonomousPeriodic()
 {
+    m_container->AutonomousPeriodic();
     // Autonomous periodic - currently nothing special to do
     // The autonomous command is running automatically via the scheduler
     // in RobotPeriodic(), so we don't need to do anything here
@@ -107,6 +127,7 @@ void Robot::AutonomousPeriodic()
 
 void Robot::AutonomousExit()
 {
+    m_container->AutonomousExit();
     // Autonomous period is ending - currently nothing special to do
     // The autonomous command will be cancelled automatically in TeleopInit()
 }
@@ -119,11 +140,13 @@ void Robot::TeleopInit()
     {
         m_autonomousCommand->Cancel();
     }
+    m_container->TeleopInit();
     // After this, the default commands (like joystick driving) will take over
 }
 
 void Robot::TeleopPeriodic()
 {
+    m_container->TeleopPeriodic();
     // Teleop periodic - currently nothing special to do
     // Driver controls are handled automatically by the command scheduler
     // All the driving, button actions, etc. are set up in RobotContainer
@@ -131,6 +154,7 @@ void Robot::TeleopPeriodic()
 
 void Robot::TeleopExit()
 {
+    m_container->TeleopExit();
     // Teleop period is ending - currently nothing special to do
     // This might be used to save settings or prepare for next mode
 }
@@ -140,10 +164,12 @@ void Robot::TestInit()
     // Cancel all commands for safety during test mode
     // Test mode should only run specific, controlled tests
     frc2::CommandScheduler::GetInstance().CancelAll();
+    m_container->TestInit();
 }
 
 void Robot::TestPeriodic()
 {
+    m_container->TestPeriodic();
     // Test periodic - currently nothing special to do
     // In test mode, you might run specific tests like:
     // - Individual motor tests
@@ -153,6 +179,7 @@ void Robot::TestPeriodic()
 
 void Robot::TestExit()
 {
+    m_container->TestExit();
     // Test mode is ending - currently nothing special to do
     // This is where you might save test results or reset systems
 }

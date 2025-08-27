@@ -8,7 +8,7 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
 
-#include "subsystems/drive/SwerveDrive.h"
+#include "frc2/command/PrintCommand.h"
 
 /**
  * @brief Container class that organizes all robot subsystems and controller
@@ -24,7 +24,7 @@
  * organized and connected. Think of it as the main control panel that connects
  * driver inputs to robot actions.
  */
-class RobotContainer
+class NFRRobotContainer
 {
 public:
     /**
@@ -33,7 +33,24 @@ public:
      * This runs once when the robot starts up. It creates our swerve drivetrain
      * and configures which buttons on the controller do what actions.
      */
-    RobotContainer();
+    NFRRobotContainer() = default;
+
+    virtual ~NFRRobotContainer() = default;
+
+    virtual void RobotInit() {};
+    virtual void RobotPeriodic() {};
+    virtual void DisabledInit() {};
+    virtual void DisabledPeriodic() {};
+    virtual void DisabledExit() {};
+    virtual void AutonomousInit() {};
+    virtual void AutonomousPeriodic() {};
+    virtual void AutonomousExit() {};
+    virtual void TeleopInit() {};
+    virtual void TeleopPeriodic() {};
+    virtual void TeleopExit() {};
+    virtual void TestInit() {};
+    virtual void TestPeriodic() {};
+    virtual void TestExit() {};
 
     /**
      * @brief Gets the command to run during autonomous period
@@ -45,7 +62,10 @@ public:
      *
      * @return CommandPtr to run during autonomous
      */
-    frc2::CommandPtr GetAutonomousCommand();
+    virtual frc2::CommandPtr GetAutonomousCommand()
+    {
+        return frc2::PrintCommand("Override me please").ToPtr();
+    }
 
     /**
      * @brief Logs current robot state for debugging and analysis
@@ -56,10 +76,11 @@ public:
      *
      * @param log The logging context to write data to
      */
-    void Log(const nfr::LogContext &log) const;
+    virtual void Log(const nfr::LogContext &log) const = 0;
 
 private:
-    void LogRobotState(const nfr::LogContext &log) const;
+    virtual void LogRobotState(const nfr::LogContext &log) const = 0;
+
     /**
      * @brief Sets up controller button bindings and default commands
      *
@@ -68,35 +89,5 @@ private:
      * - Which buttons trigger specific actions
      * - Default commands that run when no other commands are active
      */
-    void ConfigureBindings();
-
-    /**
-     * @brief Our robot's swerve drivetrain subsystem
-     *
-     * Swerve drive allows the robot to move in any direction instantly without
-     * turning first. Each wheel can rotate and steer independently, giving
-     * incredible maneuverability compared to traditional tank drive.
-     *
-     * Uses std::unique_ptr for automatic memory management - the pointer owns
-     * the SwerveDrive object and will automatically delete it when destroyed.
-     */
-    std::unique_ptr<nfr::SwerveDrive> drive{nullptr};
-
-    /**
-     * @brief Command to reset swerve module positions
-     *
-     * Swerve modules need periodic calibration to know their absolute position.
-     * This command resets their encoders to known good positions.
-     * std::optional means this may or may not contain a value.
-     */
-    std::optional<frc2::CommandPtr> resetModulesCommand;
-
-    /**
-     * @brief Xbox controller for driver input
-     *
-     * CommandXboxController integrates with the command system, allowing us to
-     * easily bind buttons to commands. The number (0) indicates this is the
-     * first controller connected to the driver station.
-     */
-    frc2::CommandXboxController driverController{0};
+    virtual void ConfigureBindings() = 0;
 };
