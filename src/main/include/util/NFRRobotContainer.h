@@ -7,6 +7,7 @@
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
+
 #include "frc2/command/PrintCommand.h"
 
 /**
@@ -61,7 +62,10 @@ public:
      *
      * @return CommandPtr to run during autonomous
      */
-    virtual frc2::CommandPtr GetAutonomousCommand() { return frc2::PrintCommand("Override me please").ToPtr(); }
+    virtual frc2::CommandPtr GetAutonomousCommand()
+    {
+        return frc2::PrintCommand("Override me please").ToPtr();
+    }
 
     /**
      * @brief Logs current robot state for debugging and analysis

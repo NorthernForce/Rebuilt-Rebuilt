@@ -1,22 +1,24 @@
 #pragma once
 
-#include <units/angle.h>
 #include <frc/Preferences.h>
+#include <units/angle.h>
+
 #include <array>
+
 #include "frc/MathUtil.h"
 #include "frc/geometry/Rotation2d.h"
 
 /**
-* @brief Loads swerve module steering offsets from robot preferences
-*
-* Swerve modules need to know their absolute angular position to steer
-* correctly. These offsets compensate for mechanical differences and are
-* determined through calibration. They're stored in robot preferences so they
-* persist between reboots.
-*
-* @return Array of 4 rotation offsets [FrontLeft, FrontRight, BackLeft,
-* BackRight]
-*/
+ * @brief Loads swerve module steering offsets from robot preferences
+ *
+ * Swerve modules need to know their absolute angular position to steer
+ * correctly. These offsets compensate for mechanical differences and are
+ * determined through calibration. They're stored in robot preferences so they
+ * persist between reboots.
+ *
+ * @return Array of 4 rotation offsets [FrontLeft, FrontRight, BackLeft,
+ * BackRight]
+ */
 inline std::array<frc::Rotation2d, 4> getModuleOffsets()
 {
     return {
@@ -27,13 +29,13 @@ inline std::array<frc::Rotation2d, 4> getModuleOffsets()
 }
 
 /**
-* @brief Saves swerve module steering offsets to robot preferences
-*
-* After calibrating the swerve modules, we save the offsets so they persist
-* between robot reboots. This avoids having to recalibrate every time.
-*
-* @param offsets Array of 4 rotation offsets to save
-*/
+ * @brief Saves swerve module steering offsets to robot preferences
+ *
+ * After calibrating the swerve modules, we save the offsets so they persist
+ * between robot reboots. This avoids having to recalibrate every time.
+ *
+ * @param offsets Array of 4 rotation offsets to save
+ */
 inline void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
 {
     frc::Preferences::SetDouble("FrontLeftOffset",

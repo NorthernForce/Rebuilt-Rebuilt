@@ -35,7 +35,7 @@ public:
      *
      * @param log The logging context to write data to
      */
-    void Log(const nfr::LogContext &log) const override;
+    void Log(const nfr::LogContext& log) const override;
 
 private:
     void LogRobotState(const nfr::LogContext& log) const override;
