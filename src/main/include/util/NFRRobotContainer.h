@@ -74,6 +74,7 @@ public:
     virtual void Log(const nfr::LogContext &log) const;
 
 private:
+    void LogRobotState(const nfr::LogContext &log) const;
     /**
      * @brief Sets up controller button bindings and default commands
      *

@@ -11,10 +11,9 @@ using namespace std;
 #include <frc/DriverStation.h>
 #include <frc2/command/CommandScheduler.h>
 
-#include "logging/LogTypes.h"
+#include <iostream>
+
 #include "logging/Logger.h"
-#include "logging/NTLogManager.h"
-#include "logging/WPILogManager.h"
 #include "util/GitMetadataLoader.h"
 
 /**
@@ -34,15 +33,17 @@ bool isCompetition()
 
 Robot::Robot()
 {
-    // Set up our logging system to help debug problems
-    // WPILogManager saves logs to files on the robot for later analysis
-    nfr::logger.AddOutput(std::make_shared<nfr::WPILogManager>());
-
-    // NTLogManager sends logs over NetworkTables to driver station in real-time
-    // Only do this when NOT at competition to reduce network traffic
+    nfr::logger.EnableWPILogging();
     if (!isCompetition())
     {
-        nfr::logger.AddOutput(std::make_shared<nfr::NTLogManager>());
+        nfr::logger.EnableNTLogging();
+        std::cout << "Running in non-competition mode. Enabling NT logging."
+                  << std::endl;
+    }
+    else
+    {
+        std::cout << "Running in competition mode. No NT logging enabled."
+                  << std::endl;
     }
 
     // Log information about which version of our code is running
