@@ -37,9 +37,9 @@ public:
      */
     void Log(const nfr::LogContext &log) const override;
 
-    void LogRobotState(const nfr::LogContext& log) const;
-
 private:
+    void LogRobotState(const nfr::LogContext& log) const override;
+
     /**
      * @brief Sets up controller button bindings and default commands
      *

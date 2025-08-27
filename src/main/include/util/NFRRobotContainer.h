@@ -7,6 +7,7 @@
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
 #include <logging/Logger.h>
+#include "frc2/command/PrintCommand.h"
 
 /**
  * @brief Container class that organizes all robot subsystems and controller
@@ -31,24 +32,24 @@ public:
      * This runs once when the robot starts up. It creates our swerve drivetrain
      * and configures which buttons on the controller do what actions.
      */
-    NFRRobotContainer();
+    NFRRobotContainer() = default;
 
     virtual ~NFRRobotContainer() = default;
 
-    virtual void RobotInit() = 0;
-    virtual void RobotPeriodic() = 0;
-    virtual void DisabledInit() = 0;
-    virtual void DisabledPeriodic() = 0;
-    virtual void DisabledExit() = 0;
-    virtual void AutonomousInit() = 0;
-    virtual void AutonomousPeriodic() = 0;
-    virtual void AutonomousExit() = 0;
-    virtual void TeleopInit() = 0;
-    virtual void TeleopPeriodic() = 0;
-    virtual void TeleopExit() = 0;
-    virtual void TestInit() = 0;
-    virtual void TestPeriodic() = 0;
-    virtual void TestExit() = 0;
+    virtual void RobotInit() {};
+    virtual void RobotPeriodic() {};
+    virtual void DisabledInit() {};
+    virtual void DisabledPeriodic() {};
+    virtual void DisabledExit() {};
+    virtual void AutonomousInit() {};
+    virtual void AutonomousPeriodic() {};
+    virtual void AutonomousExit() {};
+    virtual void TeleopInit() {};
+    virtual void TeleopPeriodic() {};
+    virtual void TeleopExit() {};
+    virtual void TestInit() {};
+    virtual void TestPeriodic() {};
+    virtual void TestExit() {};
 
     /**
      * @brief Gets the command to run during autonomous period
@@ -60,7 +61,7 @@ public:
      *
      * @return CommandPtr to run during autonomous
      */
-    virtual frc2::CommandPtr GetAutonomousCommand() = 0;
+    virtual frc2::CommandPtr GetAutonomousCommand() { return frc2::PrintCommand("Override me please").ToPtr(); }
 
     /**
      * @brief Logs current robot state for debugging and analysis
@@ -71,10 +72,11 @@ public:
      *
      * @param log The logging context to write data to
      */
-    virtual void Log(const nfr::LogContext &log) const;
+    virtual void Log(const nfr::LogContext &log) const = 0;
 
 private:
-    void LogRobotState(const nfr::LogContext &log) const;
+    virtual void LogRobotState(const nfr::LogContext &log) const = 0;
+
     /**
      * @brief Sets up controller button bindings and default commands
      *

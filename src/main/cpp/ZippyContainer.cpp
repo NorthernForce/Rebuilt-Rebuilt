@@ -1,36 +1,22 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 #include "ZippyContainer.h"
 
+#include <frc/DriverStation.h>
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/CommandXboxController.h>
 
 #include "constants/Constants.h"
-#include "frc/MathUtil.h"
-#include "frc/Preferences.h"
+#include "frc/geometry/Pose3d.h"
+#include "subsystems/drive/SwerveUtils.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 #include "generated/TunerConstants.h"
+#include "units/base.h"
 
 using namespace std;
 using namespace nfr;
-
-std::array<frc::Rotation2d, 4> getModuleOffsets()
-{
-    return {
-        (units::degree_t)frc::Preferences::GetDouble("FrontLeftOffset", 0.0),
-        (units::degree_t)frc::Preferences::GetDouble("FrontRightOffset", 0.0),
-        (units::degree_t)frc::Preferences::GetDouble("BackLeftOffset", 0.0),
-        (units::degree_t)frc::Preferences::GetDouble("BackRightOffset", 0.0)};
-}
-
-void SetModuleOffsets(const std::array<frc::Rotation2d, 4>& offsets)
-{
-    frc::Preferences::SetDouble("FrontLeftOffset",
-                                offsets[0].Degrees().value());
-    frc::Preferences::SetDouble("FrontRightOffset",
-                                offsets[1].Degrees().value());
-    frc::Preferences::SetDouble("BackLeftOffset", offsets[2].Degrees().value());
-    frc::Preferences::SetDouble("BackRightOffset",
-                                offsets[3].Degrees().value());
-}
 
 ZippyContainer::ZippyContainer()
 {
@@ -55,17 +41,6 @@ ZippyContainer::ZippyContainer()
 
     // Set up controller bindings and default commands
     ConfigureBindings();
-}
-
-std::function<double()> ProcessInput(std::function<double()> input)
-{
-    return [input = std::move(input)]() mutable
-    {
-        auto x = input();
-        x = frc::ApplyDeadband(x, 0.10);
-        x *= abs(x);  // Square the input for finer control at low speeds
-        return x;
-    };
 }
 
 void ZippyContainer::ConfigureBindings()
@@ -94,6 +69,9 @@ frc2::CommandPtr ZippyContainer::GetAutonomousCommand()
     return frc2::cmd::Print("No autonomous command configured");
 }
 
+void ZippyContainer::RobotInit()
+{
+}
 void ZippyContainer::RobotPeriodic()
 {
 }
@@ -132,4 +110,39 @@ void ZippyContainer::TestPeriodic()
 }
 void ZippyContainer::TestExit()
 {
+}
+void ZippyContainer::Log(const nfr::LogContext& log) const
+{
+    // Log important robot data for debugging and analysis
+    // Match time helps correlate log data with what happened during the match
+    log["match_time"] << frc::DriverStation::GetMatchTime();
+
+    // Log drivetrain state (position, velocity, motor currents, etc.)
+    // The drivetrain Log method will record detailed state information
+    log["drive"] << m_drive;
+}
+void ZippyContainer::LogRobotState(const nfr::LogContext& log) const
+{
+    // Get current robot pose for the base robot component
+    frc::Pose3d robotPose = frc::Pose3d(m_drive->GetState().Pose);
+
+    // Main robot pose for AdvantageScope 3D visualization
+    log["Robot"] << robotPose;
+
+    // Component 0: Swerve drive modules - base robot frame
+    // This represents the main chassis/drivetrain
+    log["component_0"] << robotPose;
+
+    // Component 1: Robot base frame - secondary base component
+    // Position based on config.json zeroedPosition for component 1
+    frc::Pose3d basePose =
+        robotPose +
+        frc::Transform3d(frc::Translation3d(-1.52_m, -0.4_m, -0.02_m),
+                         frc::Rotation3d(0_deg, 0_deg, 90_deg));
+    log["component_1"] << basePose;
+
+    // Additional robot state information for debugging
+    log["chassis_speeds"] << m_drive->GetState().Speeds;
+    log["field_relative_heading"]
+        << m_drive->GetState().Pose.Rotation().Degrees();
 }
