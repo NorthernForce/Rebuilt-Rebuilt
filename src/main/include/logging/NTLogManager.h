@@ -34,7 +34,7 @@ namespace nfr
     class NTLogManager
     {
     public:
-        NTLogManager(const std::string_view &tableName = "logs", 
+        NTLogManager(const std::string_view &tableName = "logs",
                      const std::string_view &metadataTableName = "Metadata");
         /**
          * @brief Logs a double value to a file.

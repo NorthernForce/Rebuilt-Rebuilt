@@ -60,8 +60,10 @@ void Robot::RobotInit()
     NFRRobotChooser chooser =
         NFRRobotChooser([]() { return make_unique<RalphContainer>(); }, robots);
     m_container = chooser.GetNFRRobotContainer();
-    nfr::logger["Metadata"]["robot"] << std::string(typeid(*m_container).name());
-    nfr::logger["Metadata"]["roborio_serial"] << frc::RobotController::GetSerialNumber();
+    nfr::logger["Metadata"]["robot"]
+        << std::string(typeid(*m_container).name());
+    nfr::logger["Metadata"]["roborio_serial"]
+        << frc::RobotController::GetSerialNumber();
 }
 
 void Robot::RobotPeriodic()

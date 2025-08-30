@@ -11,10 +11,11 @@ using namespace nfr;
 using namespace std;
 using namespace nt;
 
-NTLogManager::NTLogManager(const string_view& tableName, const string_view& metadataTableName)
+NTLogManager::NTLogManager(const string_view& tableName,
+                           const string_view& metadataTableName)
     : table(NetworkTableInstance::GetDefault().GetTable(tableName)),
-        metadataTable(
-            NetworkTableInstance::GetDefault().GetTable(metadataTableName))
+      metadataTable(
+          NetworkTableInstance::GetDefault().GetTable(metadataTableName))
 {
     if (!table)
     {
