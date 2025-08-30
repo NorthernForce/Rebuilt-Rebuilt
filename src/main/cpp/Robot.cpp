@@ -49,7 +49,7 @@ Robot::Robot()
 
     // Log information about which version of our code is running
     // This helps us know exactly what code was deployed to the robot
-    nfr::logger["git"] << getGitMetadata();
+    nfr::logger["Metadata"] << getGitMetadata();
 }
 
 void Robot::RobotInit()
@@ -60,6 +60,8 @@ void Robot::RobotInit()
     NFRRobotChooser chooser =
         NFRRobotChooser([]() { return make_unique<RalphContainer>(); }, robots);
     m_container = chooser.GetNFRRobotContainer();
+    nfr::logger["Metadata"]["robot"] << std::string(typeid(*m_container).name());
+    nfr::logger["Metadata"]["roborio_serial"] << frc::RobotController::GetSerialNumber();
 }
 
 void Robot::RobotPeriodic()

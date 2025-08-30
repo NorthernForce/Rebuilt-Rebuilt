@@ -34,7 +34,8 @@ namespace nfr
     class NTLogManager
     {
     public:
-        NTLogManager(const std::string_view &tableName = "logs");
+        NTLogManager(const std::string_view &tableName = "logs", 
+                     const std::string_view &metadataTableName = "Metadata");
         /**
          * @brief Logs a double value to a file.
          * @param key The key/name for the log entry.
@@ -123,7 +124,7 @@ namespace nfr
         }
 
     private:
-        std::shared_ptr<nt::NetworkTable> table;
+        std::shared_ptr<nt::NetworkTable> table, metadataTable;
         std::unordered_map<
             std::string,
             std::variant<nt::DoublePublisher, nt::IntegerPublisher,
