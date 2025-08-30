@@ -5,6 +5,7 @@
 #include "Robot.h"
 
 #include "RalphContainer.h"
+#include "ZippyContainer.h"
 #include "util/NFRRobotChooser.h"
 
 using namespace std;
@@ -53,10 +54,11 @@ Robot::Robot()
 
 void Robot::RobotInit()
 {
-    map<string, shared_ptr<NFRRobotContainer>> robots = {
-        {"023C3578", make_shared<RalphContainer>()}};
+    map<string, RobotSupplier> robots = {
+        {"023C3578", []() { return make_unique<RalphContainer>(); }},
+        {"0316d7d7", []() { return make_unique<ZippyContainer>(); }}};
     NFRRobotChooser chooser =
-        NFRRobotChooser(make_shared<RalphContainer>(), robots);
+        NFRRobotChooser([]() { return make_unique<RalphContainer>(); }, robots);
     m_container = chooser.GetNFRRobotContainer();
 }
 

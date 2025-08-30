@@ -1,26 +1,18 @@
 #include "util/NFRRobotChooser.h"
 
-#include <fstream>
 #include <iostream>
+#include <memory>
+
+#include "frc/RobotController.h"
+#include "util/NFRRobotContainer.h"
 
 using namespace std;
 
-NFRRobotChooser::NFRRobotChooser(
-    shared_ptr<NFRRobotContainer> defaultRobot,
-    map<string, shared_ptr<NFRRobotContainer>> otherRobots,
-    string robotNamePath)
+NFRRobotChooser::NFRRobotChooser(RobotSupplier defaultRobot,
+                                 map<string, RobotSupplier> otherRobots)
 {
     m_defaultRobot = defaultRobot;
     m_otherRobots = otherRobots;
-    m_robotNamePath = robotNamePath;
-}
-
-NFRRobotChooser::NFRRobotChooser(
-    shared_ptr<NFRRobotContainer> defaultRobot,
-    map<string, shared_ptr<NFRRobotContainer>> otherRobots)
-    : NFRRobotChooser(defaultRobot, otherRobots,
-                      "/home/admin/robot_settings.txt")
-{
 }
 
 bool EqualsIgnoreCase(string first, string second)
@@ -30,25 +22,18 @@ bool EqualsIgnoreCase(string first, string second)
     return first == second;
 }
 
-shared_ptr<NFRRobotContainer> NFRRobotChooser::GetNFRRobotContainer()
+std::unique_ptr<NFRRobotContainer> NFRRobotChooser::GetNFRRobotContainer()
 {
-    string text;
-    ifstream file(m_robotNamePath);
-    if (file.is_open())
+    string roborioSerial = frc::RobotController::GetSerialNumber();
+    for (auto const &entry : m_otherRobots)
     {
-        string robotName;
-        getline(file, robotName);
-        for (auto robot : m_otherRobots)
+        if (EqualsIgnoreCase(entry.first, roborioSerial))
         {
-            if (EqualsIgnoreCase(robot.first, robotName))
-            {
-                return robot.second;
-            }
+            cout << "Creating robot container for robot with serial "
+                 << roborioSerial << endl;
+            return entry.second();
         }
     }
-    else
-    {
-        cout << "Could not find file";
-    }
-    return m_defaultRobot;
+    cout << "Creating default robot container" << endl;
+    return m_defaultRobot();
 }

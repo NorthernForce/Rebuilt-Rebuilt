@@ -2,20 +2,16 @@
 
 #include <util/NFRRobotContainer.h>
 
+using RobotSupplier = std::function<std::unique_ptr<NFRRobotContainer>()>;
+
 class NFRRobotChooser
 {
 public:
-    NFRRobotChooser(
-        std::shared_ptr<NFRRobotContainer> defaultRobot,
-        std::map<std::string, std::shared_ptr<NFRRobotContainer>> otherRobots,
-        std::string robotNamePath);
-    NFRRobotChooser(
-        std::shared_ptr<NFRRobotContainer> defaultRobot,
-        std::map<std::string, std::shared_ptr<NFRRobotContainer>> otherRobots);
-    std::shared_ptr<NFRRobotContainer> GetNFRRobotContainer();
+    NFRRobotChooser(RobotSupplier defaultRobot,
+                    std::map<std::string, RobotSupplier> otherRobots);
+    std::unique_ptr<NFRRobotContainer> GetNFRRobotContainer();
 
 protected:
-    std::shared_ptr<NFRRobotContainer> m_defaultRobot;
-    std::map<std::string, std::shared_ptr<NFRRobotContainer>> m_otherRobots;
-    std::string m_robotNamePath;
+    RobotSupplier m_defaultRobot;
+    std::map<std::string, RobotSupplier> m_otherRobots;
 };

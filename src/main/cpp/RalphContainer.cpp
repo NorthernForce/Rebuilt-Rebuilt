@@ -50,11 +50,13 @@ void RalphContainer::ConfigureBindings()
     // them to robot movement
     m_drive->SetDefaultCommand(m_drive->DriveByJoystick(
         ProcessInput(
-            [&]() {
+            [&]()
+            {
                 return m_driverController.GetLeftX();
             }),  // Side-to-side movement (strafe)
         ProcessInput(
-            [&]() {
+            [&]()
+            {
                 return m_driverController.GetLeftY();
             }),  // Forward/backward movement
         ProcessInput([&]()
