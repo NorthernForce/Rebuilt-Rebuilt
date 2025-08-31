@@ -11,8 +11,11 @@ using namespace nfr;
 using namespace std;
 using namespace nt;
 
-NTLogManager::NTLogManager(const string_view& tableName)
-    : table(NetworkTableInstance::GetDefault().GetTable(tableName))
+NTLogManager::NTLogManager(const string_view& tableName,
+                           const string_view& metadataTableName)
+    : table(NetworkTableInstance::GetDefault().GetTable(tableName)),
+      metadataTable(
+          NetworkTableInstance::GetDefault().GetTable(metadataTableName))
 {
     if (!table)
     {
@@ -22,6 +25,11 @@ NTLogManager::NTLogManager(const string_view& tableName)
 
 void NTLogManager::Log(const string_view& key, double value)
 {
+    if (key.starts_with("Metadata/"))
+    {
+        metadataTable->GetDoubleTopic(key.substr(9)).Publish().Set(value);
+        return;
+    }
     if (!topics.contains(string(key)))
     {
         topics[string(key)] = table->GetDoubleTopic(key).Publish();
@@ -47,6 +55,11 @@ void NTLogManager::Log(const string_view& key, double value)
 
 void NTLogManager::Log(const string_view& key, long value)
 {
+    if (key.starts_with("Metadata/"))
+    {
+        metadataTable->GetEntry(key.substr(9)).SetInteger(value);
+        return;
+    }
     if (!topics.contains(string(key)))
     {
         topics[string(key)] = table->GetIntegerTopic(key).Publish();
@@ -72,6 +85,11 @@ void NTLogManager::Log(const string_view& key, long value)
 
 void NTLogManager::Log(const string_view& key, bool value)
 {
+    if (key.starts_with("Metadata/"))
+    {
+        metadataTable->GetEntry(key.substr(9)).SetBoolean(value);
+        return;
+    }
     if (!topics.contains(string(key)))
     {
         topics[string(key)] = table->GetBooleanTopic(key).Publish();
@@ -97,6 +115,11 @@ void NTLogManager::Log(const string_view& key, bool value)
 
 void NTLogManager::Log(const string_view& key, const string_view& value)
 {
+    if (key.starts_with("Metadata/"))
+    {
+        metadataTable->GetEntry(key.substr(9)).SetString(value);
+        return;
+    }
     if (!topics.contains(string(key)))
     {
         topics[string(key)] = table->GetStringTopic(key).Publish();
