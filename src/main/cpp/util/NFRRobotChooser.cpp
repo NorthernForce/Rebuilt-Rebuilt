@@ -17,9 +17,12 @@ NFRRobotChooser::NFRRobotChooser(RobotSupplier defaultRobot,
 
 bool EqualsIgnoreCase(string first, string second)
 {
-    transform(first.begin(), first.end(), first.begin(), ::tolower);
-    transform(second.begin(), second.end(), second.begin(), ::tolower);
-    return first == second;
+    if (first.size() != second.size())
+    {
+        return false;
+    }
+    return equal(first.begin(), first.end(), second.begin(),
+                 [](char a, char b) { return tolower(a) == tolower(b); });
 }
 
 std::unique_ptr<NFRRobotContainer> NFRRobotChooser::GetNFRRobotContainer()
