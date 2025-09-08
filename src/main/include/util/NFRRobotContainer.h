@@ -67,27 +67,10 @@ public:
         return frc2::PrintCommand("Override me please").ToPtr();
     }
 
-    /**
-     * @brief Logs current robot state for debugging and analysis
-     *
-     * This method is called every 20ms to record important robot data like
-     * drivetrain position, motor temperatures, etc. This data helps us debug
-     * problems and analyze robot performance.
-     *
-     * @param log The logging context to write data to
-     */
     virtual void Log(const nfr::LogContext &log) const = 0;
 
 private:
     virtual void LogRobotState(const nfr::LogContext &log) const = 0;
 
-    /**
-     * @brief Sets up controller button bindings and default commands
-     *
-     * This method configures:
-     * - Which joystick axes control driving
-     * - Which buttons trigger specific actions
-     * - Default commands that run when no other commands are active
-     */
     virtual void ConfigureBindings() = 0;
 };

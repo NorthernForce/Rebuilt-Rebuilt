@@ -3,6 +3,8 @@
 #include <subsystems/drive/SwerveDrive.h>
 #include <util/NFRRobotContainer.h>
 
+#include "subsystems/Localizer.h"
+
 class RalphContainer : public NFRRobotContainer
 {
 public:
@@ -50,6 +52,8 @@ private:
      */
     void ConfigureBindings() override;
 
+    static std::vector<nfr::CameraConfig> CreateCameraConfigurations();
+
     /**
      * @brief Our robot's swerve drivetrain subsystem
      *
@@ -61,6 +65,14 @@ private:
      * the SwerveDrive object and will automatically delete it when destroyed.
      */
     std::unique_ptr<nfr::SwerveDrive> m_drive{nullptr};
+
+    /**
+     * @brief AprilTag camera localizer for pose estimation
+     *
+     * The localizer manages multiple cameras and provides vision-based
+     * pose estimates that are fused with odometry for improved accuracy.
+     */
+    nfr::Localizer m_localizer;
 
     /**
      * @brief Command to reset swerve module positions
