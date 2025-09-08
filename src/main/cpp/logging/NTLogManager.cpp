@@ -1,13 +1,21 @@
 #include <logging/NTLogManager.h>
 #include <networktables/NetworkTable.h>
 #include <networktables/NetworkTableInstance.h>
+#include <networktables/StructArrayTopic.h>
+#include <networktables/StructTopic.h>
+
+#include <string_view>
+#include <unordered_map>
 
 using namespace nfr;
 using namespace std;
 using namespace nt;
 
-NTLogManager::NTLogManager(const string& tableName)
-    : table(NetworkTableInstance::GetDefault().GetTable(tableName))
+NTLogManager::NTLogManager(const string_view& tableName,
+                           const string_view& metadataTableName)
+    : table(NetworkTableInstance::GetDefault().GetTable(tableName)),
+      metadataTable(
+          NetworkTableInstance::GetDefault().GetTable(metadataTableName))
 {
     if (!table)
     {
@@ -15,13 +23,18 @@ NTLogManager::NTLogManager(const string& tableName)
     }
 }
 
-void NTLogManager::Log(const string& key, double value)
+void NTLogManager::Log(const string_view& key, double value)
 {
-    if (!topics.contains(key))
+    if (key.starts_with("Metadata/"))
     {
-        topics[key] = table->GetDoubleTopic(key).Publish();
+        metadataTable->GetDoubleTopic(key.substr(9)).Publish().Set(value);
+        return;
     }
-    auto& topic = topics[key];
+    if (!topics.contains(string(key)))
+    {
+        topics[string(key)] = table->GetDoubleTopic(key).Publish();
+    }
+    auto& topic = topics[string(key)];
     std::visit(
         [&](auto& pub)
         {
@@ -32,20 +45,26 @@ void NTLogManager::Log(const string& key, double value)
             }
             else
             {
-                throw runtime_error("Log entry type mismatch for key: " + key +
-                                    ". Expected double, got different type.");
+                throw runtime_error(
+                    "Log entry type mismatch for key: " + string(key) +
+                    ". Expected double, got different type.");
             }
         },
         topic);
 }
 
-void NTLogManager::Log(const string& key, long value)
+void NTLogManager::Log(const string_view& key, long value)
 {
-    if (!topics.contains(key))
+    if (key.starts_with("Metadata/"))
     {
-        topics[key] = table->GetIntegerTopic(key).Publish();
+        metadataTable->GetEntry(key.substr(9)).SetInteger(value);
+        return;
     }
-    auto& topic = topics[key];
+    if (!topics.contains(string(key)))
+    {
+        topics[string(key)] = table->GetIntegerTopic(key).Publish();
+    }
+    auto& topic = topics[string(key)];
     std::visit(
         [&](auto& pub)
         {
@@ -56,20 +75,26 @@ void NTLogManager::Log(const string& key, long value)
             }
             else
             {
-                throw runtime_error("Log entry type mismatch for key: " + key +
-                                    ". Expected integer, got different type.");
+                throw runtime_error(
+                    "Log entry type mismatch for key: " + string(key) +
+                    ". Expected integer, got different type.");
             }
         },
         topic);
 }
 
-void NTLogManager::Log(const string& key, bool value)
+void NTLogManager::Log(const string_view& key, bool value)
 {
-    if (!topics.contains(key))
+    if (key.starts_with("Metadata/"))
     {
-        topics[key] = table->GetBooleanTopic(key).Publish();
+        metadataTable->GetEntry(key.substr(9)).SetBoolean(value);
+        return;
     }
-    auto& topic = topics[key];
+    if (!topics.contains(string(key)))
+    {
+        topics[string(key)] = table->GetBooleanTopic(key).Publish();
+    }
+    auto& topic = topics[string(key)];
     std::visit(
         [&](auto& pub)
         {
@@ -80,20 +105,26 @@ void NTLogManager::Log(const string& key, bool value)
             }
             else
             {
-                throw runtime_error("Log entry type mismatch for key: " + key +
-                                    ". Expected boolean, got different type.");
+                throw runtime_error(
+                    "Log entry type mismatch for key: " + string(key) +
+                    ". Expected boolean, got different type.");
             }
         },
         topic);
 }
 
-void NTLogManager::Log(const string& key, const string& value)
+void NTLogManager::Log(const string_view& key, const string_view& value)
 {
-    if (!topics.contains(key))
+    if (key.starts_with("Metadata/"))
     {
-        topics[key] = table->GetStringTopic(key).Publish();
+        metadataTable->GetEntry(key.substr(9)).SetString(value);
+        return;
     }
-    auto& topic = topics[key];
+    if (!topics.contains(string(key)))
+    {
+        topics[string(key)] = table->GetStringTopic(key).Publish();
+    }
+    auto& topic = topics[string(key)];
     std::visit(
         [&](auto& pub)
         {
@@ -104,20 +135,21 @@ void NTLogManager::Log(const string& key, const string& value)
             }
             else
             {
-                throw runtime_error("Log entry type mismatch for key: " + key +
-                                    ". Expected string, got different type.");
+                throw runtime_error(
+                    "Log entry type mismatch for key: " + string(key) +
+                    ". Expected string, got different type.");
             }
         },
         topic);
 }
 
-void NTLogManager::Log(const string& key, std::span<double> values)
+void NTLogManager::Log(const string_view& key, std::span<double> values)
 {
-    if (!topics.contains(key))
+    if (!topics.contains(string(key)))
     {
-        topics[key] = table->GetDoubleArrayTopic(key).Publish();
+        topics[string(key)] = table->GetDoubleArrayTopic(key).Publish();
     }
-    auto& topic = topics[key];
+    auto& topic = topics[string(key)];
     std::visit(
         [&](auto& pub)
         {
@@ -129,20 +161,20 @@ void NTLogManager::Log(const string& key, std::span<double> values)
             else
             {
                 throw runtime_error(
-                    "Log entry type mismatch for key: " + key +
+                    "Log entry type mismatch for key: " + string(key) +
                     ". Expected double array, got different type.");
             }
         },
         topic);
 }
 
-void NTLogManager::Log(const string& key, std::span<long> values)
+void NTLogManager::Log(const string_view& key, std::span<long> values)
 {
-    if (!topics.contains(key))
+    if (!topics.contains(string(key)))
     {
-        topics[key] = table->GetIntegerArrayTopic(key).Publish();
+        topics[string(key)] = table->GetIntegerArrayTopic(key).Publish();
     }
-    auto& topic = topics[key];
+    auto& topic = topics[string(key)];
     std::visit(
         [&](auto& pub)
         {
@@ -156,20 +188,20 @@ void NTLogManager::Log(const string& key, std::span<long> values)
             else
             {
                 throw runtime_error(
-                    "Log entry type mismatch for key: " + key +
+                    "Log entry type mismatch for key: " + string(key) +
                     ". Expected integer array, got different type.");
             }
         },
         topic);
 }
 
-void NTLogManager::Log(const string& key, std::span<bool> values)
+void NTLogManager::Log(const string_view& key, std::span<bool> values)
 {
-    if (!topics.contains(key))
+    if (!topics.contains(string(key)))
     {
-        topics[key] = table->GetBooleanArrayTopic(key).Publish();
+        topics[string(key)] = table->GetBooleanArrayTopic(key).Publish();
     }
-    auto& topic = topics[key];
+    auto& topic = topics[string(key)];
     std::visit(
         [&](auto& pub)
         {
@@ -183,32 +215,41 @@ void NTLogManager::Log(const string& key, std::span<bool> values)
             else
             {
                 throw runtime_error(
-                    "Log entry type mismatch for key: " + key +
+                    "Log entry type mismatch for key: " + string(key) +
                     ". Expected boolean array, got different type.");
             }
         },
         topic);
 }
 
-void NTLogManager::Log(const string& key, std::span<std::string> values)
+void NTLogManager::Log(const string_view& key,
+                       std::span<std::string_view> values)
 {
-    if (!topics.contains(key))
+    if (!topics.contains(string(key)))
     {
-        topics[key] = table->GetStringArrayTopic(key).Publish();
+        topics[string(key)] = table->GetStringArrayTopic(key).Publish();
     }
-    auto& topic = topics[key];
+    auto& topic = topics[string(key)];
     std::visit(
         [&](auto& pub)
         {
             using T = std::decay_t<decltype(pub)>;
             if constexpr (std::is_same_v<T, StringArrayPublisher>)
             {
-                pub.Set(values);
+                // Convert std::span<std::string_view> to
+                // std::vector<std::string>
+                std::vector<std::string> stringValues;
+                stringValues.reserve(values.size());
+                for (const auto& val : values)
+                {
+                    stringValues.emplace_back(val);
+                }
+                pub.Set(stringValues);
             }
             else
             {
                 throw runtime_error(
-                    "Log entry type mismatch for key: " + key +
+                    "Log entry type mismatch for key: " + string(key) +
                     ". Expected string array, got different type.");
             }
         },
