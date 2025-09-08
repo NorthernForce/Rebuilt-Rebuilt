@@ -52,6 +52,8 @@ private:
      */
     void ConfigureBindings() override;
 
+    static std::vector<nfr::CameraConfig> CreateCameraConfigurations();
+
     /**
      * @brief Our robot's swerve drivetrain subsystem
      *

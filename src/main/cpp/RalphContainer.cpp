@@ -24,7 +24,7 @@
 using namespace std;
 using namespace nfr;
 
-std::vector<CameraConfig> CreateCameraConfigurations()
+std::vector<CameraConfig> RalphContainer::CreateCameraConfigurations()
 {
     std::vector<CameraConfig> configs;
 
