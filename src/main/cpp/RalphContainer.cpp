@@ -5,8 +5,8 @@
 #include "RalphContainer.h"
 
 #include <frc/DriverStation.h>
-#include <frc/RobotBase.h>
 #include <frc/Preferences.h>
+#include <frc/RobotBase.h>
 #include <frc/Timer.h>
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/CommandXboxController.h>
@@ -115,7 +115,8 @@ std::vector<CameraConfig> CreateCameraConfigurations()
 }
 
 RalphContainer::RalphContainer()
-    : m_localizer(CreateCameraConfigurations(), VisionConstants::kEstimateTimeout)
+    : m_localizer(CreateCameraConfigurations(),
+                  VisionConstants::kEstimateTimeout)
 {
     // Create our swerve drivetrain with all its configuration
     // This big constructor call sets up:
@@ -222,7 +223,7 @@ void RalphContainer::RobotPeriodic()
         if (estimateAge < VisionConstants::kMaxEstimateAge)
         {
             m_drive->AddVisionMeasurement(estimatedPose.pose,
-                                        estimatedPose.timestamp);
+                                          estimatedPose.timestamp);
         }
     }
 }
